@@ -106,10 +106,9 @@ class gdrive(cloudservice):
             self.crashreport = None
             username = instanceName
             self.authorization = authorization.authorization(username)
-
             import anydbm
-            self.DBM = anydbm.open(DBM,'c')
-            self.DBM.close()
+            self.DBM = DBM
+
 
 
         self.cookiejar = cookielib.CookieJar()
@@ -127,6 +126,17 @@ class gdrive(cloudservice):
             #***
             self.cache = cache.cache()
         else:
+            # load the OAUTH2 tokens or force fetch if not set
+
+
+            dbm = anydbm.open(self.DBM,'c')
+            if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
+                if self.type ==4 or dbm['code']:
+                    self.getToken(dbm['code'])
+                else:
+                    print 'ERROR:' + str(e)
+            #***
+            dbm.close()
 
             self.cache = None
 
