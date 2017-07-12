@@ -25,7 +25,11 @@ import threading
 import re
 import urllib, urllib2
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+
+KODI = False
+
+if KODI:
+    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
