@@ -23,10 +23,12 @@ import urllib, urllib2
 import sys
 import os
 
+KODI = False
 
-# cloudservice - standard XBMC modules
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin
-import xbmcvfs
+if KODI:
+    # cloudservice - standard XBMC modules
+    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmcvfs
 
 from resources.lib import mediaurl
 #from resources.lib import kodi_common
@@ -35,10 +37,10 @@ from resources.lib import streamer
 
 
 
-
-#global variables
-PLUGIN_URL = sys.argv[0]
-plugin_handle = int(sys.argv[1])
+if KODI:
+    #global variables
+    PLUGIN_URL = sys.argv[0]
+    plugin_handle = int(sys.argv[1])
 
 
 
