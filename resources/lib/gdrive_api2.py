@@ -85,7 +85,8 @@ class gdrive(cloudservice):
         self.protocol = 2
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
-        self.worksheetID = self.addon.getSetting(self.instanceName+'_spreadsheet')
+        if KODI:
+            self.worksheetID = self.addon.getSetting(self.instanceName+'_spreadsheet')
         self.DBM = None
 
 
@@ -103,6 +104,7 @@ class gdrive(cloudservice):
         else:
             self.type = 2
             self.crashreport = None
+            username = instanceName
             self.authorization = authorization.authorization(username)
 
             import anydbm
@@ -114,15 +116,19 @@ class gdrive(cloudservice):
 
         self.user_agent = user_agent
 
-        # load the OAUTH2 tokens or force fetch if not set
-        if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
-            if self.type ==4 or self.addon.getSetting(self.instanceName+'_code'):
-                self.getToken(self.addon.getSetting(self.instanceName+'_code'))
-            else:
-                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-        #***
-        self.cache = cache.cache()
+        if KODI:
+            # load the OAUTH2 tokens or force fetch if not set
+            if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
+                if self.type ==4 or self.addon.getSetting(self.instanceName+'_code'):
+                    self.getToken(self.addon.getSetting(self.instanceName+'_code'))
+                else:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            #***
+            self.cache = cache.cache()
+        else:
+
+            self.cache = None
 
         if KODI:
             self.cloudResume = self.addon.getSetting(self.instanceName+'_resumepoint')
