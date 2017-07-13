@@ -102,12 +102,18 @@ class gdrive(cloudservice):
             self.authorization = authorization.authorization(username)
 
         else:
-            self.type = 2
             self.crashreport = None
             username = instanceName
             self.authorization = authorization.authorization(username)
             import anydbm
-            self.DBM = DBM
+            self.DBM  = anydbm.open(DBM,'c')
+
+            try:
+                self.type = self.DBM['type']
+            except:
+                self.type = 2
+                print "ERROR: define your settings in the DBM first"
+                return
 
 
 
@@ -129,14 +135,12 @@ class gdrive(cloudservice):
             # load the OAUTH2 tokens or force fetch if not set
 
 
-            dbm = anydbm.open(self.DBM,'c')
             if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
-                if self.type ==4 or dbm['code']:
-                    self.getToken(dbm['code'])
+                if self.type ==4 or self.DBM['code']:
+                    self.getToken(self.DBM['code'])
                 else:
                     print 'ERROR:' + str(e)
             #***
-            dbm.close()
 
             self.cache = None
 
@@ -167,7 +171,8 @@ class gdrive(cloudservice):
                 if self.gSpreadsheet is None:
                     self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
 
-
+    def __del__(self):
+            self.DBM.close()
 
 
     ##
@@ -180,7 +185,10 @@ class gdrive(cloudservice):
             header = { 'User-Agent' : self.user_agent }
 
             if (self.type == 2):
-                url = addon.getSetting(self.instanceName+'_url')
+                if KODI:
+                    url = addon.getSetting(self.instanceName+'_url')
+                else:
+                    url = self.DBM['url']
                 values = {
                       'code' : code
                       }
@@ -188,8 +196,13 @@ class gdrive(cloudservice):
 
             elif (self.type == 3):
                 url = 'https://accounts.google.com/o/oauth2/token'
-                clientID =self.addon.getSetting(self.instanceName+'_client_id')
-                clientSecret = self.addon.getSetting(self.instanceName+'_client_secret')
+                if KODI:
+                    clientID =self.addon.getSetting(self.instanceName+'_client_id')
+                    clientSecret = self.addon.getSetting(self.instanceName+'_client_secret')
+                else:
+                    clientID =self.DBM['client_id']
+                    clientSecret = self.DBM['client_secret']
+
                 header = { 'User-Agent' : self.user_agent , 'Content-Type': 'application/x-www-form-urlencoded'}
 
                 req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(clientID)+'&client_secret='+str(clientSecret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
@@ -203,12 +216,20 @@ class gdrive(cloudservice):
 
             else:
                 url = 'https://script.google.com/macros/s/AKfycbw8fdhaq-WRVJXfOSMK5TZdVnzHvY4u41O1BfW9C8uAghMzNhM/exec'
-                values = {
-                      'username' : self.authorization.username,
-                      'passcode' : self.addon.getSetting(self.instanceName+'_passcode')
-                      }
+                if KODI:
+                    values = {
+                          'username' : self.authorization.username,
+                          'passcode' : self.addon.getSetting(self.instanceName+'_passcode')
+                          }
+                else:
+                    values = {
+                          'username' : self.authorization.username,
+                          'passcode' : self.DBM['passcode']
+                          }
+
                 req = urllib2.Request(url, urllib.urlencode(values), header)
-                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30140), self.addon.getLocalizedString(30141))
+                if KODI:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30140), self.addon.getLocalizedString(30141))
 
                 # try login
                 try:
@@ -216,11 +237,18 @@ class gdrive(cloudservice):
                 except urllib2.URLError, e:
                     if e.code == 403:
                         #login issue
-                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
-                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        if KODI:
+                            xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        else:
+                            print "ERROR:" + str(e)
                     else:
-                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
-                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        if KODI:
+                            xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        else:
+                            print "ERROR:" + str(e)
+
                     return
 
                 response_data = response.read()
@@ -231,11 +259,13 @@ class gdrive(cloudservice):
                 for r in re.finditer('code found =\"([^\"]+)\"',
                              response_data, re.DOTALL):
                     code = r.group(1)
-                if code != '':
-                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30143))
-                else:
-                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30144))
-                    return
+
+                if KODI:
+                    if code != '':
+                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30143))
+                    else:
+                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30144))
+                        return
 
                 url = 'https://script.google.com/macros/s/AKfycbxgFuUcvNlXLlB5GZLiEjEaZDqZLS2oMd-f4yL-4Y2K50shGoY/exec'
                 values = {
@@ -249,11 +279,18 @@ class gdrive(cloudservice):
             except urllib2.URLError, e:
                 if e.code == 403:
                     #login issue
-                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    if KODI:
+                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    else:
+                        print "ERROR:" + str(e)
                 else:
-                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    if KODI:
+                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    else:
+                        print "ERROR:" + str(e)
+
                 return
 
 
@@ -268,14 +305,17 @@ class gdrive(cloudservice):
                 self.authorization.setToken('auth_access_token',accessToken)
                 self.authorization.setToken('auth_refresh_token',refreshToken)
                 self.updateAuthorization(self.addon)
-                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30142))
+                if KODI:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30142))
 
             for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
                              response_data, re.DOTALL):
                 errorMessage = r.group(1)
-                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(errorMessage), xbmc.LOGERROR)
-
+                if KODI:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(errorMessage), xbmc.LOGERROR)
+                else:
+                    print "ERROR:" + str(e)
             return
 
 
