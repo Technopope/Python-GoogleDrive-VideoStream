@@ -109,7 +109,7 @@ class gdrive(cloudservice):
             self.DBM  = anydbm.open(DBM,'c')
 
             try:
-                self.type = self.DBM['type']
+                self.type = int(self.DBM['type'])
             except:
                 self.type = 2
                 print "ERROR: define your settings in the DBM first"
