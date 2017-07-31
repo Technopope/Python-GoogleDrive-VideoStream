@@ -17,6 +17,7 @@ try:
     if method == "1":
         passcode = str(sys.argv[4])
         dbm['type'] = '4'
+        dbm['passcode'] = passcode
 
     elif method == "2":
 
@@ -32,6 +33,7 @@ try:
 
         elif argSize == 5:
             dbm['code'] = str(sys.argv[4])
+
 
         dbm['type'] = '3'
 
