@@ -24,9 +24,11 @@ from SocketServer import ThreadingMixIn
 import threading
 import re
 import urllib, urllib2
+import sys
 
-
-KODI = False
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
 
 if KODI:
     import xbmc, xbmcaddon, xbmcgui, xbmcplugin
