@@ -19,30 +19,24 @@
 
 
 #
-# The purpose of this class is to override  xbmcaddon and supply equivalent subroutines when ran without KODI
+# The purpose of this class is to override  xbmcgui and supply equivalent subroutines when ran without KODI
 #
 
+class addSortMethod(object):
 
-class xbmcaddon:
+    def ok(self, heading, line1, line2='', line3=''):
+        print heading + ":" + line1 + "\n" + line2 + "\n" + line3
+        return
+
+class xbmcplugin:
     # CloudService v0.3.0
+
 
     ##
     ##
     def __init__(self):
+        self.Dialog.ok = None
         return
-
-    ##
-    # return the setting from DBM
-    ##
-    def getSetting(self,key):
-        return ''
-
-    ##
-    # return the setting from DBM
-    ##
-    def getLocalizedString(self,key):
-        print str(key)
-        return str(key)
 
 
     ##
