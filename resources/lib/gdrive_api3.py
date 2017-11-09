@@ -32,15 +32,15 @@ import unicodedata
 from cloudservice import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
-from resources.lib import teamdrive
 from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
 from resources.lib import cache
 from resources.lib import gSpreadsheets
-
-
+try:
+    from resources.lib import kodi_common
+except:pass
 KODI = True
 if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
     KODI = False
@@ -75,7 +75,7 @@ class gdrive(cloudservice):
 
     PROTOCOL = 'https://'
 
-    API_URL = PROTOCOL+'www.googleapis.com/drive/v2/'
+    API_URL = PROTOCOL+'www.googleapis.com/drive/v3/'
 
     ##
     # initialize (save addon, instance name, user agent)
@@ -85,7 +85,7 @@ class gdrive(cloudservice):
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
         self.instanceName = instanceName
-        self.protocol = 2
+        self.protocol = 3
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
         self.worksheetID = None
@@ -405,47 +405,47 @@ class gdrive(cloudservice):
     def getMediaList(self, folderName=False, title=False, contentType=7):
 
         # retrieve all items
-        url = self.API_URL +'files/?includeTeamDriveItems=true&supportsTeamDrives=true&'
+        url = self.API_URL +'files/'
 
         # show all videos
         if folderName=='VIDEO':
-            url = url + "q=mimeType+contains+'video'"
+            url = url + "?q=mimeType+contains+'video'"
         # show all music
         elif folderName=='MUSIC':
-            url = url + "q=mimeType+contains+'audio'"
+            url = url + "?q=mimeType+contains+'audio'"
         # show all music and video
         elif folderName=='VIDEOMUSIC':
-            url = url + "q=mimeType+contains+'audio'+or+mimeType+contains+'video'"
+            url = url + "?q=mimeType+contains+'audio'+or+mimeType+contains+'video'"
         # show all photos and music
         elif folderName=='PHOTOMUSIC':
-            url = url + "q=mimeType+contains+'image'+or+mimeType+contains+'music'"
+            url = url + "?q=mimeType+contains+'image'+or+mimeType+contains+'music'"
         # show all photos
         elif folderName=='PHOTO':
-            url = url + "q=mimeType+contains+'image'"
+            url = url + "?q=mimeType+contains+'image'"
         # show all music, photos and video
         elif folderName=='ALL':
-            url = url + "q=mimeType+contains+'audio'+or+mimeType+contains+'video'+or+mimeType+contains+'image'"
+            url = url + "?q=mimeType+contains+'audio'+or+mimeType+contains+'video'+or+mimeType+contains+'image'"
 
         # search for title
         elif title != False or folderName == 'SAVED SEARCH':
             encodedTitle = re.sub(' ', '+', title)
-            url = url + "q=title+contains+'" + str(encodedTitle) + "'" + "+and+not+title+contains+'SAVED+SEARCH'"
+            url = url + "?q=title+contains+'" + str(encodedTitle) + "'" + "+and+not+title+contains+'SAVED+SEARCH'"
 
         # show all starred items
         elif folderName == 'STARRED-FILES' or folderName == 'STARRED-FILESFOLDERS' or folderName == 'STARRED-FOLDERS':
-            url = url + "q=starred%3dtrue"
+            url = url + "?q=starred%3dtrue"
         # show all shared items
         elif folderName == 'SHARED':
-            url = url + "q=sharedWithMe%3dtrue"
+            url = url + "?q=sharedWithMe%3dtrue"
 
         # default / show root folder
         elif folderName == '' or folderName == 'me' or folderName == 'root':
             folderName = self.getRootID()
-            url = url + "q='"+str(folderName)+"'+in+parents"
+            url = url + "?q='"+str(folderName)+"'+in+parents"
 
         # retrieve folder items
         else:
-            url = url + "q='"+str(folderName)+"'+in+parents"
+            url = url + "?q='"+str(folderName)+"'+in+parents"
 
         # contribution by dabinn
         # filter out trashed items
@@ -469,7 +469,9 @@ class gdrive(cloudservice):
                   self.crashreport.sendError('getMediaList',str(e))
                   return
               else:
-                kodi_common.logError(e)
+                #kodi_common.logError(e)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e) + url, xbmc.LOGERROR)
+
                 self.crashreport.sendError('getMediaList',str(e))
                 return
 
@@ -654,7 +656,7 @@ class gdrive(cloudservice):
         # retrieve all items
         url = self.API_URL +'files/'
 
-        url = url + "?includeTeamDriveItems=true&supportsTeamDrives=true&q='"+str(folderName)+"'+in+parents"
+        url = url + "?q='"+str(folderName)+"'+in+parents"
 
         mediaFiles = []
         while True:
@@ -770,7 +772,7 @@ class gdrive(cloudservice):
                   if self.settings.encfsDownloadType == 0:
                       url = r.group(1)
                   else:
-                      url = self.API_URL +'files/' + str(resourceID) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                      url = self.API_URL +'files/' + str(resourceID) + '?alt=media'
                   break
                 for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -958,10 +960,10 @@ class gdrive(cloudservice):
 
                 # entry is a photo
                 if ('fanart' in title and (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType)):
-                    return self.API_URL +'files/' + str(resourceID) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                    return self.API_URL +'files/' + str(resourceID) + '?alt=media'
                 # entry is a photo
                 elif ('folder' in title and (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType)):
-                    return self.API_URL +'files/' + str(resourceID) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                    return self.API_URL +'files/' + str(resourceID) + '?alt=media'
 
                 return ''
 
@@ -994,7 +996,7 @@ class gdrive(cloudservice):
                     q = q + ' and '
                 q = q + "title contains '" + str(title) + "'"
 
-        url = url + "?includeTeamDriveItems=true&supportsTeamDrives=true&" + urllib.urlencode({'q':q})
+        url = url + "?" + urllib.urlencode({'q':q})
 
         #generate two lists of SRT files
         #1) list of files (multiple languages) from the same folder that exactly match the title of the video
@@ -1221,79 +1223,13 @@ class gdrive(cloudservice):
         return resourceID
 
     ##
-    # retrieve the list of team drives
-    #   parameters: none
-    #   returns: array of team drives
-    ##
-    def getTeamDrives(self):
-
-        # retrieve all items
-        url = self.API_URL +'teamdrives'
-        drives = []
-
-        while True:
-            req = urllib2.Request(url, None, self.getHeadersList())
-
-            # if action fails, validate login
-            try:
-              response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.refreshToken()
-                req = urllib2.Request(url, None, self.getHeadersList())
-                try:
-                  response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                  kodi_common.logError(e)
-                  self.crashreport.sendError('getTeamDrives',str(e))
-                  return
-              else:
-                kodi_common.logError(e)
-                self.crashreport.sendError('getTeamDrives',str(e))
-                return
-
-            response_data = response.read()
-            response.close()
-
-            for r1 in re.finditer('\{[^\"]+"kind": "drive#teamDrive"(.*?)\}' ,response_data, re.DOTALL):
-                entry = r1.group(1)
-
-                resourceID=''
-                name=''
-                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  resourceID = r.group(1)
-                for r in re.finditer('\"name\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  name = r.group(1)
-
-                drives.append(teamdrive.teamdrive(resourceID,name));
-
-
-            # look for more pages of videos
-            nextURL = ''
-            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
-                             response_data, re.DOTALL):
-                nextURL = r.group(1)
-
-
-            # are there more pages to process?
-            if nextURL == '':
-                break
-            else:
-                url = nextURL
-
-        return drives
-
-
-    ##
     # retrieve the download URL for given resorce ID
     #   parameters: resource ID
     #   returns: download URL
     ##
     def getDownloadURL(self, docid):
 
-            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            url = self.API_URL +'files/' + str(docid) + '?alt=media'
 
             return url
 
@@ -1342,7 +1278,7 @@ class gdrive(cloudservice):
     ##
     def getMediaDetails(self, docid):
 
-            url = self.API_URL +'files/' + docid + '?includeTeamDriveItems=true&supportsTeamDrives=true'
+            url = self.API_URL +'files/' + docid
 
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -1415,9 +1351,9 @@ class gdrive(cloudservice):
             #encodedTitle = re.sub('$', '\\\$', encodedTitle)
 
             if isExact == True:
-                url = url + "?includeTeamDriveItems=true&supportsTeamDrives=true&q=title%3d'" + str(encodedTitle) + "'"
+                url = url + "?q=title%3d'" + str(encodedTitle) + "'"
             else:
-                url = url + "?includeTeamDriveItems=true&supportsTeamDrives=true&q=title+contains+'" + str(encodedTitle) + "'"
+                url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
 
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -1454,14 +1390,14 @@ class gdrive(cloudservice):
             docid = package.file.id
 
             # new method of fetching original stream -- using alt=media
-            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            url = self.API_URL +'files/' + str(docid) + '?alt=media'
             mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
 
 
             # old method of fetching original stream -- using downloadURL
             # fetch information if no thumbnail cache (we need thumbnail url) or we want to download (we need filesize)
             if self.cache.getThumbnail(self, fileID=docid) == '' or self.settings.download  or 1:
-                url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true'
+                url = self.API_URL +'files/' + str(docid)
 
                 req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -1498,7 +1434,7 @@ class gdrive(cloudservice):
 
 
             # new method of fetching original stream -- using alt=media
-            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            url = self.API_URL +'files/' + str(docid) + '?alt=media'
             mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
 
             return (mediaURLs, package)
@@ -1940,7 +1876,7 @@ class gdrive(cloudservice):
     ##
     def setProperty(self, docid, key, value):
 
-        url = self.API_URL +'files/' + str(docid) + '/properties/' + str(key) + '?includeTeamDriveItems=true&supportsTeamDrives=true&visibility=PUBLIC'
+        url = self.API_URL +'files/' + str(docid) + '/properties/' + str(key) + '?visibility=PUBLIC'
         propertyValues = '{"value": "'+str(value)+'", "key": "'+str(key)+'", "visibility": "PUBLIC"}'
 
         req = urllib2.Request(url, propertyValues, self.getHeadersList())
@@ -1971,7 +1907,7 @@ class gdrive(cloudservice):
               elif e.code != 403:
 
 #              else:
-                  url = self.API_URL +'files/' + str(docid) + '/properties?includeTeamDriveItems=true&supportsTeamDrives=true'
+                  url = self.API_URL +'files/' + str(docid) + '/properties'
                   req = urllib2.Request(url, propertyValues, self.getHeadersList())
                   req.add_header('Content-Type', 'application/json')
                   try:
