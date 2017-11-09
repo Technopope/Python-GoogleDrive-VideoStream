@@ -25,7 +25,9 @@ def encrypt_dir(source, target):
     print str(source) + '/' + str(file)  + ' -> ' +  str(target) +'/'+ str(encFile)
   for dir in dirs:
     encDIR = encrypt.encryptString(dir)
-    os.mkdir(str(target) + '/' + str(encDIR))
+    try:
+        os.mkdir(str(target) + '/' + str(encDIR))
+    except:pass
     encrypt_dir(str(source) + '/' + str(dir), str(target) +'/'+str(encDIR))
     print str(source) + '/' + str(dir) + ' -> ' + str(target) + '/' + str(encDIR)
 
