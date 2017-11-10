@@ -28,6 +28,12 @@ class addSortMethod(object):
         print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         return
 
+class addDirectoryItem(object):
+
+    def __init__(self,):
+        self.Dialog.ok = None
+        return
+
 class xbmcplugin:
     # CloudService v0.3.0
 

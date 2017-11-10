@@ -34,7 +34,7 @@ if KODI:
 else:
     from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
-
+    from resources.libgui import xbmcplugin
 
 from resources.lib import settings
 from resources.lib import offlinefile
@@ -99,7 +99,7 @@ def debugger():
 def addMenu(url, title, img='', fanart='', total_items=0, instanceName=''):
         #    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
         listitem = xbmcgui.ListItem(title, iconImage=img, thumbnailImage=img)
-        if not fanart:
+        if not fanart and KODI:
             fanart = addon.getAddonInfo('path') + '/fanart.jpg'
         listitem.setProperty('fanart_image', fanart)
 

@@ -33,6 +33,20 @@ class WindowXMLDialog(object):
     def ok(self, heading, line1, line2='', line3=''):
         return
 
+class ListItem(object):
+
+
+    ##
+    ##
+    def __init__(self, label,label2=None,iconImage=None,thumbnailImage=None,path=None):
+        print label + "\n";
+        return
+
+    def setProperty(self,key,value):
+
+        return
+
+
 class xbmcgui:
     # CloudService v0.3.0
 
