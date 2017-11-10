@@ -39,8 +39,11 @@ class addDirectoryItem(object):
 class endOfDirectory(object):
 
     def __init__(self,plugin_handle):
-        print "OUT " +str(outputBuffer.output) + "\n"
-        outputBuffer.writer.write(outputBuffer.output)
+        if plugin_handle is not None:
+            print "OUT " +str(outputBuffer.output) + "\n"
+            plugin_handle.write(outputBuffer.output)
+            outputBuffer.output = ''
+
 
         return
 

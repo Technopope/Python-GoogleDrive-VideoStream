@@ -19,9 +19,8 @@
 
 class contentengine(object):
 
-    def run(self,outputBuffer):
+    def run(self,writer=None):
         #return
-        outputBuffer = 'cc'
 #class run():
         # cloudservice - required python modules
         import sys
@@ -87,7 +86,7 @@ class contentengine(object):
 
         else:
             PLUGIN_URL = ''
-            plugin_handle = ''
+            plugin_handle = writer
             plugin_queries = ''
 
             addon_dir = ''
