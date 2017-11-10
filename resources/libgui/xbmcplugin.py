@@ -17,32 +17,42 @@
 
 '''
 
-
+class outputBuffer(object):
+    output = ''
+    writer = ''
 #
 # The purpose of this class is to override  xbmcgui and supply equivalent subroutines when ran without KODI
 #
 
 class addSortMethod(object):
 
-    def ok(self, heading, line1, line2='', line3=''):
-        print heading + ":" + line1 + "\n" + line2 + "\n" + line3
+    def ok(self):
         return
 
 class addDirectoryItem(object):
 
     def __init__(self,plugin_handle, url, listitem, isFolder=None, totalItems=None):
+        outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\">"+ str(listitem) + "</a>\n"
+        #print "IN " +str(keeper.count) + str(listitem) + "\n"
         return
 
 class endOfDirectory(object):
 
     def __init__(self,plugin_handle):
+        print "OUT " +str(outputBuffer.output) + "\n"
+        outputBuffer.writer.write(outputBuffer.output)
+
         return
 
+class assignOutputBuffer(object):
+
+    def __init__(self,writer):
+        outputBuffer.writer = writer
+        return
 
 
 class xbmcplugin:
     # CloudService v0.3.0
-
 
     ##
     ##

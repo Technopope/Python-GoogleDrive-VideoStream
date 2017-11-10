@@ -18,4 +18,23 @@
 
 from resources.lib import default
 
-default.run()
+
+
+from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+from resources.libgui import webgui
+import urllib, urllib2
+from SocketServer import ThreadingMixIn
+import threading
+
+
+#try:
+server = webgui.WebGUIServer(('',  9988), webgui.webGUI)
+print "ENABLED STREAMER \n\n\n"
+
+while server.ready:
+    server.handle_request()
+server.socket.close()
+#except: pass
+
+
+#default.run()

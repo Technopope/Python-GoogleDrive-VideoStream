@@ -40,12 +40,15 @@ class ListItem(object):
     ##
     def __init__(self, label,label2=None,iconImage=None,thumbnailImage=None,path=None):
         print label + "\n";
+        self.label = label
+
         return
 
     def setProperty(self,key,value):
-
         return
 
+    def __str__(self):
+        return self.label
 
 class xbmcgui:
     # CloudService v0.3.0

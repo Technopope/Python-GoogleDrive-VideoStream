@@ -17,12 +17,12 @@
 '''
 
 
-class default(object):
+class contentengine(object):
 
-    def run():
-        return
-
-class run():
+    def run(self,outputBuffer):
+        #return
+        outputBuffer = 'cc'
+#class run():
         # cloudservice - required python modules
         import sys
         import urllib
@@ -316,6 +316,7 @@ class run():
                 if silent == 0:
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
             xbmcplugin.endOfDirectory(plugin_handle)
+            return
 
         ###
 
@@ -382,6 +383,7 @@ class run():
                     pass
 
             xbmcplugin.endOfDirectory(plugin_handle)
+            return
 
 
 
@@ -409,6 +411,7 @@ class run():
         elif service is None:
 
             xbmcplugin.endOfDirectory(plugin_handle)
+            return
 
 
         #cloud_db actions
@@ -653,6 +656,7 @@ class run():
                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
                 xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME+'-login', xbmc.LOGERROR)
                 xbmcplugin.endOfDirectory(plugin_handle)
+                return
 
             #if encrypted, get everything(as encrypted files will be of type application/ostream)
             if encfs:
@@ -953,6 +957,7 @@ class run():
                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
                 xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME + '-login',xbmc.LOGERROR)
                 xbmcplugin.endOfDirectory(plugin_handle)
+                return
 
             if encfs:
 
@@ -1206,6 +1211,7 @@ class run():
                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
                 xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME + '-login', xbmc.LOGERROR)
                 xbmcplugin.endOfDirectory(plugin_handle)
+                return
 
             #settings.setCacheParameters()
 
@@ -1954,6 +1960,7 @@ class run():
                         xbmc.sleep(5000)
 
         xbmcplugin.endOfDirectory(plugin_handle)
+        return
 
 
 
@@ -2073,3 +2080,4 @@ class run():
                                     #    xbmc.sleep(5000)
 
 
+        return outputBuffer
