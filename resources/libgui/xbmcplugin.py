@@ -30,9 +30,15 @@ class addSortMethod(object):
 
 class addDirectoryItem(object):
 
-    def __init__(self,):
-        self.Dialog.ok = None
+    def __init__(self,plugin_handle, url, listitem, isFolder=None, totalItems=None):
         return
+
+class endOfDirectory(object):
+
+    def __init__(self,plugin_handle):
+        return
+
+
 
 class xbmcplugin:
     # CloudService v0.3.0

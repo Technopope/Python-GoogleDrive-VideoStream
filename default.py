@@ -18,4 +18,4 @@
 
 from resources.lib import default
 
-default()
+default.run()
