@@ -22,45 +22,22 @@
 # The purpose of this class is to override  xbmcgui and supply equivalent subroutines when ran without KODI
 #
 
-class Dialog(object):
-
-    def ok(self, heading, line1, line2='', line3=''):
-        print heading + ":" + line1 + "\n" + line2 + "\n" + line3
-        return
-
-class WindowXMLDialog(object):
-
-    def ok(self, heading, line1, line2='', line3=''):
-        return
-
-class ListItem(object):
+class exists(object):
 
 
     ##
     ##
-    def __init__(self, label,label2=None,iconImage=None,thumbnailImage=None,path=None):
-        print label + "\n";
-        self.label = label
-
+    def __init__(self,path):
         return
 
-    def setProperty(self,key,value):
-        return
 
-    def addContextMenuItems(self,cm,value):
-        return
-
-    def __str__(self):
-        return self.label
-
-class xbmcgui:
+class xbmcvfs:
     # CloudService v0.3.0
 
 
     ##
     ##
     def __init__(self):
-        self.Dialog.ok = None
         return
 
 

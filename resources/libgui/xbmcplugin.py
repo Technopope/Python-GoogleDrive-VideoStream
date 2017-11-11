@@ -32,7 +32,10 @@ class addSortMethod(object):
 class addDirectoryItem(object):
 
     def __init__(self,plugin_handle, url, listitem, isFolder=None, totalItems=None):
-        outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\">"+ str(listitem) + "</a>\n"
+        label = str(listitem)
+        label = label.replace("<",'(')
+        label = label.replace(">",')')
+        outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\">"+ str(label) + "</a><br />\n"
         #print "IN " +str(keeper.count) + str(listitem) + "\n"
         return
 

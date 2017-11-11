@@ -35,6 +35,7 @@ else:
     from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
     from resources.libgui import xbmcplugin
+    from resources.libgui import xbmcvfs
 
 from resources.lib import settings
 from resources.lib import offlinefile

@@ -43,7 +43,7 @@ if KODI:
 else:
     from resources.libgui import xbmcaddon
 
-    PLUGIN_NAME = 'gdrive_py'
+    PLUGIN_NAME = 'gdrive'
 
     addon = xbmcaddon.xbmcaddon()
 
