@@ -19,7 +19,7 @@
 
 class contentengine(object):
 
-    def run(self,writer=None):
+    def run(self,writer=None, query=None):
         #return
 #class run():
         # cloudservice - required python modules
@@ -87,7 +87,7 @@ class contentengine(object):
         else:
             PLUGIN_URL = ''
             plugin_handle = writer
-            plugin_queries = ''
+            plugin_queries = query
 
             addon_dir = ''
 

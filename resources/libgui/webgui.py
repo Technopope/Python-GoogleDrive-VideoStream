@@ -98,6 +98,19 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         # redirect url to output
+        elif re.search(r'/default.py', str(self.path)):
+            self.send_response(200)
+            self.end_headers()
+
+            results = re.search(r'/(default\.py.*)$', str(self.path))
+            if results:
+                query = str(results.group(1))
+
+            mediaEngine = default.contentengine()
+            mediaEngine.run(self.wfile,query)
+            return
+
+        # redirect url to output
         else:
             # no options
             return
