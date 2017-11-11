@@ -29,6 +29,7 @@ import threading
 
 #try:
 server = webgui.WebGUIServer(('',  9988), webgui.webGUI)
+server.setDBM('./gdrive.db')
 print "ENABLED STREAMER \n\n\n"
 
 while server.ready:

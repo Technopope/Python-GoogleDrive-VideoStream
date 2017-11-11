@@ -47,6 +47,9 @@ class ListItem(object):
     def setProperty(self,key,value):
         return
 
+    def setInfo(self,key,value):
+        return
+
     def addContextMenuItems(self,cm,value):
         return
 

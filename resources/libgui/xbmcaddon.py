@@ -29,6 +29,8 @@ class getAddonInfo(object):
         print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         return
 
+
+
 class xbmcaddon:
     # CloudService v0.3.0
 
@@ -41,15 +43,37 @@ class xbmcaddon:
     #
         return
 
+    def getAddonInfo(self, id):
+        return ''
+
+
+
     ##
     # return the setting from DBM
     ##
     def getSetting(self,key):
         print "getting key " + key + "\n"
-        return self.dbm[key]
+        try:
+           return self.dbm[key]
+        except:
+           return ''
+
 
     ##
     # return the setting from DBM
+    ##
+    def setSetting(self,key,value):
+        self.dbm.close()
+        self.dbm = anydbm.open(self.dbmfile,'w')
+        self.dbm[key] = value
+        self.dbm.close()
+        self.dbm = anydbm.open(self.dbmfile,'r')
+        print "setting key " + key + "\n"
+        return
+
+
+    ##
+    # return the language setting
     ##
     def getLocalizedString(self,key):
         print str(key)

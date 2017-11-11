@@ -41,6 +41,10 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         #    self.MOVIEDB = None
 
 
+    # set DBM
+    def setDBM(self, dbm):
+        self.dbm = dbm
+
 
 class webGUI(BaseHTTPRequestHandler):
 
@@ -93,7 +97,7 @@ class webGUI(BaseHTTPRequestHandler):
             #xbmcplugin.assignOutputBuffer(self.wfile)
 
             mediaEngine = default.contentengine()
-            mediaEngine.run(self.wfile)
+            mediaEngine.run(self.wfile, DBM=self.server.dbm)
             #self.wfile.write(outputBuffer)
             return
 
@@ -107,7 +111,7 @@ class webGUI(BaseHTTPRequestHandler):
                 query = str(results.group(1))
 
             mediaEngine = default.contentengine()
-            mediaEngine.run(self.wfile,query)
+            mediaEngine.run(self.wfile,query, DBM=self.server.dbm)
             return
 
         # redirect url to output

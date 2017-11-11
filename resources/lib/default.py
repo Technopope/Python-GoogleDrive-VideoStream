@@ -19,7 +19,7 @@
 
 class contentengine(object):
 
-    def run(self,writer=None, query=None):
+    def run(self,writer=None, query=None,DBM=None):
         #return
 #class run():
         # cloudservice - required python modules
@@ -87,8 +87,10 @@ class contentengine(object):
         else:
             PLUGIN_URL = ''
             plugin_handle = writer
-            plugin_queries = query
-
+            plugin_queries = ''
+            try:
+                plugin_queries = settings.parse_query(query)
+            except:pass
             addon_dir = ''
 
 
@@ -217,9 +219,9 @@ class contentengine(object):
 
                                     #let's log in
                                     if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                        service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                        service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
                                     else:
-                                        service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                        service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                     loop = False
                             except:
@@ -232,9 +234,9 @@ class contentengine(object):
                                 except NameError:
                                     #fallback on first defined account
                                     if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                        service = cloudservice1(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
+                                        service = cloudservice1(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                     else:
-                                        service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
+                                        service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                 break
                             count = count + 1
 
@@ -289,7 +291,7 @@ class contentengine(object):
                                 if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                         service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
                                 else:
-                                    service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                    service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                 service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
 
@@ -302,7 +304,7 @@ class contentengine(object):
                                     if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                             service = cloudservice1(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                                     else:
-                                        service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
+                                        service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                 break
                             count = count + 1
 
@@ -336,11 +338,11 @@ class contentengine(object):
         if instanceName is None and (mode == 'index' or mode == 'main' or mode == 'offline'):
             service = None
         elif instanceName is None:
-            service = cloudservice2(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
+            service = cloudservice2(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False,DBM=DBM)
         elif settings.getSettingInt(instanceName+'_type',0)==0 :
             service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
         else:
-            service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
+            service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
 
 
