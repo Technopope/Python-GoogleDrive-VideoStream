@@ -53,6 +53,10 @@ class ListItem(object):
     def addContextMenuItems(self,cm,value):
         return
 
+
+    def addStreamInfo(self,cm,value):
+        return
+
     def __str__(self):
         return self.label
 

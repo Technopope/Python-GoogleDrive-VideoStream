@@ -106,7 +106,7 @@ class webGUI(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            results = re.search(r'/(default\.py.*)$', str(self.path))
+            results = re.search(r'/default\.py\?(.*)$', str(self.path))
             if results:
                 query = str(results.group(1))
 

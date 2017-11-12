@@ -90,6 +90,7 @@ class contentengine(object):
             plugin_queries = ''
             try:
                 plugin_queries = settings.parse_query(query)
+                settings.plugin_queries = plugin_queries
             except:pass
             addon_dir = ''
 

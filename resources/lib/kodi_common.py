@@ -166,9 +166,10 @@ def getContentType(contextType,encfs):
                 contentType = 1
             else:
                 contentType = 0
-        # cloudservice - sorting options
-        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
-        xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+        if KODI:
+            # cloudservice - sorting options
+            xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
+            xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
       elif contextType == 'audio':
         if encfs:
@@ -185,8 +186,9 @@ def getContentType(contextType,encfs):
                 contentType = 4
             else:
                 contentType = 3
-        # cloudservice - sorting options
-        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
+        if KODI:
+            # cloudservice - sorting options
+            xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
 
       elif contextType == 'image':
         if encfs:
