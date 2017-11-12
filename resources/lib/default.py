@@ -140,9 +140,9 @@ class contentengine(object):
 
 
         if KODI:
-            xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-            #    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
-            xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
+            xbmcplugin.addSortMethod(plugin_handle, xbmcplugin.SORT_METHOD_LABEL)
+            #    xbmcplugin.addSortMethod(plugin_handle, xbmcplugin.SORT_METHOD_TRACKNUM)
+            xbmcplugin.addSortMethod(plugin_handle, xbmcplugin.SORT_METHOD_SIZE)
 
         numberOfAccounts = kodi_common.numberOfAccounts(addon_parameters.PLUGIN_NAME)
         invokedUsername = settings.getParameter('username')
@@ -739,7 +739,7 @@ class contentengine(object):
                                     else:
                                         fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath) + str(item.file.title)).st_ctime()))] = item
                                     #service.addMediaFile(item, contextType=contextType)
-                                if encfs_inode > 0:
+                                if KODI and encfs_inode > 0:
                                         xbmc.sleep(1000)
 
 
@@ -865,7 +865,7 @@ class contentengine(object):
                                     player.setContent(episodes)
                                     player.setWorksheet(worksheets['data'])
                                     player.next()
-                                    while not player.isExit:
+                                    while KODI and not player.isExit:
                                         xbmc.sleep(5000)
                           else:
                             for worksheet in worksheets.iterkeys():
@@ -877,7 +877,7 @@ class contentengine(object):
                                     player.setWorksheet(worksheets['db'])
                                     player.PlayStream('plugin://plugin.video.'+addon_parameters.PLUGIN_NAME+'-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
                                     #player.next()
-                                    while not player.isExit:
+                                    while KODI and not player.isExit:
                                         player.saveTime()
                                         xbmc.sleep(5000)
 
@@ -911,7 +911,7 @@ class contentengine(object):
 
                 xbmc.executebuiltin("XBMC.ShowPicture(\""+str(encfs_target) + str(dencryptedPath)+"\")")
                 #item = xbmcgui.ListItem(path=str(encfs_target) + str(dencryptedPath))
-                #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                #xbmcplugin.setResolvedUrl(plugin_handle, True, item)
 
             else:
                 path = settings.getSetting('photo_folder')
@@ -944,7 +944,7 @@ class contentengine(object):
                 #item = xbmcgui.ListItem(path=str(path) + '/'+str(folder) + '/'+str(title))
                 url = service.getDownloadURL(docid)
                 item = xbmcgui.ListItem(path=url + '|' + service.getHeadersEncoded())
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                xbmcplugin.setResolvedUrl(plugin_handle, True, item)
 
         elif mode == 'downloadfolder':
 
@@ -1053,7 +1053,7 @@ class contentengine(object):
                                     progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30035), item.file.title)
                                     if (not xbmcvfs.exists(str(encfs_source) + '/'+str(dir)+'/'+str(item.file.title))):
                                         service.downloadGeneralFile(item.mediaurl.url,str(encfs_source) + '/'+str(dir)+ '/'+str(item.file.title))
-                                        if encfs_inode > 0:
+                                        if KODI and encfs_inode > 0:
                                             xbmc.sleep(100)
 
 
@@ -1134,7 +1134,7 @@ class contentengine(object):
                     # if invoked in .strm or as a direct-video (don't prompt for quality)
                     item = xbmcgui.ListItem(path=playbackURL+ '|' + service.getHeadersEncoded())
                     item.setInfo( type="Video", infoLabels={ "Title": mediaURLs[ret].title , "Plot" : mediaURLs[ret].title } )
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                    xbmcplugin.setResolvedUrl(plugin_handle, True, item)
 
 
             else:
@@ -1291,12 +1291,12 @@ class contentengine(object):
                                             thumbnailImage=package.file.thumbnail, path='http://localhost:' + str(service.settings.streamPort) + '/play')
 
                             item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
-                            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                            xbmcplugin.setResolvedUrl(plugin_handle, True, item)
 
 
                             ## contribution by dabinn
                             # handle situation where playback is skipped to next file, wait for new source to load
-                            if player.isPlaying():
+                            if KODI and player.isPlaying():
                                 xbmc.sleep(100)
 
                             startPlayback = False
@@ -1315,7 +1315,7 @@ class contentengine(object):
                             # must occur after playback started (resolve or startPlayback in player)
                             # load captions
                             if 0 and (settings.srt or settings.cc) and (service.protocol == 2 or service.protocol == 3):
-                                while not (player.isPlaying()):
+                                while not (KODI and player.isPlaying()):
                                     xbmc.sleep(1000)
 
                                 files = cache.getSRT(service)
@@ -1328,10 +1328,11 @@ class contentengine(object):
                                             pass
                                         player.setSubtitles(file)
 
-                            xbmc.sleep(100)
+                            if KODI:
+                                xbmc.sleep(100)
 
                             # we need to keep the plugin alive for as long as there is playback from the plugin, or the player object closes
-                            while not player.isExit:
+                            while KODI and not player.isExit:
                                 player.saveTime()
                                 xbmc.sleep(5000)
 
@@ -1404,7 +1405,7 @@ class contentengine(object):
                                     else:
                                         fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath) + str(itemx.file.title)).st_ctime()))] = itemx
                                     #service.addMediaFile(itemx, contextType=contextType)
-                                if encfs_inode > 0:
+                                if KODI and encfs_inode > 0:
                                         xbmc.sleep(1000)
 
 
@@ -1471,7 +1472,7 @@ class contentengine(object):
                             fileListINodes[(str(xbmcvfs.Stat(encfs_target +  'encfs.mp4').st_ino()))] = item
                         else:
                             fileListINodes[(str(xbmcvfs.Stat(encfs_target +  'encfs.mp4').st_ctime()))] = item
-                        if encfs_inode > 0:
+                        if KODI and encfs_inode > 0:
                             xbmc.sleep(1000)
 
                         dirs, files = xbmcvfs.listdir(encfs_source)
@@ -1525,7 +1526,7 @@ class contentengine(object):
                     startPlayback = False
                     #exists; resolve for an opening stream dialog
             #        elif resolvedPlayback:
-            #            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+            #            xbmcplugin.setResolvedUrl(plugin_handle, True, item)
 
                     # need to seek?
                     #if seek > 0:
@@ -1537,7 +1538,7 @@ class contentengine(object):
 
 
                     #loop until finished
-                    while not player.isExit:
+                    while KODI and not player.isExit:
                         player.saveTime()
                         xbmc.sleep(5000)
 
@@ -1616,7 +1617,7 @@ class contentengine(object):
 
                             item = xbmcgui.ListItem(path=playbackPath+'|' + service.getHeadersEncoded())
                             item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
-                            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                            xbmcplugin.setResolvedUrl(plugin_handle, True, item)
 
                 # playback of entire folder?
                 # folder only
@@ -1734,7 +1735,7 @@ class contentengine(object):
 
                             # right-click - play + cache (download and play)
                             elif not mediaURL.offline and settings.download and settings.play:
-                    #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+                    #            service.downloadMediaFile(plugin_handle, playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
                                 service.downloadMediaFile(mediaURL, item, package, playback=service.PLAYBACK_PLAYER, player=player)
                                 resolvedPlayback = False
 
@@ -1792,7 +1793,7 @@ class contentengine(object):
                                                         player.PlayStream(mediaURL.url, item, 0, package)
                                                     else:
                                                         player.PlayStream(mediaURL.url, item,media[0][7],package)
-                                                    while not player.isExit:
+                                                    while KODI and not player.isExit:
                                                         player.saveTime()
                                                         xbmc.sleep(5000)
 
@@ -1883,7 +1884,7 @@ class contentengine(object):
                             # use streamer if defined
                             # streamer
                             useStreamer = False
-                            if service is not None and service.settings.streamer:
+                            if KODI and service is not None and service.settings.streamer:
                                 # test streamer
                                 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                                 from resources.lib import streamer
@@ -1898,7 +1899,7 @@ class contentengine(object):
                                 except:
                                     useStreamer = True
 
-                            if useStreamer and service is not None and service.settings.streamer:
+                            if KODI and useStreamer and service is not None and service.settings.streamer:
 
 
                                 url = 'http://localhost:' + str(service.settings.streamPort) + '/playurl'
@@ -1913,18 +1914,18 @@ class contentengine(object):
 
 
                                 item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
-                                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                                xbmcplugin.setResolvedUrl(plugin_handle, True, item)
 
 
                             else:
                                 # regular playback
                                 item.setPath(mediaURL.url)
-                                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                                xbmcplugin.setResolvedUrl(plugin_handle, True, item)
 
 
                     ## contribution by dabinn
                     # handle situation where playback is skipped to next file, wait for new source to load
-                    if player.isPlaying():
+                    if KODI and player.isPlaying():
                         xbmc.sleep(100)
 
 
@@ -1941,7 +1942,7 @@ class contentengine(object):
                     # must occur after playback started (resolve or startPlayback in player)
                     # load captions
                     if  (settings.srt or settings.cc) and  (service.protocol == 2 or service.protocol == 3):
-                        while not (player.isPlaying()):
+                        while KODI and not player.isPlaying():
                             xbmc.sleep(1000)
 
                         files = cache.getSRT(service)
@@ -1954,10 +1955,11 @@ class contentengine(object):
                                     pass
                                 player.setSubtitles(file)
 
-                    xbmc.sleep(100)
+                    if KODI:
+                        xbmc.sleep(100)
 
                     # we need to keep the plugin alive for as long as there is playback from the plugin, or the player object closes
-                    while not player.isExit:
+                    while KODI and not player.isExit:
                         player.saveTime()
                         xbmc.sleep(5000)
 

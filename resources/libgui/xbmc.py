@@ -28,6 +28,15 @@ class Player(object):
         print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         return
 
+class log(object):
+    ##
+    def __init__(self,message,type):
+        return
+
+class LOGNOTICE(object):
+    ##
+    def __init__(self,message):
+        return
 
 class xbmc:
     # CloudService v0.3.0

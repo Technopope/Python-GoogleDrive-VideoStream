@@ -47,8 +47,12 @@ class ListItem(object):
     def setProperty(self,key,value):
         return
 
-    def setInfo(self,key,value):
+    def setInfo(self,key=None,value=None,type=None,infoLabels=None):
         return
+
+    def setPath(self,path):
+        return
+
 
     def addContextMenuItems(self,cm,value):
         return

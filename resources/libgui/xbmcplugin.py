@@ -50,6 +50,13 @@ class endOfDirectory(object):
 
         return
 
+class setResolvedUrl(object):
+
+    def __init__(self,value1,value2,value3):
+
+
+        return
+
 class assignOutputBuffer(object):
 
     def __init__(self,writer):
