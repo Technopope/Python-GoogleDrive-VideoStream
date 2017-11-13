@@ -41,6 +41,7 @@ class ListItem(object):
     def __init__(self, label,label2=None,iconImage=None,thumbnailImage=None,path=None):
         print label + "\n";
         self.label = label
+        self.path = None
 
         return
 
@@ -51,6 +52,7 @@ class ListItem(object):
         return
 
     def setPath(self,path):
+        self.path = path
         return
 
 

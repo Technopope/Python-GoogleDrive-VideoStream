@@ -43,8 +43,11 @@ class endOfDirectory(object):
 
     def __init__(self,plugin_handle):
         if plugin_handle is not None:
+            plugin_handle.send_response(200)
+            plugin_handle.end_headers()
+
             print "OUT " +str(outputBuffer.output) + "\n"
-            plugin_handle.write(outputBuffer.output)
+            plugin_handle.wfile.write(outputBuffer.output)
             outputBuffer.output = ''
 
 
@@ -52,8 +55,17 @@ class endOfDirectory(object):
 
 class setResolvedUrl(object):
 
-    def __init__(self,value1,value2,value3):
+    def __init__(self,plugin_handle,value2,item):
+        if plugin_handle is not None:
+            #plugin_handle.send_response(303)
+            #plugin_handle.send_header('Location', '/play')
+            plugin_handle.send_header('Set-Cookie', 'url='+item.path)
+            plugin_handle.send_header('Set-Cookie', 'url='+item.path)
 
+            plugin_handle.end_headers()
+
+
+        print "ITEM = " + item.path + "\n"
 
         return
 

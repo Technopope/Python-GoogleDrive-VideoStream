@@ -61,6 +61,26 @@ class webGUI(BaseHTTPRequestHandler):
             self.server.ready = False
             return
 
+        # redirect url to output
+        elif self.path == '/play':
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            #print post_data
+
+            self.send_response(200)
+            self.end_headers()
+            for r in re.finditer('$([^\|]+)' ,
+                     post_data, re.DOTALL):
+                url = r.group(1)
+                print "url = " + url + "\n"
+            for r in re.finditer('(Cookie\=[^\&]+)' ,
+                     post_data, re.DOTALL):
+                cookie = r.group(1)
+                print "cookie = " + cookie + "\n"
+            for r in re.finditer('(Authorization\=[^\s]+)' ,
+                     post_data, re.DOTALL):
+                auth = r.group(1)
+                print "auth = " + auth + "\n"
 
     def do_HEAD(self):
 
@@ -103,15 +123,15 @@ class webGUI(BaseHTTPRequestHandler):
 
         # redirect url to output
         elif re.search(r'/default.py', str(self.path)):
-            self.send_response(200)
-            self.end_headers()
+#            self.send_response(200)
+#            self.end_headers()
 
             results = re.search(r'/default\.py\?(.*)$', str(self.path))
             if results:
                 query = str(results.group(1))
 
             mediaEngine = default.contentengine()
-            mediaEngine.run(self.wfile,query, DBM=self.server.dbm)
+            mediaEngine.run(self,query, DBM=self.server.dbm)
             return
 
         # redirect url to output
