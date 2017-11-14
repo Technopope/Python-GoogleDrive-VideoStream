@@ -66,7 +66,7 @@ class contentengine(object):
         from resources.lib import folder
         from resources.lib import teamdrive
         from resources.lib import file
-        from resources.lib import offlinefile
+        #from resources.lib import offlinefile
         from resources.lib import package
         from resources.lib import mediaurl
         from resources.lib import crashreport
