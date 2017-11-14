@@ -121,7 +121,7 @@ class setResolvedUrl(object):
                 if end == '':
                     plugin_handle.send_header('Content-Range','bytes ' + str(start) + '-' +str(int(plugin_handle.server.length)-1) + '/' +str(int(plugin_handle.server.length)))
                 else:
-                    v.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(plugin_handle.server.length)))
+                    plugin_handle.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(plugin_handle.server.length)))
 
                 #self.send_header('Content-Range',response.info().getheader('Content-Range'))
                 print 'Content-Range!!!' + str(start) + '-' + str(int(plugin_handle.server.length)-1) + '/' +str(int(plugin_handle.server.length)) + "\n"
