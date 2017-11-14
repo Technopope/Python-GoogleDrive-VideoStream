@@ -38,7 +38,7 @@ else:
     from resources.libgui import xbmcvfs
 
 from resources.lib import settings
-from resources.lib import offlinefile
+#from resources.lib import offlinefile
 
 # global variables
 import addon_parameters
