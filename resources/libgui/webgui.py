@@ -179,12 +179,12 @@ class webGUI(BaseHTTPRequestHandler):
 
         # redirect url to output
         elif self.path == '/list':
-            self.send_response(200)
-            self.end_headers()
+            #self.send_response(200)
+            #self.end_headers()
             #xbmcplugin.assignOutputBuffer(self.wfile)
 
             mediaEngine = default.contentengine()
-            mediaEngine.run(self.wfile, DBM=self.server.dbm)
+            mediaEngine.run(self, DBM=self.server.dbm)
             #self.wfile.write(outputBuffer)
             return
 

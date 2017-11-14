@@ -27,6 +27,10 @@ class Dialog(object):
     def ok(self, heading, line1, line2='', line3=''):
         print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         return
+    def select(self, heading, line1, line2='', line3=''):
+        print heading + ":" + line1 + "\n" + line2 + "\n" + line3
+        return
+
 
 class WindowXMLDialog(object):
 
