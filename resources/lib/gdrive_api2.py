@@ -53,6 +53,7 @@ if KODI:
 else:
     from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
+    from resources.libgui import xbmc
 
 
 SERVICE_NAME = 'dmdgdrive'
