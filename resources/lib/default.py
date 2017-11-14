@@ -39,6 +39,8 @@ class contentengine(object):
             from resources.libgui import xbmcaddon
             from resources.libgui import xbmcgui
             from resources.libgui import xbmcplugin
+            from resources.libgui import xbmc
+
 
         # common routines
         from resources.lib import kodi_common
