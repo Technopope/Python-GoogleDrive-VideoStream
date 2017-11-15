@@ -87,7 +87,7 @@ class setResolvedUrl(object):
                 print "auth = " + auth + "\n"
 #                plugin_handle.send_header('Set-Cookie', auth)
             playbackBuffer.playback.append({'auth':auth,'url':url,'cookie':cookie})
-            plugin_handle.send_header('Location', '/play')
+            plugin_handle.send_header('Location', '/play?count=' + str(len(playbackBuffer.playback)-1))
             plugin_handle.end_headers()
 
 

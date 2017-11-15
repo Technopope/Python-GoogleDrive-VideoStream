@@ -62,25 +62,10 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         # redirect url to output
-        elif self.path == '/play':
-            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
-            post_data = self.rfile.read(content_length) # <--- Gets the data itself
-            #print post_data
+        elif re.search(r'/play.py', str(self.path)):
 
-            self.send_response(200)
-            self.end_headers()
-            for r in re.finditer('([^\|]+)\|' ,
-                     post_data, re.DOTALL):
-                url = r.group(1)
-                print "url = " + url + "\n"
-            for r in re.finditer('(Cookie\=[^\&]+)' ,
-                     post_data, re.DOTALL):
-                cookie = r.group(1)
-                print "cookie = " + cookie + "\n"
-            for r in re.finditer('(Authorization\=[^\s]+)' ,
-                     post_data, re.DOTALL):
-                auth = r.group(1)
-                print "auth = " + auth + "\n"
+            print "TRYING TO SEEK WITH POSR REQUEST\n\n\n"
+
 
     def do_HEAD(self):
 
@@ -99,58 +84,9 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # redirect url to output
-        elif self.path == '/play':
-            cookies = self.headers['Cookie']
-            cookie = ''
-            url = ''
-            auth = ''
-            print "COOKIES =" + cookies + "\n"
-            for r in re.finditer(' url\=([^\;]+)\;' ,
-                     cookies, re.DOTALL):
-                url = r.group(1)
-                print "url = " + url + "\n"
-            for r in re.finditer(' Cookie\=DRIVE_STREAM\%3D([^\;]+)\;' ,
-                     cookies, re.DOTALL):
-                cookie = r.group(1)
-                print "cookie = " + cookie + "\n"
-            for r in re.finditer(' Authorization\=([^\;]+)\;' ,
-                     cookies, re.DOTALL):
-                auth = r.group(1)
-                print "auth = " + auth + "\n"
+        elif re.search(r'/play.py', str(self.path)):
 
-
-            print 'HEAD ' + url + "\n\n\n\n"
-            req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
-            req.get_method = lambda : 'HEAD'
-
-            try:
-                response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-                if e.code == 403 or e.code == 401:
-                    print "ERROR\n"
-                    return
-                else:
-                    return
-
-            self.send_response(200)
-            #print str(response.info()) + "\n"
-            self.send_header('Content-Type',response.info().getheader('Content-Type'))
-            self.send_header('Content-Length',response.info().getheader('Content-Length'))
-            self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
-            self.send_header('Date',response.info().getheader('Date'))
-            self.send_header('Content-type','video/mp4')
-            self.send_header('Accept-Ranges','bytes')
-
-            #self.send_header('ETag',response.info().getheader('ETag'))
-            #self.send_header('Server',response.info().getheader('Server'))
-            self.end_headers()
-
-            ## may want to add more granular control over chunk fetches
-            #self.wfile.write(response.read())
-
-            response.close()
-            print "DONE"
-            self.server.length = response.info().getheader('Content-Length')
+            print "TRYING TO SEEK WITH HEAD REQUEST\n\n\n"
 
 
     #Handler for the GET requests
@@ -192,14 +128,21 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         # redirect url to output
-        elif self.path == '/play':
+        elif re.search(r'/play', str(self.path)):
+#            self.send_response(200)
+#            self.end_headers()
+            print "PLAYBACK" + "\n\n\n"
+            count = 0
+            results = re.search(r'/play\?count\=(.*)$', str(self.path))
+            if results:
+                count = int(results.group(1))
             #self.send_response(200)
             #self.end_headers()
             #xbmcplugin.assignOutputBuffer(self.wfile)
             cookies = self.headers['Cookie']
-            cookie = xbmcplugin.playbackBuffer.playback[0]['cookie']
-            url = xbmcplugin.playbackBuffer.playback[0]['url']
-            auth = xbmcplugin.playbackBuffer.playback[0]['auth']
+            cookie = xbmcplugin.playbackBuffer.playback[count]['cookie']
+            url = xbmcplugin.playbackBuffer.playback[count]['url']
+            auth = xbmcplugin.playbackBuffer.playback[count]['auth']
             #print "AUTH" + xbmcplugin.playbackBuffer.playback[0]['auth'] + "\n"
 
 
