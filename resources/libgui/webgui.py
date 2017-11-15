@@ -197,22 +197,25 @@ class webGUI(BaseHTTPRequestHandler):
             #self.end_headers()
             #xbmcplugin.assignOutputBuffer(self.wfile)
             cookies = self.headers['Cookie']
-            cookie = ''
-            url = ''
-            auth = ''
-            print "COOKIES =" + cookies + "\n"
-            for r in re.finditer(' url\=([^\;]+)\;' ,
-                     cookies, re.DOTALL):
-                url = r.group(1)
-                print "url = " + url + "\n"
-            for r in re.finditer(' Cookie\=DRIVE_STREAM\%3D([^\;]+)\;' ,
-                     cookies, re.DOTALL):
-                cookie = r.group(1)
-                print "cookie = " + cookie + "\n"
-            for r in re.finditer(' Authorization\=([^\;]+)\;' ,
-                     cookies, re.DOTALL):
-                auth = r.group(1)
-                print "auth = " + auth + "\n"
+            cookie = xbmcplugin.playbackBuffer.playback[0]['cookie']
+            url = xbmcplugin.playbackBuffer.playback[0]['url']
+            auth = xbmcplugin.playbackBuffer.playback[0]['auth']
+            #print "AUTH" + xbmcplugin.playbackBuffer.playback[0]['auth'] + "\n"
+
+
+            if 0:
+                for r in re.finditer(' url\=([^\;]+)\;' ,
+                         cookies, re.DOTALL):
+                    url = r.group(1)
+                    print "url = " + url + "\n"
+                for r in re.finditer(' Cookie\=DRIVE_STREAM\%3D([^\;]+)\;' ,
+                         cookies, re.DOTALL):
+                    cookie = r.group(1)
+                    print "cookie = " + cookie + "\n"
+                for r in re.finditer(' Authorization\=([^\;]+)\;' ,
+                         cookies, re.DOTALL):
+                    auth = r.group(1)
+                    print "auth = " + auth + "\n"
 
             if start == '':
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
@@ -228,7 +231,6 @@ class webGUI(BaseHTTPRequestHandler):
                     return
                 else:
                     return
-            self.server.length = response.info().getheader('Content-Length')
 
             if start == '':
                 self.send_response(200)
@@ -237,17 +239,16 @@ class webGUI(BaseHTTPRequestHandler):
                 self.send_response(206)
                 self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))-startOffset))
                 #self.send_header('Content-Range','bytes ' + str(start) + '-' +str(end))
-                if end == '':
-                    self.send_header('Content-Range','bytes ' + str(start) + '-' +str(int(self.server.length)-1) + '/' +str(int(self.server.length)))
-                else:
-                    self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(self.server.length)))
+                #if end == '':
+                #    self.send_header('Content-Range','bytes ' + str(start) + '-' +str(int(self.server.length)-1) + '/' +str(int(self.server.length)))
+                #else:
+                #    self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(self.server.length)))
 
                 #self.send_header('Content-Range',response.info().getheader('Content-Range'))
-                print 'Content-Range!!!' + str(start) + '-' + str(int(self.server.length)-1) + '/' +str(int(self.server.length)) + "\n"
 
             print str(response.info()) + "\n"
             self.send_header('Content-Type',response.info().getheader('Content-Type'))
-
+            self.send_header('Content-Range', response.info().getheader('Content-Range'))
             self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
             self.send_header('Date',response.info().getheader('Date'))
             self.send_header('Content-type','video/mp4')

@@ -30,7 +30,7 @@ class Player(object):
 
 class log(object):
     ##
-    def __init__(self,message,type):
+    def __init__(self,message,type=None):
         return
 
 class LOGNOTICE(object):
