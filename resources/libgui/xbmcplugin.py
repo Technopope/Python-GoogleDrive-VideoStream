@@ -117,11 +117,12 @@ class setResolvedUrl(object):
             else:
                 plugin_handle.send_response(206)
                 plugin_handle.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))-startOffset))
+                plugin_handle.send_header('Content-Range', response.info().getheader('Content-Range'))
                 #self.send_header('Content-Range','bytes ' + str(start) + '-' +str(end))
-                if end == '':
-                    plugin_handle.send_header('Content-Range','bytes ' + str(start) + '-' +str(int(plugin_handle.server.length)-1) + '/' +str(int(plugin_handle.server.length)))
-                else:
-                    plugin_handle.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(plugin_handle.server.length)))
+                #if end == '':
+                #    plugin_handle.send_header('Content-Range','bytes ' + str(start) + '-' +str(int(plugin_handle.server.length)-1) + '/' +str(int(plugin_handle.server.length)))
+                #else:
+                #    plugin_handle.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(plugin_handle.server.length)))
 
                 #self.send_header('Content-Range',response.info().getheader('Content-Range'))
                 print 'Content-Range!!!' + str(start) + '-' + str(int(plugin_handle.server.length)-1) + '/' +str(int(plugin_handle.server.length)) + "\n"

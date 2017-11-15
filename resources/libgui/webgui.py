@@ -88,6 +88,9 @@ class webGUI(BaseHTTPRequestHandler):
         headers = str(self.headers)
         print(headers)
 
+
+        print "HEAD HEAD HEAD\n\n"
+
         # passed a kill signal?
         if self.path == '/kill':
             self.server.ready = False
