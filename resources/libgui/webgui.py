@@ -139,7 +139,7 @@ class webGUI(BaseHTTPRequestHandler):
             #self.send_response(200)
             #self.end_headers()
             #xbmcplugin.assignOutputBuffer(self.wfile)
-            cookies = self.headers['Cookie']
+            #cookies = self.headers['Cookie']
             cookie = xbmcplugin.playbackBuffer.playback[count]['cookie']
             url = xbmcplugin.playbackBuffer.playback[count]['url']
             auth = xbmcplugin.playbackBuffer.playback[count]['auth']
