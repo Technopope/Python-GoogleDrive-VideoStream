@@ -32,25 +32,30 @@ Windows and Mac OS ready to playback without installing Python, coming soon.  Ri
 At this stage, you cannot enroll an account with this application or modify user settings.  You MUST import these from a KODI install.  I am only supporting alpha testing with users who have used the Google Drive plugin for KODI previously.
 
 
-The DBM file contain's the user's settings and enrollment information for Google Drive.  To import your KODI settings:
-run:
+The DBM file contain's the user's settings and enrollment information for Google Drive.  To import your KODI settings, run:
+
 python dbm_setup.py <dbmfile> <kodi plugin settings.xml>
+
 such as:
+
 python dbm_setup.py ./gdrive.db /home/durdle/.kodi/userdata/addon_data/plugin.video.gdrive-testing/settings.xml
 
 To edit any single setting, you can use the KODI plugin to modify the setting or modify the parameter (if you know what you are doing) by running:
+
 python dbm_setup.py <dbmfile> <key> <value>
 
 To see a list of all settings:
+
 python dbm_display.py <dbmfile>
 
 
 
-##To start the media server, run:
+To start the media server, run:
 
-###python default.py
+python default.py
 
 The default dbmfile is ./gdrive.db and the default port to run on is 9988.  You can override these by running:
+
 python default.py <port> <dbmfile>
 
 You can use the setting.xml from either gdrive or gdrive-testing plugin for KODI.
