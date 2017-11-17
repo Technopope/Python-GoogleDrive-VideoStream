@@ -142,7 +142,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # redirect url to output
-        elif decryptkeyvalue == '/list':
+        elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
             print "IN\n\n"
             #self.send_response(200)
             #self.end_headers()
@@ -237,11 +237,11 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         # redirect url to output
-        elif re.search(r'/default.py', str(decryptkeyvalue)):
+        elif re.search(r'/\?', str(decryptkeyvalue)) or re.search(r'/default.py', str(decryptkeyvalue)):
 #            self.send_response(200)
 #            self.end_headers()
 
-            results = re.search(r'/default\.py\?(.*)$', str(decryptkeyvalue))
+            results = re.search(r'\?(.*)$', str(decryptkeyvalue))
             if results:
                 query = str(results.group(1))
 
