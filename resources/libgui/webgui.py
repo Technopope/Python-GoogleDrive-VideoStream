@@ -26,6 +26,7 @@ import re
 import urllib, urllib2
 import sys
 
+import constants
 from resources.lib import default
 from resources.libgui import xbmcplugin
 
@@ -114,7 +115,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
 
-
+        print "CONSTANT =" +str(constants.CONST.spreadsheet) + "\n"
 
         # debug - print headers in log
         headers = str(self.headers)
