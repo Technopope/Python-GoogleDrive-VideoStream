@@ -26,11 +26,19 @@ import urllib, urllib2
 from SocketServer import ThreadingMixIn
 import threading
 
+try:
+    port = str(sys.argv[1])
+except:
+    port = 9988
+try:
+    dbmfile = str(sys.argv[2])
+except:
+    dbmfile = './gdrive.db'
 
 #try:
-server = webgui.WebGUIServer(('',  9988), webgui.webGUI)
-server.setDBM('./gdrive.db')
-print "ENABLED STREAMER \n\n\n"
+server = webgui.WebGUIServer(('',  port), webgui.webGUI)
+server.setDBM(dbmfile)
+print "Google Drive Media Server ready....\n"
 
 while server.ready:
     server.handle_request()
