@@ -44,6 +44,16 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
     # set DBM
     def setDBM(self, dbm):
         self.dbm = dbm
+        #setup encryption password
+        import anydbm
+
+        dbm = anydbm.open(dbm,'r')
+        try:
+            from resources.lib import encryption
+            self.encrypt = encryption.encryption(dbm['salt'],dbm['password'])
+        except:
+            self.encrypt = None
+        dbm.close()
 
 
 class webGUI(BaseHTTPRequestHandler):
@@ -92,6 +102,20 @@ class webGUI(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_GET(self):
 
+        decryptkeyvalue = self.path
+        if re.search(r'keyvalue\=', str(self.path)):
+            from resources.lib import encryption
+
+            results = re.search(r'keyvalue\=(.*)$', str(self.path))
+            if results:
+                keyvalue = str(results.group(1))
+                decryptkeyvalue = '/' + self.server.encrypt.decryptString(keyvalue).strip()
+                print decryptkeyvalue +"."
+
+
+
+
+
         # debug - print headers in log
         headers = str(self.headers)
         print(headers)
@@ -111,13 +135,14 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # passed a kill signal?
-        if self.path == '/kill':
+        if decryptkeyvalue == '/kill':
             self.server.ready = False
             return
 
 
         # redirect url to output
-        elif self.path == '/list':
+        elif decryptkeyvalue == '/list':
+            print "IN\n\n"
             #self.send_response(200)
             #self.end_headers()
             #xbmcplugin.assignOutputBuffer(self.wfile)
@@ -128,12 +153,12 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         # redirect url to output
-        elif re.search(r'/play', str(self.path)):
+        elif re.search(r'/play', str(decryptkeyvalue)):
 #            self.send_response(200)
 #            self.end_headers()
             print "PLAYBACK" + "\n\n\n"
             count = 0
-            results = re.search(r'/play\?count\=(.*)$', str(self.path))
+            results = re.search(r'/play\?count\=(.*)$', str(decryptkeyvalue))
             if results:
                 count = int(results.group(1))
             #self.send_response(200)
@@ -211,11 +236,11 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         # redirect url to output
-        elif re.search(r'/default.py', str(self.path)):
+        elif re.search(r'/default.py', str(decryptkeyvalue)):
 #            self.send_response(200)
 #            self.end_headers()
 
-            results = re.search(r'/default\.py\?(.*)$', str(self.path))
+            results = re.search(r'/default\.py\?(.*)$', str(decryptkeyvalue))
             if results:
                 query = str(results.group(1))
 
