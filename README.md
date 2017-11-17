@@ -46,9 +46,9 @@ python dbm_display.py <dbmfile>
 
 
 
-To start the media server, run:
+##To start the media server, run:
 
-python default.py
+###python default.py
 
 The default dbmfile is ./gdrive.db and the default port to run on is 9988.  You can override these by running:
 python default.py <port> <dbmfile>
