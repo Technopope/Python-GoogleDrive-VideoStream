@@ -118,8 +118,6 @@ class webGUI(BaseHTTPRequestHandler):
 
 
 
-        print "CONSTANT =" +str(constants.CONST.spreadsheet) + "\n"
-
         # debug - print headers in log
         headers = str(self.headers)
         print(headers)

@@ -46,6 +46,7 @@ class ListItem(object):
         print label + "\n";
         self.label = label
         self.path = None
+        self.menu = ''
 
         return
 
