@@ -18,6 +18,7 @@
 '''
 
 import anydbm
+import re
 
 
 # The purpose of this class is to override  xbmcaddon and supply equivalent subroutines when ran without KODI
@@ -40,7 +41,20 @@ class xbmcaddon:
 
         self.dbmfile = './gdrive.db'
         self.dbm = anydbm.open(self.dbmfile,'r')
-    #
+        self.language = {}
+        file = open('./resources/language/english/strings.xml', "r")
+        print "LOAD LANGUAGES\n\n\n"
+        for line in file:
+            result = re.search(r'\<string id\=\"([^\"]+)\"\>([^\<]+)\<', str(line))
+            key = ''
+            value = ''
+            if result:
+                key = str(result.group(1))
+                value = str(result.group(2))
+                self.language[key] = value;
+
+
+
         return
 
     def getAddonInfo(self, id):
@@ -52,7 +66,6 @@ class xbmcaddon:
     # return the setting from DBM
     ##
     def getSetting(self,key):
-        print "getting key " + key + "\n"
         try:
            return self.dbm[key]
         except:
@@ -76,7 +89,7 @@ class xbmcaddon:
     # return the language setting
     ##
     def getLocalizedString(self,key):
-        print str(key)
-        return str(key)
+        print self.language[str(key)]
+        return self.language[str(key)]
 
 

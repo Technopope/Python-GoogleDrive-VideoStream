@@ -38,6 +38,9 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)
         self.ready = True
+        import addon_parameters
+        self.addon = addon_parameters.addon
+
         #self.TVDB = None
         #    self.MOVIEDB = None
 
@@ -149,7 +152,7 @@ class webGUI(BaseHTTPRequestHandler):
             #xbmcplugin.assignOutputBuffer(self.wfile)
 
             mediaEngine = default.contentengine()
-            mediaEngine.run(self, DBM=self.server.dbm)
+            mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
             #self.wfile.write(outputBuffer)
             return
 
@@ -246,7 +249,7 @@ class webGUI(BaseHTTPRequestHandler):
                 query = str(results.group(1))
 
             mediaEngine = default.contentengine()
-            mediaEngine.run(self,query, DBM=self.server.dbm)
+            mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon)
             return
 
         # redirect url to output

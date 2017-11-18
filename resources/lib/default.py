@@ -19,7 +19,7 @@
 
 class contentengine(object):
 
-    def run(self,writer=None, query=None,DBM=None):
+    def run(self,writer=None, query=None,DBM=None, addon=None):
         #return
 #class run():
         # cloudservice - required python modules
@@ -35,19 +35,22 @@ class contentengine(object):
         if KODI:
             # cloudservice - standard XBMC modules
             import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+            # global variables
+            import addon_parameters
+            addon = addon_parameters.addon
         else:
             from resources.libgui import xbmcaddon
             from resources.libgui import xbmcgui
             from resources.libgui import xbmcplugin
             from resources.libgui import xbmc
+            # global variables
+            import addon_parameters
+            #addon = addon_parameters.addon
 
 
         # common routines
         from resources.lib import kodi_common
 
-        # global variables
-        import addon_parameters
-        addon = addon_parameters.addon
         cloudservice3 = addon_parameters.cloudservice3
         cloudservice2 = addon_parameters.cloudservice2
         #cloudservice1 = addon_parameters.cloudservice1
