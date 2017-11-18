@@ -65,6 +65,10 @@ class ListItem(object):
 
 
     def addStreamInfo(self,cm,value):
+        print "xx\n"
+        value = str(value)
+        value = value.replace("\'",'')
+        self.menu =  '<button title="+" onclick="if(document.getElementById(\''+str(self.label)+'\').style.display==\'none\'){document.getElementById(\''+str(self.label)+'\').style.display=\'\'}else{document.getElementById(\''+str(self.label)+'\').style.display=\'none\'}">+</button><div style="display: none" id="'+str(self.label)+'"> <strong>'+str(value)+'</strong></div>'
         return
 
     def __str__(self):
