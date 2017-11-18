@@ -1,0 +1,3 @@
+- decode language codes into strings
+v0.1.0 (2017-11-19)
+- first alpha release for testing
