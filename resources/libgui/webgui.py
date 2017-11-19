@@ -170,24 +170,13 @@ class webGUI(BaseHTTPRequestHandler):
             cookie = xbmcplugin.playbackBuffer.playback[count]['cookie']
             url = xbmcplugin.playbackBuffer.playback[count]['url']
             auth = xbmcplugin.playbackBuffer.playback[count]['auth']
+            auth = auth.replace("+",' ')
+
             #print "AUTH" + xbmcplugin.playbackBuffer.playback[0]['auth'] + "\n"
 
 
-            if 0:
-                for r in re.finditer(' url\=([^\;]+)\;' ,
-                         cookies, re.DOTALL):
-                    url = r.group(1)
-                    print "url = " + url + "\n"
-                for r in re.finditer(' Cookie\=DRIVE_STREAM\%3D([^\;]+)\;' ,
-                         cookies, re.DOTALL):
-                    cookie = r.group(1)
-                    print "cookie = " + cookie + "\n"
-                for r in re.finditer(' Authorization\=([^\;]+)\;' ,
-                         cookies, re.DOTALL):
-                    auth = r.group(1)
-                    print "auth = " + auth + "\n"
-
             if start == '':
+#                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
             else:
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(start- startOffset)+'-' + str(end)})
@@ -197,7 +186,7 @@ class webGUI(BaseHTTPRequestHandler):
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    print "STILL ERROR\n"
+                    print "STILL ERROR"+str(e.code)+"\n"
                     return
                 else:
                     return
