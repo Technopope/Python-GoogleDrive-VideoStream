@@ -236,13 +236,13 @@ class webGUI(BaseHTTPRequestHandler):
                 id = ''
                 type = ''
                 values = ''
-                default = ''
+                defaults = ''
                 label = ''
                 if result:
                     id = str(result.group(1))
                     type = str(result.group(2))
                     values = str(result.group(3))
-                    default = str(result.group(4))
+                    defaults = str(result.group(4))
                     label = str(result.group(5))
                     print "ID = " + id + "\n"
 

@@ -1,3 +1,8 @@
+v0.1.1 (2017-11-19)
+- fix never_stream = true
+- add support for secure login for /, /list, /kill (to enable, run dbm_setup.py ./gdrive.db username username_to_create and run dbm_setup.py ./gdrive.db password password_to_use)
+- add "passthrough" mode (to enable, run dbm_setup.py ./gdrive.db passthrough true)
+- start work on settings
 - decode language codes into strings
-v0.1.0 (2017-11-19)
+v0.1.0 (2017-11-18)
 - first alpha release for testing

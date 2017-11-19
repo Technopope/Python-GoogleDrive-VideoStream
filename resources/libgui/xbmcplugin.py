@@ -66,7 +66,7 @@ class setResolvedUrl(object):
     def __init__(self,plugin_handle,value2,item):
         if plugin_handle is not None:
 
-            plugin_handle.send_response(302)
+            plugin_handle.send_response(307)
             url = ''
             cookie = ''
             auth = ''
@@ -86,8 +86,15 @@ class setResolvedUrl(object):
                 auth = r.group(1)
                 print "auth = " + auth + "\n"
 #                plugin_handle.send_header('Set-Cookie', auth)
+
             playbackBuffer.playback.append({'auth':auth,'url':url,'cookie':cookie})
-            plugin_handle.send_header('Location', '/play?count=' + str(len(playbackBuffer.playback)-1))
+            #auth = auth.replace("+",' ')
+            #plugin_handle.send_header('Authorization', auth)
+            if (plugin_handle.server.addon.getSetting('passthrough')) == 'true':
+                auth = auth.replace("Bearer+",'')
+                plugin_handle.send_header('Location', url + '&access_token='+auth)
+            else:
+                plugin_handle.send_header('Location', '/play?count=' + str(len(playbackBuffer.playback)-1))
             plugin_handle.end_headers()
 
 
