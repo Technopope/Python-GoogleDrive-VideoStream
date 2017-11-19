@@ -41,9 +41,6 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         import addon_parameters
         self.addon = addon_parameters.addon
 
-        #self.TVDB = None
-        #    self.MOVIEDB = None
-
 
     # set DBM
     def setDBM(self, dbm):
@@ -57,6 +54,15 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             self.encrypt = encryption.encryption(dbm['salt'],dbm['password'])
         except:
             self.encrypt = None
+
+        # login password?
+        try:
+            self.username = dbm['username']
+            self.password = dbm['password']
+        except:
+            self.username = None
+            self.password = None
+
         dbm.close()
 
 
@@ -72,7 +78,35 @@ class webGUI(BaseHTTPRequestHandler):
 
         # passed a kill signal?
         if self.path == '/kill':
-            self.server.ready = False
+            if self.server.username is not None:
+                content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+                post_data = self.rfile.read(content_length) # <--- Gets the data itself
+                #print post_data
+
+                self.send_response(200)
+                self.end_headers()
+                username = ''
+                password = ''
+                for r in re.finditer('username\=([^\&]+)' ,
+                         post_data, re.DOTALL):
+                    username = r.group(1)
+                for r in re.finditer('password\=([^\&]+)' ,
+                         post_data, re.DOTALL):
+                    password = r.group(1)
+                if self.server.username == username and self.server.password == password:
+                    self.wfile.write("Stopping server...")
+                    self.server.ready = False
+                    print "Stopping server...\n"
+                else:
+                    self.wfile.write("Wrong username/password")
+
+
+            else:
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write("Stopping server...")
+                self.server.ready = False
+                print "Stopping server...\n"
             return
 
         # redirect url to output
@@ -92,7 +126,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         # passed a kill signal?
         if self.path == '/kill':
-            self.server.ready = False
+#            self.server.ready = False
             return
 
 
@@ -138,13 +172,19 @@ class webGUI(BaseHTTPRequestHandler):
 
         # passed a kill signal?
         if decryptkeyvalue == '/kill':
-            self.server.ready = False
+            self.send_response(200)
+            self.end_headers()
+            if self.server.username is not None:
+                self.wfile.write('<html><form action="/kill" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Stop Server"></form></html>')
+            else:
+                self.wfile.write('<html><form action="/kill" method="post"><input type="submit" value="Stop Server"></form></html>')
+
+            #self.server.ready = False
             return
 
 
         # redirect url to output
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
-            print "IN\n\n"
             #self.send_response(200)
             #self.end_headers()
             #xbmcplugin.assignOutputBuffer(self.wfile)
@@ -172,7 +212,6 @@ class webGUI(BaseHTTPRequestHandler):
             auth = xbmcplugin.playbackBuffer.playback[count]['auth']
             auth = auth.replace("+",' ')
 
-            #print "AUTH" + xbmcplugin.playbackBuffer.playback[0]['auth'] + "\n"
 
 
             if start == '':
