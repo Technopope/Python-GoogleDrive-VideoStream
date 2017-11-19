@@ -72,12 +72,23 @@ class webGUI(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_POST(self):
 
+        decryptkeyvalue = self.path
+        if re.search(r'keyvalue\=', str(self.path)):
+            from resources.lib import encryption
+
+            results = re.search(r'keyvalue\=(.*)$', str(self.path))
+            if results:
+                keyvalue = str(results.group(1))
+                decryptkeyvalue = '/' + self.server.encrypt.decryptString(keyvalue).strip()
+                print decryptkeyvalue +"."
+
+
         # debug - print headers in log
         headers = str(self.headers)
         print(headers)
 
         # passed a kill signal?
-        if self.path == '/kill':
+        if decryptkeyvalue == '/kill':
             if self.server.username is not None:
                 content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
                 post_data = self.rfile.read(content_length) # <--- Gets the data itself
@@ -109,8 +120,36 @@ class webGUI(BaseHTTPRequestHandler):
                 print "Stopping server...\n"
             return
 
+        elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
+
+            if self.server.username is not None:
+                content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+                post_data = self.rfile.read(content_length) # <--- Gets the data itself
+                #print post_data
+
+                username = ''
+                password = ''
+                for r in re.finditer('username\=([^\&]+)' ,
+                         post_data, re.DOTALL):
+                    username = r.group(1)
+                for r in re.finditer('password\=([^\&]+)' ,
+                         post_data, re.DOTALL):
+                    password = r.group(1)
+                if self.server.username == username and self.server.password == password:
+                    mediaEngine = default.contentengine()
+                    mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
+                else:
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write("Wrong username/password")
+
+            else:
+                mediaEngine = default.contentengine()
+                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
+
+
         # redirect url to output
-        elif re.search(r'/play.py', str(self.path)):
+        elif re.search(r'/play.py', str(decryptkeyvalue)):
 
             print "TRYING TO SEEK WITH POSR REQUEST\n\n\n"
 
@@ -185,6 +224,16 @@ class webGUI(BaseHTTPRequestHandler):
 
         # redirect url to output
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
+            self.send_response(200)
+            self.end_headers()
+            if self.server.username is not None:
+                self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
+            else:
+                self.wfile.write('<html><form action="/list" method="post"><input type="submit" value="Login"></form></html>')
+
+            #self.server.ready = False
+            return
+
             #self.send_response(200)
             #self.end_headers()
             #xbmcplugin.assignOutputBuffer(self.wfile)
