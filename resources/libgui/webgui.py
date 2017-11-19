@@ -221,8 +221,31 @@ class webGUI(BaseHTTPRequestHandler):
             #self.server.ready = False
             return
 
+        elif decryptkeyvalue == '/settings':
+            self.send_response(200)
+            self.end_headers()
 
-        # redirect url to output
+            self.setings = {}
+            file = open('./resources/settings.xml', "r")
+            print "LOAD SETTINGS\n\n\n"
+            for line in file:
+                result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]+)\" default\=\"([^\"]+)\" label\=\"([^\"]+)\" \/\>', str(line))
+                if result is None:
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"( )label\=\"([^\"]+)\" default\=\"([^\"]+)\" \/\>', str(line))
+
+                id = ''
+                type = ''
+                values = ''
+                default = ''
+                label = ''
+                if result:
+                    id = str(result.group(1))
+                    type = str(result.group(2))
+                    values = str(result.group(3))
+                    default = str(result.group(4))
+                    label = str(result.group(5))
+                    print "ID = " + id + "\n"
+
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
             self.send_response(200)
             self.end_headers()
