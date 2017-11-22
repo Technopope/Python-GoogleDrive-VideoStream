@@ -69,7 +69,10 @@ def getSetting(key,default=''):
         return default
 
 def parse_query(query):
-    queries = cgi.parse_qs(query)
+    queries = {}
+    try:
+        queries = cgi.parse_qs(query)
+    except:pass
     q = {}
     for key, value in queries.items():
         q[key] = value[0]

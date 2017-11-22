@@ -93,10 +93,9 @@ class contentengine(object):
             PLUGIN_URL = ''
             plugin_handle = writer
             plugin_queries = ''
-            try:
-                plugin_queries = settings.parse_query(query)
-                settings.plugin_queries = plugin_queries
-            except:pass
+
+            plugin_queries = settings.parse_query(query)
+            settings.plugin_queries = plugin_queries
             addon_dir = ''
 
 
@@ -134,7 +133,6 @@ class contentengine(object):
             instanceName = (plugin_queries['instance']).lower()
         except:
             pass
-
         # cloudservice - content type
         contextType = settings.getParameter('content_type')
 
