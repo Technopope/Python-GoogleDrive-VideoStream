@@ -28,6 +28,9 @@ class outputBuffer(object):
 class playbackBuffer(object):
     playback =[]
 
+class instanceSettings(object):
+    keypair = True
+
 #
 # The purpose of this class is to override  xbmcgui and supply equivalent subroutines when ran without KODI
 #
@@ -37,14 +40,22 @@ class addSortMethod(object):
     def ok(self):
         return
 
+
+
 class addDirectoryItem(object):
 
     def __init__(self,plugin_handle, url, listitem, isFolder=None, totalItems=None):
         label = str(listitem)
         label = label.replace("<",'(')
         label = label.replace(">",')')
+
+        #if instanceSettings.keypair:
+        #    params = re.search(r'/([^\/]+)', str(url))
+        #    if params:
+        #        params = str(params.group(1))
+        #        url = str(url) + '&keypair=' +plugin_handle.server.encrypt.encryptString(params)
+
         outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\">"+ str(label) + "</a> "+ listitem.menu+"<br />\n"
-        #print "IN " +str(keeper.count) + str(listitem) + "\n"
         return
 
 class endOfDirectory(object):
@@ -53,8 +64,6 @@ class endOfDirectory(object):
         if plugin_handle is not None:
             plugin_handle.send_response(200)
             plugin_handle.end_headers()
-
-            print "OUT " +str(outputBuffer.output) + "\n"
             plugin_handle.wfile.write(outputBuffer.output)
             outputBuffer.output = ''
 
@@ -164,7 +173,7 @@ class setResolvedUrl(object):
                     #    plugin_handle.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(plugin_handle.server.length)))
 
                     #self.send_header('Content-Range',response.info().getheader('Content-Range'))
-                    print 'Content-Range!!!' + str(start) + '-' + str(int(plugin_handle.server.length)-1) + '/' +str(int(plugin_handle.server.length)) + "\n"
+
 
                 print str(response.info()) + "\n"
                 plugin_handle.send_header('Content-Type',response.info().getheader('Content-Type'))

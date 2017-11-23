@@ -40,7 +40,6 @@ else:
 
 
 from resources.lib import mediaurl
-#from resources.lib import kodi_common
 #from resources.lib import settings
 from resources.lib import streamer
 

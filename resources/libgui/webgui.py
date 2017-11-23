@@ -72,6 +72,9 @@ class webGUI(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_POST(self):
 
+
+
+
         decryptkeyvalue = self.path
         if re.search(r'keyvalue\=', str(self.path)):
             from resources.lib import encryption
