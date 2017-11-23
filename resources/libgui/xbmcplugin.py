@@ -55,7 +55,10 @@ class addDirectoryItem(object):
         #        params = str(params.group(1))
         #        url = str(url) + '&keypair=' +plugin_handle.server.encrypt.encryptString(params)
 
-        outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\">"+ str(label) + "</a> "+ listitem.menu+"<br />\n"
+        if listitem.thumbnailImage is not None:
+            outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\"><img src=\""+listitem.thumbnailImage+"\" /><br />"+ str(label) + "</a>"+ listitem.menu+"<br />\n"
+        else:
+            outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\">"+ str(label) + "</a> "+ listitem.menu+"<br />\n"
         return
 
 class endOfDirectory(object):
@@ -64,7 +67,7 @@ class endOfDirectory(object):
         if plugin_handle is not None:
             plugin_handle.send_response(200)
             plugin_handle.end_headers()
-            plugin_handle.wfile.write(outputBuffer.output)
+            plugin_handle.wfile.write('<html>'+outputBuffer.output+'</html>')
             outputBuffer.output = ''
 
 

@@ -44,6 +44,11 @@ class ListItem(object):
     ##
     def __init__(self, label,label2=None,iconImage=None,thumbnailImage=None,path=None):
         print label + "\n";
+        if thumbnailImage is not None and thumbnailImage != "":
+            self.thumbnailImage = thumbnailImage
+        else:
+            self.thumbnailImage = None
+        print "thumbnail" + thumbnailImage + "\n"
         self.label = label
         self.path = None
         self.menu = ''
