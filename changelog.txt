@@ -1,3 +1,5 @@
+- add parameters keyvalue (generage kv parameter representing the encrypted parameters passed in) and hide (to sumpress displaying the decrypted parameters)
+- add duration and resolution
 - added thumbnail support
 v0.1.2 (2017-11-22)
 - fix stability issue (related to query parameters not reloading correctly between navigations

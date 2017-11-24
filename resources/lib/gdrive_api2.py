@@ -86,7 +86,8 @@ class gdrive(cloudservice):
     ##
     # initialize (save addon, instance name, user agent)
     ##
-    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, gSpreadsheet=None, DBM=None):
+    def __init__(self, plugin_handle, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, gSpreadsheet=None, DBM=None):
+        self.plugin_handle = plugin_handle
         self.integratedPlayer = False
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon

@@ -49,11 +49,16 @@ class addDirectoryItem(object):
         label = label.replace("<",'(')
         label = label.replace(">",')')
 
-        #if instanceSettings.keypair:
-        #    params = re.search(r'/([^\/]+)', str(url))
-        #    if params:
-        #        params = str(params.group(1))
-        #        url = str(url) + '&keypair=' +plugin_handle.server.encrypt.encryptString(params)
+        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+        #    print "KV " + str(url) + "\n"
+
+            if params and plugin_handle.server.hide:
+                base = str(params.group(1))
+                extended = str(params.group(1))
+                url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+            else:
+                url = str(url) + '&kv=' +plugin_handle.server.encrypt.encryptString(url)
 
         if listitem.thumbnailImage is not None:
             outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\"><img src=\""+listitem.thumbnailImage+"\" /><br />"+ str(label) + "</a>"+ listitem.detail+"<br />\n"

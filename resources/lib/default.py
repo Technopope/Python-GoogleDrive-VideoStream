@@ -778,7 +778,7 @@ class contentengine(object):
                                     #if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                         #service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
                                     #else:
-                                    service = cloudservice2(self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                     loop = False
                             except:
@@ -793,7 +793,7 @@ class contentengine(object):
                                     #if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                     #    service = cloudservice1(self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                     #else:
-                                    service = cloudservice2(self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                 break
                             count = count + 1
 
@@ -848,7 +848,7 @@ class contentengine(object):
                                 #if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                 #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
                                 #else:
-                                service = cloudservice2(self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+                                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                 service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
 
@@ -861,7 +861,7 @@ class contentengine(object):
                                     #if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                     #        service = cloudservice1(self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                                     #else:
-                                    service = cloudservice2(self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                 break
                             count = count + 1
 
@@ -895,11 +895,11 @@ class contentengine(object):
         if instanceName is None and (mode == 'index' or mode == 'main' or mode == 'offline'):
             service = None
         elif instanceName is None:
-            service = cloudservice2(self.PLUGIN_URL,addon,'', user_agent, settings, authenticate=False,DBM=DBM)
+            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,'', user_agent, settings, authenticate=False,DBM=DBM)
         #elif settings.getSettingInt(instanceName+'_type',0)==0 :
         #    service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
         else:
-            service = cloudservice2(self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
 
 

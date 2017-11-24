@@ -40,7 +40,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.ready = True
         import addon_parameters
         self.addon = addon_parameters.addon
-
+        self.hide = False
+        self.keyvalue = False
 
     # set DBM
     def setDBM(self, dbm):
@@ -63,6 +64,13 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             self.username = None
             self.password = None
 
+        try:
+            if dbm['hide'] == 'true':
+                self.hide = True
+            if dbm['keyvalue'] == 'true':
+                self.keyvalue = True
+        except: pass
+
         dbm.close()
 
 
@@ -76,10 +84,10 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         decryptkeyvalue = self.path
-        if re.search(r'keyvalue\=', str(self.path)):
+        if re.search(r'kv\=', str(self.path)):
             from resources.lib import encryption
 
-            results = re.search(r'keyvalue\=(.*)$', str(self.path))
+            results = re.search(r'kv\=(.*)$', str(self.path))
             if results:
                 keyvalue = str(results.group(1))
                 decryptkeyvalue = '/' + self.server.encrypt.decryptString(keyvalue).strip()
@@ -183,10 +191,10 @@ class webGUI(BaseHTTPRequestHandler):
     def do_GET(self):
 
         decryptkeyvalue = self.path
-        if re.search(r'keyvalue\=', str(self.path)):
+        if re.search(r'kv\=', str(self.path)):
             from resources.lib import encryption
 
-            results = re.search(r'keyvalue\=(.*)$', str(self.path))
+            results = re.search(r'kv\=(.*)$', str(self.path))
             if results:
                 keyvalue = str(results.group(1))
                 decryptkeyvalue = '/' + self.server.encrypt.decryptString(keyvalue).strip()
