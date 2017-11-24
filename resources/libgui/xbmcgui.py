@@ -22,6 +22,8 @@
 # The purpose of this class is to override  xbmcgui and supply equivalent subroutines when ran without KODI
 #
 
+import re
+
 class Dialog(object):
 
     def ok(self, heading, line1, line2='', line3=''):
@@ -56,9 +58,11 @@ class ListItem(object):
         return
 
     def setProperty(self,key,value):
+        print "setProperty " + str(key) + ',' + str(value) + "\n"
         return
 
     def setInfo(self,key=None,value=None,type=None,infoLabels=None):
+        print "setInfo " + str(key) + ',' + str(value) + "\n"
         return
 
     def setPath(self,path):
@@ -74,7 +78,15 @@ class ListItem(object):
         print "xx\n"
         value = str(value)
         value = value.replace("\'",'')
-        self.menu =  '<button title="+" onclick="if(document.getElementById(\''+str(self.label)+'\').style.display==\'none\'){document.getElementById(\''+str(self.label)+'\').style.display=\'\'}else{document.getElementById(\''+str(self.label)+'\').style.display=\'none\'}">+</button><div style="display: none" id="'+str(self.label)+'"> <strong>'+str(value)+'</strong></div>'
+        print "streaminfo " + str(value) + "\n"
+        params = re.search(r'duration\: (\d+).* height\: (\d+)', str(value))
+        duration = ''
+        resolution = ''
+        if params:
+            duration = str(params.group(1))
+            resolution = str(params.group(2))
+        self.detail = '<sup><b>' + str(resolution) + 'p</b></sup><i>['+ str(int(duration)/60) + 'mins]</i>'
+        #self.menu =  '<button title="+" onclick="if(document.getElementById(\''+str(self.label)+'\').style.display==\'none\'){document.getElementById(\''+str(self.label)+'\').style.display=\'\'}else{document.getElementById(\''+str(self.label)+'\').style.display=\'none\'}">+</button><div style="display: none" id="'+str(self.label)+'"> <strong>'+str(value)+'</strong></div>'
         return
 
     def __str__(self):
