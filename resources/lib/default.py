@@ -36,6 +36,26 @@ else:
 
 from resources.lib import settings
 
+
+
+def decode(data):
+        return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
+
+def decode_dict(data):
+        for k, v in data.items():
+            if type(v) is str or type(v) is unicode:
+                data[k] = decode(v)
+        return data
+
+#http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
+def _callback(matches):
+    id = matches.group(1)
+    try:
+        return unichr(int(id))
+    except:
+        return id
+
+
 class contentengine(object):
 
     plugin_handle = None
