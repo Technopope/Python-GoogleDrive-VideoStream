@@ -51,7 +51,6 @@ class addDirectoryItem(object):
 
         if plugin_handle.server.keyvalue or plugin_handle.server.hide:
             params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
-        #    print "KV " + str(url) + "\n"
 
             if params and plugin_handle.server.hide:
                 base = str(params.group(1))

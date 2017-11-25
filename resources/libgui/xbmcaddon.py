@@ -43,7 +43,6 @@ class xbmcaddon:
         self.dbm = anydbm.open(self.dbmfile,'r')
         self.language = {}
         file = open('./resources/language/english/strings.xml', "r")
-        print "LOAD LANGUAGES\n\n\n"
         for line in file:
             result = re.search(r'\<string id\=\"([^\"]+)\"\>([^\<]+)\<', str(line))
             key = ''
@@ -89,7 +88,6 @@ class xbmcaddon:
     # return the language setting
     ##
     def getLocalizedString(self,key):
-        print self.language[str(key)]
         return self.language[str(key)]
 
 

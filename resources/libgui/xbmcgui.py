@@ -50,7 +50,6 @@ class ListItem(object):
             self.thumbnailImage = thumbnailImage
         else:
             self.thumbnailImage = None
-        print "thumbnail" + thumbnailImage + "\n"
         self.label = label
         self.path = None
         self.menu = ''
@@ -71,14 +70,28 @@ class ListItem(object):
 
 
     def addContextMenuItems(self,cm,value):
+        print "setInfo " +str(value) + "\n"
+        i=0
+        menuItems = ''
+        while i < len(cm):
+            url = cm[i][1]
+            params = re.search(r'\(([^\)]+)\)', str(url))
+            if params:
+                url = str(params.group(1))
+
+            menuItems += '<a href="'+str(url)+'">'+str(cm[i][0])+'</a><br/>'
+            i += 1
+
+#        self.menu =  '<button title="+" onclick="if(document.getElementById(\''+str(self.label)+'\').style.display==\'none\'){document.getElementById(\''+str(self.label)+'\').style.display=\'\'}else{document.getElementById(\''+str(self.label)+'\').style.display=\'none\'}">+</button><div style="display: none" id="'+str(self.label)+'"> <strong>'+str(menuItems)+'</strong></div>'
+        self.menu =  '<button title="+" onclick="if(document.getElementById(\''+str(self.label)+'\').style.display==\'none\'){document.getElementById(\''+str(self.label)+'\').style.display=\'\'}else{document.getElementById(\''+str(self.label)+'\').style.display=\'none\'}">+</button><div style="display: none" id="'+str(self.label)+'">'+str(menuItems)+'</div>'
         return
 
 
     def addStreamInfo(self,cm,value):
-        print "xx\n"
         value = str(value)
         value = value.replace("\'",'')
         print "streaminfo " + str(value) + "\n"
+        print "cm " + str(cm) + "\n"
         params = re.search(r'duration\: (\d+).* height\: (\d+)', str(value))
         duration = ''
         resolution = ''

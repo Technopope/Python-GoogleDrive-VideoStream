@@ -451,7 +451,6 @@ class contentengine(object):
                     try:
                         username = settings.getSetting(instanceName+'_username')
                         if username != '':
-                            print "XXXX"
                             self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
                     except:
