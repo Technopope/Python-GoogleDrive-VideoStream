@@ -42,6 +42,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.addon = addon_parameters.addon
         self.hide = False
         self.keyvalue = False
+        self.cryptoSalt = None
+        self.cryptoPassword = None
 
     # set DBM
     def setDBM(self, dbm):
@@ -69,6 +71,11 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                 self.hide = True
             if dbm['keyvalue'] == 'true':
                 self.keyvalue = True
+        except: pass
+
+        try:
+            self.cryptoSalt = dbm['crypto_salt']
+            self.cryptoPassword = dbm['crypto_password']
         except: pass
 
         dbm.close()
@@ -277,15 +284,24 @@ class webGUI(BaseHTTPRequestHandler):
             #self.wfile.write(outputBuffer)
             return
 
+
         # redirect url to output
         elif re.search(r'/play', str(decryptkeyvalue)):
 #            self.send_response(200)
 #            self.end_headers()
-            print "PLAYBACK" + "\n\n\n"
             count = 0
-            results = re.search(r'/play\?count\=(.*)$', str(decryptkeyvalue))
+            isEncrypted = False
+            results = re.search(r'/play\?count\=(\d+)\&encrypted\=true$', str(decryptkeyvalue))
+            #encrypted stream
             if results:
                 count = int(results.group(1))
+                isEncrypted = True
+            #not encrypted stream
+            else:
+                results = re.search(r'/play\?count\=(\d+)$', str(decryptkeyvalue))
+                if results:
+                    count = int(results.group(1))
+
             #self.send_response(200)
             #self.end_headers()
             #xbmcplugin.assignOutputBuffer(self.wfile)
@@ -295,6 +311,17 @@ class webGUI(BaseHTTPRequestHandler):
             auth = xbmcplugin.playbackBuffer.playback[count]['auth']
             auth = auth.replace("+",' ')
 
+            length=0
+            try:
+                length = xbmcplugin.playbackBuffer.playback[count]['length']
+            except:
+                length = 0
+                start= ''
+
+            if (isEncrypted and start != '' and start > 16 and end == ''):
+                #start = start - (16 - (end % 16))
+                print "START = " + str(start)
+                startOffset = 16-(( int(length) - start) % 16)+8
 
 
             if start == '':
@@ -302,7 +329,7 @@ class webGUI(BaseHTTPRequestHandler):
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
             else:
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(start- startOffset)+'-' + str(end)})
-
+                print "RANGE FETCH\n"
 
             try:
                 response = urllib2.urlopen(req)
@@ -312,6 +339,9 @@ class webGUI(BaseHTTPRequestHandler):
                     return
                 else:
                     return
+
+            if start == '':
+                xbmcplugin.playbackBuffer.playback[count]['length'] =  response.info().getheader('Content-Length')
 
             if start == '':
                 self.send_response(200)
@@ -337,12 +367,23 @@ class webGUI(BaseHTTPRequestHandler):
 
             self.end_headers()
 
-            CHUNK = 16 * 1024
-            while True:
-                chunk = response.read(CHUNK)
-                if not chunk:
-                    break
-                self.wfile.write(chunk)
+
+
+            if isEncrypted:
+
+                from resources.lib import  encryption
+                decrypt = encryption.encryption(self.server.cryptoSalt,self.server.cryptoPassword)
+
+                CHUNK = 16 * 1024
+                decrypt.decryptStreamChunk(response,self.wfile, startOffset=startOffset)
+
+            else:
+                CHUNK = 16 * 1024
+                while True:
+                    chunk = response.read(CHUNK)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
 
             #response_data = response.read()
             response.close()

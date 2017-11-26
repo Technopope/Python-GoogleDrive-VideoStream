@@ -1835,7 +1835,13 @@ class contentengine(object):
 
                     # use streamer if defined
                     useStreamer = False
-                    if service is not None and service.settings.streamer:
+                    if not KODI:
+                        item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                        thumbnailImage=package.file.thumbnail, path=mediaURL.url+'|' + service.getHeadersEncoded())
+                        item.setPath(mediaURL.url+'|' + service.getHeadersEncoded())
+                        print "URL = " +mediaURL.url + "\n"
+                        xbmcplugin.setResolvedUrl(self.plugin_handle, True, item, encrypted=True)
+                    elif KODI and service is not None and service.settings.streamer:
                         # test streamer
                         from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                         from resources.lib import streamer

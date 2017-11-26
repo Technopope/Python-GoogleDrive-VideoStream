@@ -79,7 +79,7 @@ class endOfDirectory(object):
 
 class setResolvedUrl(object):
 
-    def __init__(self,plugin_handle,value2,item):
+    def __init__(self,plugin_handle,value2,item, encrypted=False):
         if plugin_handle is not None:
 
             plugin_handle.send_response(307)
@@ -106,9 +106,11 @@ class setResolvedUrl(object):
             playbackBuffer.playback.append({'auth':auth,'url':url,'cookie':cookie})
             #auth = auth.replace("+",' ')
             #plugin_handle.send_header('Authorization', auth)
-            if (plugin_handle.server.addon.getSetting('passthrough')) == 'true':
+            if not encrypted and (plugin_handle.server.addon.getSetting('passthrough')) == 'true':
                 auth = auth.replace("Bearer+",'')
                 plugin_handle.send_header('Location', url + '&access_token='+auth)
+            elif encrypted:
+                plugin_handle.send_header('Location', '/play?count=' + str(len(playbackBuffer.playback)-1) + '&encrypted=true')
             else:
                 plugin_handle.send_header('Location', '/play?count=' + str(len(playbackBuffer.playback)-1))
             plugin_handle.end_headers()
