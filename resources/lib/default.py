@@ -620,9 +620,6 @@ class contentengine(object):
             self.PLUGIN_URL = 'default.py'
         self.PLUGIN_NAME = addon_parameters.PLUGIN_NAME
 
-        # common routines
-        from resources.lib import kodi_common
-
         cloudservice3 = addon_parameters.cloudservice3
         cloudservice2 = addon_parameters.cloudservice2
         #cloudservice1 = addon_parameters.cloudservice1
