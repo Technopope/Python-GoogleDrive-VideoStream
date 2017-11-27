@@ -397,7 +397,7 @@ class webGUI(BaseHTTPRequestHandler):
                 if isEncrypted:
                     self.send_header('Content-Length', str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-startOffset))
                 else:
-                    self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))-start))
+                    self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))))
 
             print str(response.info()) + "\n"
             self.send_header('Content-Type',response.info().getheader('Content-Type'))
