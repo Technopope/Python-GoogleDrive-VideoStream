@@ -175,6 +175,23 @@ class encryption():
                 else:
                     wfile.write(responseChunk)
 
+    def decryptCalculatePadding(self,response, chunksize=24*1024):
+            if ENCRYPTION_ENABLE == 0:
+                return
+    #    with open(in_filename, 'rb') as infile:
+            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+            decryptor = AES.new(self.key, AES.MODE_ECB)
+
+            count = 0
+            while True:
+                chunk = response.read(chunksize)
+                count = count + 1
+                if len(chunk) == 0:
+                    break
+                print "CHUNK " + str(len(chunk)) + "\n"
+                responseChunk = decryptor.decrypt(chunk)
+                return int(len(chunk) - len(responseChunk.strip()))
+
     def decryptStreamChunk2(self,response, wfile, chunksize=24*1024, startOffset=0):
             if ENCRYPTION_ENABLE == 0:
                 return

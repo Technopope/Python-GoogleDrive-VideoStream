@@ -318,18 +318,23 @@ class webGUI(BaseHTTPRequestHandler):
                 length = 0
                 start= ''
 
+            if isEncrypted:
+
+                from resources.lib import  encryption
+                decrypt = encryption.encryption(self.server.cryptoSalt,self.server.cryptoPassword)
+
+
             if (isEncrypted and start != '' and start > 16 and end == ''):
                 #start = start - (16 - (end % 16))
-                print "START = " + str(start)
+               # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
                 startOffset = 16-(( int(length) - start) % 16)+8
-
+                print "START = " + str(start) + ', ' + str(startOffset) + "\n"
 
             if start == '':
 #                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
             else:
-                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(start- startOffset)+'-' + str(end)})
-                print "RANGE FETCH\n"
+                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(start- startOffset ))+'-' + str(end)})
 
             try:
                 response = urllib2.urlopen(req)
@@ -340,15 +345,48 @@ class webGUI(BaseHTTPRequestHandler):
                 else:
                     return
 
+            # first fetch (no start specified, or 0)
             if start == '':
                 xbmcplugin.playbackBuffer.playback[count]['length'] =  response.info().getheader('Content-Length')
+                #for encrypted streams
+                # need to fetch the last 16 bytes to calculate unpadded size
+                if isEncrypted:
+                    response.close()
+                    req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(xbmcplugin.playbackBuffer.playback[count]['length']) - 32 + 8)+'-'})
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        if e.code == 403 or e.code == 401:
+                            print "STILL ERROR"+str(e.code)+"\n"
+                            return
+                        else:
+                            return
+                    CHUNK = 16 * 1024
+                    print "FETCH SIZE = " + str(int(xbmcplugin.playbackBuffer.playback[count]['length']) - 32 + 8) + "\n"
+                    finalChunkDifference = decrypt.decryptCalculatePadding(response,chunksize=CHUNK)
+                    #xbmcplugin.playbackBuffer.playback[count]['length'] = int(xbmcplugin.playbackBuffer.playback[count]['length']) - finalChunkDifference
+                    xbmcplugin.playbackBuffer.playback[count]['decryptedlength'] = int(xbmcplugin.playbackBuffer.playback[count]['length']) - finalChunkDifference
+                    print "FINAL CHUNK SIZE DIFFERENCE " + str(finalChunkDifference) + "\n"
+                    req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        if e.code == 403 or e.code == 401:
+                            print "STILL ERROR"+str(e.code)+"\n"
+                            return
+                        else:
+                            return
+
 
             if start == '':
                 self.send_response(200)
-                self.send_header('Content-Length',response.info().getheader('Content-Length'))
+                #self.send_header('Content-Length',response.info().getheader('Content-Length'))
+                if isEncrypted:
+                    self.send_header('Content-Length',xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])
+                else:
+                    self.send_header('Content-Length',xbmcplugin.playbackBuffer.playback[count]['length'])
             else:
                 self.send_response(206)
-                self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))-startOffset))
                 #self.send_header('Content-Range','bytes ' + str(start) + '-' +str(end))
                 #if end == '':
                 #    self.send_header('Content-Range','bytes ' + str(start) + '-' +str(int(self.server.length)-1) + '/' +str(int(self.server.length)))
@@ -356,10 +394,21 @@ class webGUI(BaseHTTPRequestHandler):
                 #    self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(self.server.length)))
 
                 #self.send_header('Content-Range',response.info().getheader('Content-Range'))
+                if isEncrypted:
+                    self.send_header('Content-Length', str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-startOffset))
+                else:
+                    self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))-start))
 
             print str(response.info()) + "\n"
             self.send_header('Content-Type',response.info().getheader('Content-Type'))
-            self.send_header('Content-Range', response.info().getheader('Content-Range'))
+            if isEncrypted:
+                if end == '':
+                    end = int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - int(startOffset) - 1
+                self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str(int(end + 1)))
+                print "RANGE = " + 'bytes ' + str(start) + '-' + str(end) + '/' + str(int(end + 1)) + ", length " + str(int(end+1)) + "\n"
+            else:
+                self.send_header('Content-Range', response.info().getheader('Content-Range'))
+
             self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
             self.send_header('Date',response.info().getheader('Date'))
             self.send_header('Content-type','video/mp4')
@@ -371,11 +420,8 @@ class webGUI(BaseHTTPRequestHandler):
 
             if isEncrypted:
 
-                from resources.lib import  encryption
-                decrypt = encryption.encryption(self.server.cryptoSalt,self.server.cryptoPassword)
-
                 CHUNK = 16 * 1024
-                decrypt.decryptStreamChunk(response,self.wfile, startOffset=startOffset)
+                decrypt.decryptStreamChunk(response,self.wfile, startOffset=startOffset, chunksize=CHUNK)
 
             else:
                 CHUNK = 16 * 1024
