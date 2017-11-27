@@ -87,8 +87,8 @@ try:
 except:pass
 
 # global variables
-import addon_parameters
-addon = addon_parameters.addon
+import constants
+addon = constants.addon
 
 #addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 #addon = xbmcaddon.Addon(id='plugin.video.gdrive')

@@ -603,10 +603,10 @@ class contentengine(object):
             # cloudservice - standard XBMC modules
 #            import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
             # global variables
-            import addon_parameters
-            addon = addon_parameters.addon
+            import constants
+            addon = constants.addon
             self.addon = addon
-            self.PLUGIN_URL = addon_parameters.PLUGIN_NAME
+            self.PLUGIN_URL = constants.PLUGIN_NAME
 
         else:
  #           from resources.libgui import xbmcaddon
@@ -614,15 +614,18 @@ class contentengine(object):
  #           from resources.libgui import xbmcplugin
  #           from resources.libgui import xbmc
             # global variables
-            import addon_parameters
-            #addon = addon_parameters.addon
+            import constants
+            #addon = constants.addon
             self.addon = addon
             self.PLUGIN_URL = 'default.py'
-        self.PLUGIN_NAME = addon_parameters.PLUGIN_NAME
+        self.PLUGIN_NAME = constants.PLUGIN_NAME
 
-        cloudservice3 = addon_parameters.cloudservice3
-        cloudservice2 = addon_parameters.cloudservice2
-        #cloudservice1 = addon_parameters.cloudservice1
+        #from resources.lib import gdrive_api2
+        #from resources.lib import gdrive_api3
+
+        cloudservice3 = constants.cloudservice3
+        cloudservice2 = constants.cloudservice2
+        #cloudservice1 = gdrive_api1.cloudservice1
 
 
         #*** testing - gdrive
@@ -634,7 +637,6 @@ class contentengine(object):
 
         # cloudservice - standard modules
         #from resources.lib import gdrive
-        #from resources.lib import gdrive_api2
         from resources.lib import cloudservice
         from resources.lib import authorization
         from resources.lib import folder
@@ -716,7 +718,7 @@ class contentengine(object):
             #    xbmcplugin.addSortMethod(plugin_handle, xbmcplugin.SORT_METHOD_TRACKNUM)
             xbmcplugin.addSortMethod(self.plugin_handle, xbmcplugin.SORT_METHOD_SIZE)
 
-        numberOfAccounts = self.numberOfAccounts(addon_parameters.PLUGIN_NAME)
+        numberOfAccounts = self.numberOfAccounts(constants.PLUGIN_NAME)
         invokedUsername = settings.getParameter('username')
 
 
@@ -725,7 +727,7 @@ class contentengine(object):
 
         if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
-            self.accountActions(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, numberOfAccounts)
+            self.accountActions(addon, constants.PLUGIN_NAME, mode, instanceName, numberOfAccounts)
 
         #create strm files
         elif mode == 'buildstrm':
@@ -785,7 +787,7 @@ class contentengine(object):
                         count = 1
                         loop = True
                         while loop:
-                            instanceName = addon_parameters.PLUGIN_NAME+str(count)
+                            instanceName = constants.PLUGIN_NAME+str(count)
                             try:
                                 username = settings.getSetting(instanceName+'_username')
                                 if username == invokedUsername:
@@ -807,9 +809,9 @@ class contentengine(object):
                                 except NameError:
                                     #fallback on first defined account
                                     #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                    #    service = cloudservice1(self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                    #    service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                     #else:
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                 break
                             count = count + 1
 
@@ -823,7 +825,7 @@ class contentengine(object):
                                 title = titleDecrypted.group(1)
 
 
-                        if addon_parameters.spreadsheet and service.cloudResume == '2':
+                        if constants.CONST.spreadsheet and service.cloudResume == '2':
                             spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                             service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
                             spreadsheetFile.close()
@@ -857,7 +859,7 @@ class contentengine(object):
 
                         count = 1
                         while True:
-                            instanceName = addon_parameters.PLUGIN_NAME+str(count)
+                            instanceName = constants.PLUGIN_NAME+str(count)
                             username = settings.getSetting(instanceName+'_username')
 
                             if username != '' and username == invokedUsername:
@@ -875,9 +877,9 @@ class contentengine(object):
                                 except NameError:
                                     #fallback on first defined account
                                     #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                    #        service = cloudservice1(self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
+                                    #        service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings)
                                     #else:
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                 break
                             count = count + 1
 
@@ -902,7 +904,7 @@ class contentengine(object):
 
         #STRM playback without instance name; use default
         if invokedUsername == '' and instanceName == '' and (mode == 'video' or mode == 'audio'):
-            instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
+            instanceName = constants.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
 
 
         instanceName = self.getInstanceName(addon, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
@@ -1003,7 +1005,7 @@ class contentengine(object):
             package=package.package(mediaFile,mediaFolder)
 
                 # TESTING
-            if addon_parameters.spreadsheet and service.cloudResume == '2':
+            if constants.CONST.spreadsheet and service.cloudResume == '2':
                 if service.worksheetID == '':
 
                     try:
@@ -1025,7 +1027,7 @@ class contentengine(object):
                         break
 
                 # TESTING
-            if addon_parameters.spreadsheet and service.cloudResume == '2':
+            if constants.CONST.spreadsheet and service.cloudResume == '2':
 
                 if service.gSpreadsheet is None:
                     service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -1085,7 +1087,7 @@ class contentengine(object):
 
                 spreadsheet = None
                     # TESTING
-                if addon_parameters.spreadsheet:
+                if constants.CONST.spreadsheet:
 
                         try:
                             service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -1105,7 +1107,7 @@ class contentengine(object):
                                 break
 
                     # TESTING
-                if addon_parameters.spreadsheet:
+                if constants.CONST.spreadsheet:
 
                     if service.gSpreadsheet is None:
                         service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -1177,7 +1179,7 @@ class contentengine(object):
             # display option for all Videos/Music/Photos, across gdrive
             #** gdrive specific
             if mode == 'main':
-                if ('gdrive' in addon_parameters.PLUGIN_NAME):
+                if ('gdrive' in constants.PLUGIN_NAME):
 
                     if contentType in (2,4,7):
                         self.addMenu(self.PLUGIN_URL+'?mode=index&folder=ALL&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
@@ -1193,7 +1195,7 @@ class contentengine(object):
                         self.addMenu(self.PLUGIN_URL+'?mode=index&folder=PHOTOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
                 folderID = 'root'
 
-                if ('gdrive' in addon_parameters.PLUGIN_NAME):
+                if ('gdrive' in constants.PLUGIN_NAME):
 
         #        if (service.protocol != 2):
         #            self.addMenu(self.PLUGIN_URL+'?mode=index&folder=STARRED-FILES&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
@@ -1209,12 +1211,12 @@ class contentengine(object):
 
                 self.addMenu(self.PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
                 self.addMenu(self.PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<Testing - manual run of change tracking build STRM>')
-                if addon_parameters.testing_features:
+                if constants.CONST.testing_features:
                     self.addMenu(self.PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'[MOVIES]')
 
 
                 #CLOUD_DB
-                if 'gdrive' in addon_parameters.PLUGIN_NAME and service.gSpreadsheet is not None:
+                if 'gdrive' in constants.PLUGIN_NAME and service.gSpreadsheet is not None:
                         self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=recentstarted&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently started]')
                         self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=recentwatched&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently watched]')
                         self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=library&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' library]')
@@ -1228,7 +1230,7 @@ class contentengine(object):
                 service
             except NameError:
                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-                xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME+'-login', xbmc.LOGERROR)
+                xbmc.log(addon.getLocalizedString(30050)+ constants.PLUGIN_NAME+'-login', xbmc.LOGERROR)
                 xbmcplugin.endOfDirectory(self.plugin_handle)
                 return
 
@@ -1369,7 +1371,7 @@ class contentengine(object):
                 # real folder
                 if folderID != '':
                     mediaItems = service.getMediaList(folderID,contentType=contentType)
-                    if addon_parameters.spreadsheet and service.cloudResume == '2':
+                    if constants.CONST.spreadsheet and service.cloudResume == '2':
 
                         if service.gSpreadsheet is None:
                             service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -1447,7 +1449,7 @@ class contentengine(object):
                                     #player.setService(service)
         #                            player.setContent(episodes)
                                     player.setWorksheet(worksheets['db'])
-                                    player.PlayStream('plugin://plugin.video.'+addon_parameters.PLUGIN_NAME+'-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
+                                    player.PlayStream('plugin://plugin.video.'+constants.PLUGIN_NAME+'-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
                                     #player.next()
                                     while KODI and not player.isExit:
                                         player.saveTime()
@@ -1529,7 +1531,7 @@ class contentengine(object):
                 service
             except NameError:
                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-                xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME + '-login',xbmc.LOGERROR)
+                xbmc.log(addon.getLocalizedString(30050)+ constants.PLUGIN_NAME + '-login',xbmc.LOGERROR)
                 xbmcplugin.endOfDirectory(self.plugin_handle)
                 return
 
@@ -1783,7 +1785,7 @@ class contentengine(object):
                 service
             except NameError:
                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-                xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME + '-login', xbmc.LOGERROR)
+                xbmc.log(addon.getLocalizedString(30050)+ constants.PLUGIN_NAME + '-login', xbmc.LOGERROR)
                 xbmcplugin.endOfDirectory(self.plugin_handle)
                 return
 
@@ -2217,7 +2219,7 @@ class contentengine(object):
                     # right-click - download (download only + force)
                     if not seek > 0 and not (settings.download and not settings.play):
                             # TESTING
-                        if addon_parameters.spreadsheet and service.cloudResume == '2':
+                        if constants.CONST.spreadsheet and service.cloudResume == '2':
                             if service.worksheetID == '':
 
                                 try:
@@ -2239,7 +2241,7 @@ class contentengine(object):
                                     break
 
                             # TESTING
-                        if addon_parameters.spreadsheet and service.cloudResume == '2':
+                        if constants.CONST.spreadsheet and service.cloudResume == '2':
 
                             if service.gSpreadsheet is None:
                                 service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)

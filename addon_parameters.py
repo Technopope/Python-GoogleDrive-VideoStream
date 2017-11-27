@@ -54,6 +54,4 @@ cloudservice3 = gdrive_api3.gdrive
 cloudservice2 = gdrive_api2.gdrive
 #cloudservice1 = gdrive.gdrive
 
-spreadsheet = True
-testing_features = False
 

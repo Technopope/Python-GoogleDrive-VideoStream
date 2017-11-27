@@ -38,8 +38,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)
         self.ready = True
-        import addon_parameters
-        self.addon = addon_parameters.addon
+        import constants
+        self.addon = constants.addon
         self.hide = False
         self.keyvalue = False
         self.cryptoSalt = None

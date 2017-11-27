@@ -18,6 +18,29 @@
 
 '''
 
+import re
+import sys
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
+
+
+PLUGIN_NAME = 'gdrive'
+
+if KODI:
+    # cloudservice - standard XBMC modules
+    import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+
+    # global variables
+    #addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+    addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+
+else:
+    from resources.libgui import xbmcaddon
+    addon = xbmcaddon.xbmcaddon()
+
+
+
 class CONST():
 
     spreadsheet = True
