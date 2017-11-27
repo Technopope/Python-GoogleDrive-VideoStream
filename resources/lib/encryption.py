@@ -153,7 +153,7 @@ class encryption():
                     fixSize = chunk - deltaSize
                     wfile.write(decryptor.decrypt(chunk)[:])
 
-    def decryptStreamChunk(self,response, wfile, chunksize=24*1024, startOffset=0):
+    def decryptStreamChunk(self,response, wfile, chunksize=24*1024, startOffset=0, endOffset=0):
             if ENCRYPTION_ENABLE == 0:
                 return
     #    with open(in_filename, 'rb') as infile:

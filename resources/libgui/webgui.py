@@ -323,18 +323,28 @@ class webGUI(BaseHTTPRequestHandler):
                 from resources.lib import  encryption
                 decrypt = encryption.encryption(self.server.cryptoSalt,self.server.cryptoPassword)
 
-
+            endOffset = 0
+            newEnd = end
+            # start > 16 bytes, back up to nearest whole chunk of 16
             if (isEncrypted and start != '' and start > 16 and end == ''):
                 #start = start - (16 - (end % 16))
                # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
                 startOffset = 16-(( int(length) - start) % 16)+8
                 print "START = " + str(start) + ', ' + str(startOffset) + "\n"
 
+            # end < 16
+            elif (isEncrypted and end < 16):
+                #start = start - (16 - (end % 16))
+               # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
+                endOffset = 16 - int(end)
+                print "START = " + str(start) + ", END = " + str(end) + ', ' + str(endOffset) + "\n"
+                newEnd= 15
+
             if start == '':
 #                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
             else:
-                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(start- startOffset ))+'-' + str(end)})
+                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(start- startOffset ))+'-' + str(newEnd)})
 
             try:
                 response = urllib2.urlopen(req)
@@ -404,10 +414,13 @@ class webGUI(BaseHTTPRequestHandler):
             if isEncrypted:
                 if end == '':
                     end = int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - int(startOffset) - 1
+                if start == '':
+                    start = 0
                 self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str(int(end + 1)))
                 print "RANGE = " + 'bytes ' + str(start) + '-' + str(end) + '/' + str(int(end + 1)) + ", length " + str(int(end+1)) + "\n"
             else:
                 self.send_header('Content-Range', response.info().getheader('Content-Range'))
+                print "RANGE = " +  response.info().getheader('Content-Range') + "\n"
 
             self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
             self.send_header('Date',response.info().getheader('Date'))
@@ -421,7 +434,7 @@ class webGUI(BaseHTTPRequestHandler):
             if isEncrypted:
 
                 CHUNK = 16 * 1024
-                decrypt.decryptStreamChunk(response,self.wfile, startOffset=startOffset, chunksize=CHUNK)
+                decrypt.decryptStreamChunk(response,self.wfile, startOffset=startOffset, endOffset=endOffset, chunksize=CHUNK)
 
             else:
                 CHUNK = 16 * 1024
