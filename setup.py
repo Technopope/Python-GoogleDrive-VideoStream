@@ -52,20 +52,6 @@ class dbfile():
         for key in self.dbm:
             print key + " " + self.dbm[key]
     
-        
-
-'''        
-add = dbfile('twwrfrwe.db', 'c')
-add.set('mutti', "ffsfsdf")
-add.set('robert', "testtestetetest")
-add.set('Philipp', "einweiteretest")
-
-print add.get('robert')
-print add.get('Philipp')
-
-add.delete('robert')
-add.display()
-'''
 
 if options.add:
     
