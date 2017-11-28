@@ -42,6 +42,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.addon = constants.addon
         self.hide = False
         self.keyvalue = False
+        self.saltfile = None
         self.cryptoSalt = None
         self.cryptoPassword = None
 
@@ -52,12 +53,6 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         import anydbm
 
         dbm = anydbm.open(dbm,'r')
-        try:
-            from resources.lib import encryption
-            self.encrypt = encryption.encryption(dbm['salt'],dbm['password'])
-        except:
-            self.encrypt = None
-
         # login password?
         try:
             self.username = dbm['username']
@@ -67,12 +62,27 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             self.password = None
 
         try:
-            if dbm['hide'] == 'true':
+            if dbm['hide'] == 'true' and self.password != None:
                 self.hide = True
             if dbm['keyvalue'] == 'true':
                 self.keyvalue = True
         except: pass
 
+        try:
+			from resources.lib import encryption
+            
+			try:
+				dbm['saltfile']
+				self.saltfile = dbm['saltfile']
+			except:
+				self.saltfile = 'saltfile'
+				print "No saltfile set, using file \'" + self.saltfile + "\' instead."
+						
+			self.encrypt = encryption.encryption(self.saltfile,self.password)
+        except:
+            self.encrypt = None
+            
+        
         try:
             self.cryptoSalt = dbm['crypto_salt']
             self.cryptoPassword = dbm['crypto_password']
