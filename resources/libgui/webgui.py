@@ -332,6 +332,12 @@ class webGUI(BaseHTTPRequestHandler):
                 startOffset = 16-(( int(length) - start) % 16)+8
                 print "START = " + str(start) + ', ' + str(startOffset) + "\n"
             # 2) start > 16 bytes, back up to nearest whole chunk of 16, end < end of file
+            elif (0 and isEncrypted and start != '' and start > 16 and end == int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
+                #start = start - (16 - (end % 16))
+               # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
+                startOffset = 16-(( int(end+1) - start) % 16)+8
+                print "START = " + str(start) + ', ' + str(startOffset) + ",END =" +str(end) +"\n"
+                newEnd = int(end)
             elif (isEncrypted and start != '' and start > 16 and end != ''):
                 #start = start - (16 - (end % 16))
                # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
@@ -351,6 +357,8 @@ class webGUI(BaseHTTPRequestHandler):
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
             else:
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(start- startOffset))+'-' + str(newEnd)})
+                #req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(start- startOffset))+'-' + str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1)})
+
                 print "REQUESTING "+str(int(start- startOffset ))+'-' + str(newEnd) + "\n"
             try:
                 response = urllib2.urlopen(req)
@@ -474,6 +482,9 @@ class webGUI(BaseHTTPRequestHandler):
                     if not chunk:
                         break
                     self.wfile.write(chunk)
+
+
+
 
             #response_data = response.read()
             response.close()
