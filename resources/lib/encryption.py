@@ -156,9 +156,20 @@ class encryption():
     def decryptStreamChunk(self,response, wfile, chunksize=24*1024, startOffset=0, endOffset=0):
             if ENCRYPTION_ENABLE == 0:
                 return
-    #    with open(in_filename, 'rb') as infile:
             origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
             decryptor = AES.new(self.key, AES.MODE_ECB)
+
+    #    with open(in_filename, 'rb') as infile:
+            if endOffset > 0:
+                print "special case\n\n"
+
+                chunk = response.read(chunksize)
+                print "size of chunk = " + str(len(chunk)) + "\n"
+                responseChunk = decryptor.decrypt(chunk)
+                print "endOffset = "+str(endOffset)+" length = " + str(len(responseChunk[:endOffset])) + "\n"
+                wfile.write(responseChunk[:endOffset])
+                return
+
 
             count = 0
             while True:
