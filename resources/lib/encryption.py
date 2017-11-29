@@ -114,7 +114,7 @@ class encryption():
                         break
                     outfile.write(decryptor.decrypt(chunk))
 
-                ##outfile.truncate(origsize)
+                outfile.truncate(origsize)
 
     def decryptStream(self,response, chunksize=24*1024):
             if ENCRYPTION_ENABLE == 0:

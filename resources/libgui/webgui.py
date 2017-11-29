@@ -487,7 +487,7 @@ class webGUI(BaseHTTPRequestHandler):
             self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
             self.send_header('Date',response.info().getheader('Date'))
             self.send_header('Content-type','video/mp4')
-            self.send_header('Accept-Ranges','bytes')
+            #self.send_header('Accept-Ranges','bytes')
 
             self.end_headers()
 
