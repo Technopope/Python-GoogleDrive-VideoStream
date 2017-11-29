@@ -318,39 +318,63 @@ class webGUI(BaseHTTPRequestHandler):
                 length = 0
                 start= ''
 
+            endOffset = 0
+            startOffset = 0
+            newEnd = end
+
             if isEncrypted:
 
                 from resources.lib import  encryption
                 decrypt = encryption.encryption(self.server.cryptoSalt,self.server.cryptoPassword)
 
-            endOffset = 0
-            newEnd = end
-            # 1) start > 16 bytes, back up to nearest whole chunk of 16
-            if (isEncrypted and start != '' and start > 16 and end == ''):
-                #start = start - (16 - (end % 16))
-               # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
-                startOffset = 16-(( int(length) - start) % 16)+8
-                print "START = " + str(start) + ', ' + str(startOffset) + "\n"
-            # 2) start > 16 bytes, back up to nearest whole chunk of 16, end < end of file
-            elif (0 and isEncrypted and start != '' and start > 16 and end == int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
-                #start = start - (16 - (end % 16))
-               # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
-                startOffset = 16-(( int(end+1) - start) % 16)+8
-                print "START = " + str(start) + ', ' + str(startOffset) + ",END =" +str(end) +"\n"
-                newEnd = int(end)
-            elif (isEncrypted and start != '' and start > 16 and end != ''):
-                #start = start - (16 - (end % 16))
-               # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
-                startOffset = 16-(( int(end+1) - start) % 16)+8
-                print "START = " + str(start) + ', ' + str(startOffset) + ",END =" +str(end) +"\n"
-                newEnd = int(end)
-            # 3) end < 16
-            elif (isEncrypted and end < 16):
-                #start = start - (16 - (end % 16))
-               # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
-                endOffset = 16 - int(end)
-                print "START = " + str(start) + ", END = " + str(end) + ', ' + str(endOffset) + "\n"
-                newEnd= 15 + 8
+
+                #?issue
+                # 1) start > 16 bytes, back up to nearest whole chunk of 16
+                if (start != '' and start > 16 and end == ''):
+                    #start = start - (16 - (end % 16))
+                   # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
+                    startOffset = 16-(( int(length) - start) % 16)+8
+                    newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length'])-1
+                    print "[1] START=" + str(start) + ', END=' + str(end) + ', length='+str(length)+ ' , startOffset=' +str(startOffset)+ ' , endOffset=' +str(endOffset) +', newEnd='+str(newEnd)+"\n"
+                #tested - good
+                # 2) start > 16 bytes, back up to nearest whole chunk of 16, end < end of file
+                elif (start != '' and start > 16 and end == int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
+                    finalChunkDifference = int(xbmcplugin.playbackBuffer.playback[count]['length']) - int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])
+
+                    #start = start - (16 - (end % 16))
+                   # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
+                    #startOffset = -(( int(end) - start - finalChunkDifference) % 16)
+                    startOffset += finalChunkDifference -8
+                    newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length'])-1
+                    startOffset += 16-(( end - start + 1) % 16)
+                    print "[2] START=" + str(start) + ', END=' + str(end) + ', length='+str(length)+ ' , startOffset=' +str(startOffset)+ ' , endOffset=' +str(endOffset) +', newEnd='+str(newEnd)+"\n"
+
+                # fetch all, return all
+                elif (start != '' and start == 0 and end == int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
+                    finalChunkDifference = int(xbmcplugin.playbackBuffer.playback[count]['length']) - int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - 8
+
+                    #start = start - (16 - (end % 16))
+                   # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
+                    startOffset = 0
+                    newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length'])-1
+                    print "[5] START=" + str(start) + ', END=' + str(end) + ', length='+str(length)+ ' , startOffset=' +str(startOffset)+ ' , endOffset=' +str(endOffset) +', newEnd='+str(newEnd)+"\n"
+
+                #?issue
+                elif (start != '' and start > 16 and end != ''):
+                    #start = start - (16 - (end % 16))
+                    # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
+                    #startOffset = 16-(( int(end+1) - start) % 16)+8
+                    startOffset = 8
+                    endOffset = 16-(( int(end+1) - start) % 16)
+                    newEnd = end + endOffset
+                    print "[3] START=" + str(start) + ', END=' + str(end) + ', length='+str(length)+ ' , startOffset=' +str(startOffset)+ ' , endOffset=' +str(endOffset) +', newEnd='+str(newEnd)+"\n"
+                # special case - end < 16 (such as first 2 bytes (apple)
+                elif (end < 16):
+                    #start = start - (16 - (end % 16))
+                   # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
+                    endOffset = 16 - int(end)
+                    newEnd= 15 + 8
+                    print "[4] START=" + str(start) + ', END=' + str(end) + ', length='+str(length)+ ' , startOffset=' +str(startOffset)+ ' , endOffset=' +str(endOffset) +', newEnd='+str(newEnd)+"\n"
 
             if start == '':
 #                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
@@ -359,7 +383,6 @@ class webGUI(BaseHTTPRequestHandler):
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(start- startOffset))+'-' + str(newEnd)})
                 #req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(start- startOffset))+'-' + str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1)})
 
-                print "REQUESTING "+str(int(start- startOffset ))+'-' + str(newEnd) + "\n"
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
@@ -424,14 +447,14 @@ class webGUI(BaseHTTPRequestHandler):
                 if isEncrypted:
                     if end < 16: # != '':
                         self.send_header('Content-Length', str(int(end - start + 1)-startOffset))
-                        print "set content-length "+str(int(end - start + 1)-startOffset) + "\n"
+                        print "1) set content-length "+str(int(end - start + 1)-startOffset) + "\n"
                         specialEnd = int(end - start + 1)
                     elif end != '':
                         self.send_header('Content-Length', str(int(end - start + 1)-startOffset))
-                        print "set content-length "+str(int(end - start + 1)-startOffset) + "\n"
+                        print "2) set content-length "+str(int(end - start + 1)-startOffset) + "\n"
                     else:
-                        self.send_header('Content-Length', str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-startOffset))
-                        print "set content-length "+str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-startOffset) + "\n"
+                        self.send_header('Content-Length', str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])+1 - start))
+                        print "3) set content-length "+str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])+1 - start) + "\n"
                 else:
                     self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))))
 
@@ -442,21 +465,21 @@ class webGUI(BaseHTTPRequestHandler):
                     end = int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - int(startOffset) - 1
                 if start == '':
                     start = 0
-                if start > 0:
-#                    self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str( int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - int(startOffset) ))
-                    self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str( int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - int(0) ))
-                    print "set content-range "+ str(start) + '-' + str(end) + '/' + str( int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - int(0) )+ "\n"
-                else:
-                    self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])) )
-                    print "set content-range "+str(start) + '-' + str(end) + '/' + str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']))+ "\n"
+                #if start > 0:
+#               #     self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str( int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - int(startOffset) ))
+                #    self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str( int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])  ))
+                #    print "1) set content-range "+ str(start) + '-' + str(end) + '/' + str( int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - int(startOffset) )+ "\n"
+                #else:
+                self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])) )
+                print "2) set content-range "+str(start) + '-' + str(end) + '/' + str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']))+ "\n"
 
                 #self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str(int(end + 1)))
 
                 #self.send_header('Content-Range', response.info().getheader('Content-Range'))
                 if response.info().getheader('Content-Range') != None:
-                    print "processed = " + response.info().getheader('Content-Range') + "\n"
+                    print "received to process = " + response.info().getheader('Content-Range') + "\n"
 
-                print "processed = " + response.info().getheader('Content-Length') + "\n"
+                print "received to process = " + response.info().getheader('Content-Length') + "\n"
             else:
                 self.send_header('Content-Range', response.info().getheader('Content-Range'))
                 #print "RANGE = " +  response.info().getheader('Content-Range') + "\n"
