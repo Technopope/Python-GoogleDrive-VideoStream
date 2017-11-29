@@ -49,7 +49,7 @@ class dbfile():
             print "Key " + key + " not found."
             
     def display(self):
-        for key in self.dbm:
+        for key in self.dbm.keys():
             print key + " " + self.dbm[key]
     
 
