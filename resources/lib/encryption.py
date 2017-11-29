@@ -1,6 +1,12 @@
 #http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
 import os, random, struct, string, re
 
+
+#debugging
+import hashlib
+
+
+
 try:
     import Crypto.Random
     from Crypto.Cipher import AES
@@ -115,7 +121,7 @@ class encryption():
                         break
                     outfile.write(decryptor.decrypt(chunk))
 
-                ##outfile.truncate(origsize)
+                outfile.truncate(origsize)
 
     def decryptStream(self,response, chunksize=24*1024):
             if ENCRYPTION_ENABLE == 0:
@@ -154,16 +160,48 @@ class encryption():
                     fixSize = chunk - deltaSize
                     wfile.write(decryptor.decrypt(chunk)[:])
 
-    def decryptStreamChunk(self,response, wfile, chunksize=24*1024, startOffset=0, endOffset=0):
+    def decryptStreamChunk(self,response, wfile, chunksize=24*1024, startOffset=0, endOffset=0, end=0):
             if ENCRYPTION_ENABLE == 0:
                 return
-    #    with open(in_filename, 'rb') as infile:
             origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
             decryptor = AES.new(self.key, AES.MODE_ECB)
 
-            count = 0
-            while True:
+            #debugging
+            hash_md5 = hashlib.md5()
+
+    #    with open(in_filename, 'rb') as infile:
+            if startOffset == 0 and endOffset > 0:
+                print "special case\n\n"
+
                 chunk = response.read(chunksize)
+                print "size of chunk = " + str(len(chunk)) + "\n"
+                responseChunk = decryptor.decrypt(chunk)
+                print "endOffset = "+str(endOffset)+" length = " + str(len(responseChunk[:endOffset])) + "\n"
+                hash_md5.update(responseChunk[:endOffset])
+                print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                wfile.write(responseChunk[:endOffset])
+
+                return
+
+            #remove the origsize from offset
+            #if startOffset > 0:
+            #    startOffset -= 8
+
+            sending=0
+            if startOffset > 0 and end == 0:
+                response.read(startOffset)
+                startOffset = 0
+                print "IN\n"
+            elif startOffset > 0:
+                #response.read(startOffset)
+                startOffset = 0
+
+            responseChunk = ''
+            count = 0
+            chunk = response.read(chunksize)
+
+            while True:
+                nextChunk = response.read(chunksize)
                 count = count + 1
                 if len(chunk) == 0:
                     break
@@ -171,10 +209,25 @@ class encryption():
                 responseChunk = decryptor.decrypt(chunk)
                 if count == 1 and startOffset !=0:
                     wfile.write(responseChunk[startOffset:])
-                elif (len(chunk)) < (len(responseChunk.strip())):
+                    sending += len(responseChunk[startOffset:])
+                    print 'x' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[startOffset:]))
+                    hash_md5.update(responseChunk[startOffset:])
+                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                elif len(nextChunk) == 0:#(len(chunk)) > (len(responseChunk.strip())):
                     wfile.write(responseChunk.strip())
+                    sending += len(responseChunk.strip())
+                    print 'y' + str(sending)
+                    hash_md5.update(responseChunk.strip())
+                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+
                 else:
                     wfile.write(responseChunk)
+                    sending += len(responseChunk)
+                    print '.' + str(sending)
+                    hash_md5.update(responseChunk)
+                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                chunk = nextChunk
+            print "EXIT\n"
 
     def decryptCalculatePadding(self,response, chunksize=24*1024):
             if ENCRYPTION_ENABLE == 0:
@@ -192,6 +245,16 @@ class encryption():
                 print "CHUNK " + str(len(chunk)) + "\n"
                 responseChunk = decryptor.decrypt(chunk)
                 return int(len(chunk) - len(responseChunk.strip()))
+
+    def decryptCalculateSizing(self,response):
+            if ENCRYPTION_ENABLE == 0:
+                return
+    #    with open(in_filename, 'rb') as infile:
+            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+            decryptor = AES.new(self.key, AES.MODE_ECB)
+
+            return origsize
+
 
     def decryptStreamChunk2(self,response, wfile, chunksize=24*1024, startOffset=0):
             if ENCRYPTION_ENABLE == 0:
