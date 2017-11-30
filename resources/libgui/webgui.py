@@ -324,6 +324,7 @@ class webGUI(BaseHTTPRequestHandler):
             endOffset = 0
             startOffset = 0
             newEnd = end
+            specialEnd = 0
 
             if isEncrypted:
 
@@ -368,9 +369,10 @@ class webGUI(BaseHTTPRequestHandler):
                     #start = start - (16 - (end % 16))
                     # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
                     #startOffset = 16-(( int(end+1) - start) % 16)+8
-                    startOffset = 8
-                    endOffset = 16-(( int(end+1) - start) % 16)
-                    newEnd = end + endOffset
+                    startOffset = 0#8
+                    endOffset = 16-(( end - start + 1 +8 ) % 16)
+                    newEnd = end + endOffset + 8
+                    #specialEnd = endOffset
                     print "[3] START=" + str(start) + ', END=' + str(end) + ', length='+str(length)+ ' , startOffset=' +str(startOffset)+ ' , endOffset=' +str(endOffset) +', newEnd='+str(newEnd)+"\n"
                 #tested - good**
                 # special case - end < 16 (such as first 2 bytes (apple)
@@ -434,7 +436,6 @@ class webGUI(BaseHTTPRequestHandler):
                         else:
                             return
 
-            specialEnd = 0
 
             if start == '':
                 self.send_response(200)

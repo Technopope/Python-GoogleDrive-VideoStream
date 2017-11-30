@@ -191,9 +191,9 @@ class encryption():
                 response.read(startOffset)
                 startOffset = 0
                 print "IN\n"
-            elif startOffset > 0:
-                #response.read(startOffset)
-                startOffset = 0
+            elif startOffset == 0 and endOffset > 0:
+                print "IN 2\n"
+                response.read(8)
 
             responseChunk = ''
             count = 0
@@ -212,13 +212,20 @@ class encryption():
                     print 'x' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[startOffset:]))
                     hash_md5.update(responseChunk[startOffset:])
                     print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                elif len(nextChunk) == 0 and end > 0:#(len(chunk)) > (len(responseChunk.strip())):
+                    #endOffset -= 5
+                    wfile.write(responseChunk[:(len(responseChunk)-end)])
+                    sending += len(responseChunk[:(len(responseChunk)-end)])
+                    print 'z' + str(sending)
+                    hash_md5.update(responseChunk[:(len(responseChunk)-end)])
+                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+
                 elif len(nextChunk) == 0:#(len(chunk)) > (len(responseChunk.strip())):
                     wfile.write(responseChunk.strip())
                     sending += len(responseChunk.strip())
                     print 'y' + str(sending)
                     hash_md5.update(responseChunk.strip())
                     print "HASH = " + str(hash_md5.hexdigest()) + "\n"
-
                 else:
                     wfile.write(responseChunk)
                     sending += len(responseChunk)
