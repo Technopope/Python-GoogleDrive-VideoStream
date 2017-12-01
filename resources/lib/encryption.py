@@ -159,7 +159,58 @@ class encryption():
                     fixSize = chunk - deltaSize
                     wfile.write(decryptor.decrypt(chunk)[:])
 
-    def decryptStreamChunk(self,response, wfile, chunksize=24*1024, startOffset=0, endOffset=0, end=0):
+    def decryptStreamChunk(self,response, wfile, adjStart, adjEnd, chunksize=16*1024):
+            if ENCRYPTION_ENABLE == 0:
+                return
+            #origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+            decryptor = AES.new(self.key, AES.MODE_ECB)
+
+            #debugging
+            hash_md5 = hashlib.md5()
+
+
+            sending=0
+            responseChunk = ''
+            count = 0
+            chunk = response.read(chunksize)
+
+            while True:
+                nextChunk = response.read(chunksize)
+                count = count + 1
+                if len(chunk) == 0:
+                    break
+
+                responseChunk = decryptor.decrypt(chunk)
+                if count == 1:
+                    wfile.write(responseChunk[adjStart:])
+                    sending += len(responseChunk[adjStart:])
+                    print 'x' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:]))
+                    hash_md5.update(responseChunk[adjStart:])
+                    adjStart = 0
+                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                elif len(nextChunk) == 0 and adjEnd > 0:
+                    wfile.write(responseChunk[:(len(responseChunk)-adjEnd)])
+                    sending += len(responseChunk[:(len(responseChunk)-adjEnd)])
+                    print 'z' + str(sending)
+                    hash_md5.update(responseChunk[:(len(responseChunk)-adjEnd)])
+                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                    adjEnd = 0
+                elif len(nextChunk) == 0: #adjEnd = 0
+                    wfile.write(responseChunk.strip())
+                    sending += len(responseChunk.strip())
+                    print 'y' + str(sending)
+                    hash_md5.update(responseChunk.strip())
+                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                else:
+                    wfile.write(responseChunk)
+                    sending += len(responseChunk)
+                    print '.' + str(sending)
+                    hash_md5.update(responseChunk)
+                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                chunk = nextChunk
+            print "EXIT\n"
+
+    def decryptStreamChunk20171201(self,response, wfile, chunksize=24*1024, startOffset=0, endOffset=0, end=0):
             if ENCRYPTION_ENABLE == 0:
                 return
             origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
@@ -234,7 +285,6 @@ class encryption():
                     print "HASH = " + str(hash_md5.hexdigest()) + "\n"
                 chunk = nextChunk
             print "EXIT\n"
-
     def decryptCalculatePadding(self,response, chunksize=24*1024):
             if ENCRYPTION_ENABLE == 0:
                 return

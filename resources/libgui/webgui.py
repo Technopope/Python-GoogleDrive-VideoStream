@@ -334,6 +334,225 @@ class webGUI(BaseHTTPRequestHandler):
 
                 #
                 # 1) start > 16 bytes, back up to nearest whole chunk of 16
+                if ((start != '' and start > 16) and end == ''): # or end == (len -1)
+                    newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length'])-1
+                    offset = (16-(newEnd - start +1) % 16)
+                    newStart = start - offset
+                    returnLength = int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - start
+                    adjStart = 8 + offset
+                    adjEnd = 0
+                    print "[3] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ ' , offset=' +str(offset)+ ' , E*=' +str(newEnd) +', returnLength='+str(returnLength)+"\n"
+                # 2) start = 0, fetch all, return all
+                elif ( (start == 0 or start == '') and end == int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
+                    finalChunkDifference = int(xbmcplugin.playbackBuffer.playback[count]['length']) - int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])
+                    newStart = start #=0
+                    newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length']) -1
+                    returnLength = int(xbmcplugin.playbackBuffer.playback[count]['length']) - finalChunkDifference - 8
+                    offset = 0
+                    adjStart = 8
+                    adjEnd = 0
+                    print "[2] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ ' , offset=' +str(offset)+ ' , E*=' +str(newEnd) +', returnLength='+str(returnLength)+"\n"
+                # staart = 0, end < length -1
+                elif ( (start == 0 or start == '') and end < int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
+                    newStart = 8
+                    offset = (16 - (end - newStart + 1)%16)
+                    newEnd = end + 8 + offset
+                    returnLength = end - start + 1
+                    adjStart = 0
+                    adjEnd = 8 + offset
+                    print "[4] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ ' , offset=' +str(offset)+ ' , E*=' +str(newEnd) +', returnLength='+str(returnLength)+"\n"
+
+                #s > 0 e < len -1
+                elif (start != '' and start > 16 and end < int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
+                    newStart = start + 8
+                    offset = 16 - (end - newStart + 1)%16
+                    newEnd = end + 8 + offset
+                    if newEnd > int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1:
+                        newEnd = end + 8
+                        offset = 16 - (neEnd - start + 1)%16
+                        newStart = stat - offset + 8
+                        adjStart = 8 + offset
+                        adjEnd = 0
+                    else:
+                        adjStart = 0
+                        adjEnd = 8 + offset
+
+                    returnLength = end - start + 1
+                    print "[5] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ ' , offset=' +str(offset)+ ' , E*=' +str(newEnd) +', returnLength='+str(returnLength)+"\n"
+                # special case - end < 16 (such as first 2 bytes (apple)
+                elif (end < 16):
+                    newStart = 0
+                    newEnd = 16
+                    returnLength = 2
+                    adjStart = 8
+                    adjEnd = 14
+                    print "[1] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ ' , offset=' +str(offset)+ ' , E*=' +str(newEnd) +', returnLength='+str(returnLength)+"\n"
+                else:
+                    newStart = 0
+                    newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length'])- 1
+                    returnLength = int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])
+                    adjStart = 8
+                    adjEnd = 0
+            if start == '':
+#                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
+                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
+            else:
+                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(newStart)+'-' + str(newEnd)})
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    print "STILL ERROR"+str(e.code)+"\n"
+                    return
+                else:
+                    return
+
+            # first fetch (no start specified, or 0)
+            if start == '':
+                xbmcplugin.playbackBuffer.playback[count]['length'] =  response.info().getheader('Content-Length')
+                #for encrypted streams
+                # need to fetch the last 16 bytes to calculate unpadded size
+                if isEncrypted:
+                    response.close()
+                    req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(xbmcplugin.playbackBuffer.playback[count]['length']) - 16 - 8 )+'-'})
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        if e.code == 403 or e.code == 401:
+                            print "STILL ERROR"+str(e.code)+"\n"
+                            return
+                        else:
+                            return
+                    CHUNK = 16 * 1024
+
+                    #originalSize = decrypt.decryptCalculateSizing(response)
+                    #print "size " + response.info().getheader('Content-Length') + ' vs ' + str(originalSize) + "\n"
+                    #return
+                    finalChunkDifference = decrypt.decryptCalculatePadding(response,chunksize=CHUNK)
+                    #xbmcplugin.playbackBuffer.playback[count]['length'] = int(xbmcplugin.playbackBuffer.playback[count]['length']) - finalChunkDifference
+                    xbmcplugin.playbackBuffer.playback[count]['decryptedlength'] = int(xbmcplugin.playbackBuffer.playback[count]['length']) - finalChunkDifference - 8
+                    print "FINAL CHUNK SIZE DIFFERENCE " + str(finalChunkDifference) + "\n"
+                    print "length " +  str(xbmcplugin.playbackBuffer.playback[count]['length']) + "\n"
+                    print "decryptedlength " +  str(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) + "\n"
+                    req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        if e.code == 403 or e.code == 401:
+                            print "STILL ERROR"+str(e.code)+"\n"
+                            return
+                        else:
+                            return
+
+
+            if start == '':
+                self.send_response(200)
+                #self.send_header('Content-Length',response.info().getheader('Content-Length'))
+                if isEncrypted:
+                    self.send_header('Content-Length',xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])
+                else:
+                    self.send_header('Content-Length',xbmcplugin.playbackBuffer.playback[count]['length'])
+            else:
+                self.send_response(206)
+                if isEncrypted:
+                    self.send_header('Content-Length', str(returnLength))
+                else:
+                    self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))))
+
+            print str(response.info()) + "\n"
+            self.send_header('Content-Type',response.info().getheader('Content-Type'))
+            if isEncrypted:
+                self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' + str(returnLength))
+
+                #self.send_header('Content-Range', response.info().getheader('Content-Range'))
+                if response.info().getheader('Content-Range') != None:
+                    print "received to process = " + response.info().getheader('Content-Range') + "\n"
+
+                print "received to process = " + response.info().getheader('Content-Length') + "\n"
+            else:
+                self.send_header('Content-Range', response.info().getheader('Content-Range'))
+                #print "RANGE = " +  response.info().getheader('Content-Range') + "\n"
+
+            self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+            self.send_header('Date',response.info().getheader('Date'))
+            self.send_header('Content-type','video/mp4')
+            self.send_header('Accept-Ranges','bytes')
+
+            self.end_headers()
+
+
+            if isEncrypted:
+
+                CHUNK = 16 * 1024
+                decrypt.decryptStreamChunk(response,self.wfile, adjStart,adjEnd, chunksize=CHUNK)
+
+            else:
+                CHUNK = 16 * 1024
+                count=0
+                hash_md5 = hashlib.md5()
+                while True:
+                    chunk = response.read(CHUNK)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+                    hash_md5.update(chunk)
+                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+
+
+
+
+
+
+            #response_data = response.read()
+            response.close()
+            return
+
+        elif re.search(r'/play20171201', str(decryptkeyvalue)):
+#            self.send_response(200)
+#            self.end_headers()
+            count = 0
+            isEncrypted = False
+            results = re.search(r'/play\?count\=(\d+)\&encrypted\=true$', str(decryptkeyvalue))
+            #encrypted stream
+            if results:
+                count = int(results.group(1))
+                isEncrypted = True
+            #not encrypted stream
+            else:
+                results = re.search(r'/play\?count\=(\d+)$', str(decryptkeyvalue))
+                if results:
+                    count = int(results.group(1))
+
+            #self.send_response(200)
+            #self.end_headers()
+            #xbmcplugin.assignOutputBuffer(self.wfile)
+            #cookies = self.headers['Cookie']
+            cookie = xbmcplugin.playbackBuffer.playback[count]['cookie']
+            url = xbmcplugin.playbackBuffer.playback[count]['url']
+            auth = xbmcplugin.playbackBuffer.playback[count]['auth']
+            auth = auth.replace("+",' ')
+
+            length=0
+            try:
+                length = xbmcplugin.playbackBuffer.playback[count]['length']
+            except:
+                length = 0
+                start= ''
+
+            endOffset = 0
+            startOffset = 0
+            newEnd = end
+            specialEnd = 0
+
+            if isEncrypted:
+
+                from resources.lib import  encryption
+                decrypt = encryption.encryption(self.server.cryptoSalt,self.server.cryptoPassword)
+
+
+                #
+                # 1) start > 16 bytes, back up to nearest whole chunk of 16
                 if (start != '' and start > 16 and end == ''):
                     #start = start - (16 - (end % 16))
                    # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
@@ -526,7 +745,6 @@ class webGUI(BaseHTTPRequestHandler):
             #response_data = response.read()
             response.close()
             return
-
         # redirect url to output
         elif re.search(r'/\?', str(decryptkeyvalue)) or re.search(r'/default.py', str(decryptkeyvalue)):
 #            self.send_response(200)
