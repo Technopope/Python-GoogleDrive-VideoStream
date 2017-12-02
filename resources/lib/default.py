@@ -1257,9 +1257,25 @@ class contentengine(object):
                             mediaList = ['.jpg', '.png']
                         media_re = re.compile("|".join(mediaList), re.I)
 
-                        #create the files and folders for decrypting file/folder names
+                        #sort encrypted items by title:
+                        sortedMediaItems = {}
                         for item in mediaItems:
+                            if item.file is None:
+                                try:
+                                    item.folder.displaytitle =  encrypt.decryptString(str(item.folder.title))
+                                    sortedMediaItems[str(item.folder.displaytitle) + '_' + str(item.folder.title)] = item
+                                except: pass
+                            else:
+                                try:
+                                    item.file.displaytitle = encrypt.decryptString(str(item.file.title))
+                                    sortedMediaItems[str(item.file.displaytitle) + '_' + str(item.file.title)] = item
+                                except:
+                                    pass
 
+                        #create the files and folders for decrypting file/folder names
+                        for item in sorted (sortedMediaItems):
+                            print "item" + str(item) + "\n"
+                            item = sortedMediaItems[item]
 
                             if item.file is None:
                                 try:
