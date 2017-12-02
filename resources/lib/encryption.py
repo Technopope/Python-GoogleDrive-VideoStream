@@ -1,9 +1,11 @@
 #http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
 import os, random, struct, string, re
 
+import constants
 
-#debugging
-import hashlib
+if constants.CONST.DEBUG:
+    #debugging
+    import hashlib
 
 
 
@@ -165,13 +167,17 @@ class encryption():
             #origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
             decryptor = AES.new(self.key, AES.MODE_ECB)
 
-            #debugging
-            hash_md5 = hashlib.md5()
 
+            #print "size = " + str(len(response.read(struct.calcsize('Q')))) + "\n"
+            #return
 
             sending=0
             responseChunk = ''
             count = 0
+            #firstChunkSize = chunksize + adjStart
+            #if adjStart > 0:
+            #    firstChunk = response.read(adjStart)
+            #    adjStart = 0
             chunk = response.read(chunksize)
 
             while True:
@@ -181,34 +187,45 @@ class encryption():
                     break
 
                 responseChunk = decryptor.decrypt(chunk)
-                if count == 1:
-                    wfile.write(responseChunk[adjStart:])
-                    sending += len(responseChunk[adjStart:])
-                    print 'x' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:]))
-                    hash_md5.update(responseChunk[adjStart:])
+                if count == 1 and adjStart > 0 and len(nextChunk) == 0:
+                    wfile.write(responseChunk[adjStart:].strip())
+                    if constants.CONST.DEBUG:
+                        sending += len(responseChunk[adjStart:].strip())
+                        print 'x1 ' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:].strip()))
+                        print "HASH = " + str(hashlib.md5(responseChunk[adjStart:].strip()).hexdigest()) + "\n"
                     adjStart = 0
-                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                elif count == 1 and adjStart > 0:
+                    wfile.write(responseChunk[adjStart:])
+
+                    if constants.CONST.DEBUG:
+                        sending += len(responseChunk[adjStart:])
+                        print 'x2 ' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:]))
+                        print "HASH = " + str(hashlib.md5(responseChunk[adjStart:]).hexdigest()) + "\n"
+                    adjStart = 0
                 elif len(nextChunk) == 0 and adjEnd > 0:
                     wfile.write(responseChunk[:(len(responseChunk)-adjEnd)])
-                    sending += len(responseChunk[:(len(responseChunk)-adjEnd)])
-                    print 'z' + str(sending)
-                    hash_md5.update(responseChunk[:(len(responseChunk)-adjEnd)])
-                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+
+                    if constants.CONST.DEBUG:
+                        sending += len(responseChunk[:(len(responseChunk)-adjEnd)])
+                        print 'z' + str(sending)
+                        print "HASH = " + str(hashlib.md5(responseChunk[:(len(responseChunk)-adjEnd)]).hexdigest()) + "\n"
                     adjEnd = 0
+
                 elif len(nextChunk) == 0: #adjEnd = 0
                     wfile.write(responseChunk.strip())
-                    sending += len(responseChunk.strip())
-                    print 'y' + str(sending)
-                    hash_md5.update(responseChunk.strip())
-                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                    if constants.CONST.DEBUG:
+                        sending += len(responseChunk.strip())
+                        print 'y' + str(sending)
+                        print "HASH = " + str(hashlib.md5(responseChunk.strip()).hexdigest()) + "\n"
                 else:
                     wfile.write(responseChunk)
-                    sending += len(responseChunk)
-                    print '.' + str(sending)
-                    hash_md5.update(responseChunk)
-                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
+                    if constants.CONST.DEBUG:
+                        sending += len(responseChunk)
+                        print '.' + str(sending)
+                        print "HASH = " + str(hashlib.md5(responseChunk).hexdigest()) + "\n"
                 chunk = nextChunk
-            print "EXIT\n"
+            if constants.CONST.DEBUG:
+                print "EXIT\n"
 
     def decryptStreamChunk20171201(self,response, wfile, chunksize=24*1024, startOffset=0, endOffset=0, end=0):
             if ENCRYPTION_ENABLE == 0:

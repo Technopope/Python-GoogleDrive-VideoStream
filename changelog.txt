@@ -1,3 +1,4 @@
+- fully working encryption streaming playback including on MAC/iOS
 - crypto support
 v0.1.3 (2017-11-24)
 - add parameters keyvalue (generate kv parameter representing the encrypted parameters passed in) and hide (to sumpress displaying the decrypted parameters)
