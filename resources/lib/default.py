@@ -18,7 +18,7 @@
 
 import re
 import sys
-
+import os
 KODI = True
 if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
     KODI = False
@@ -1179,6 +1179,9 @@ class contentengine(object):
             # display option for all Videos/Music/Photos, across gdrive
             #** gdrive specific
             if mode == 'main':
+
+                self.addMenu(self.PLUGIN_URL+'?mode=index&instance='+str(service.instanceName)+'&content_type=image','[switch to photo view]')
+
                 if ('gdrive' in constants.PLUGIN_NAME):
 
                     if contentType in (2,4,7):
