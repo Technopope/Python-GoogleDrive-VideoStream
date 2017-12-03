@@ -383,6 +383,7 @@ class webGUI(BaseHTTPRequestHandler):
                         response.close()
 
 
+
                 #
                 # 1) start > 16 bytes, back up to nearest whole chunk of 16
                 if ((start != '' and start > 16) and (end == '' or end == int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 )): # or end == (len -1)
@@ -467,21 +468,29 @@ class webGUI(BaseHTTPRequestHandler):
                     if constants.CONST.DEBUG:
                         print "[0] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ '('+str(adjStart)+') , offset=' +str(offset)+ ' , E*=' +str(newEnd) +'('+str(adjEnd)+'), returnLength='+str(returnLength)+"\n"
 
+
             if start == '' and not isEncrypted:
 #                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
-            else:
+            elif isEncrypted:
                 req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(newStart)+'-' + str(newEnd)})
+            else:
+                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(start)+'-' + str(end)})
 
             try:
                 response = urllib2.urlopen(req)
+                try:
+                    if xbmcplugin.playbackBuffer.playback[count]['length'] == -1:
+                        return
+                except:
+                    xbmcplugin.playbackBuffer.playback[count]['length'] =  response.info().getheader('Content-Length')
+
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
                     print "STILL ERROR"+str(e.code)+"\n"
                     return
                 else:
                     return
-
 
 
             if start == '':
