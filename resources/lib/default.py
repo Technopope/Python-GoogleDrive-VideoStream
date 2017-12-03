@@ -2411,8 +2411,9 @@ class contentengine(object):
                         cache = cache.cache(package)
                         service.cache = cache
 
-                        (localResolutions,localFiles) = service.cache.getFiles(service)
-                        if len(localFiles) > 0:
+                        if constants.CONST.CACHE:
+                            (localResolutions,localFiles) = service.cache.getFiles(service)
+                        if constants.CONST.CACHE and len(localFiles) > 0:
                             mediaURL = mediaurl.mediaurl(str(localFiles[0]), 'offline', 0, 0)
                             mediaURL.offline = True
                         else:
