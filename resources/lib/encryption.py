@@ -16,6 +16,7 @@ try:
     ENCRYPTION_ENABLE = 1
 except:
     ENCRYPTION_ENABLE = 0
+    print "python-crypto not found"
 
 class encryption():
 
