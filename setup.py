@@ -41,16 +41,18 @@ class dbfile():
     def delete(self, key):
         found = False
         if key in self.dbm:
-            print "deleted " + key + " " + self.dbm[key]
+            print "Deleted key: \"" + key + "\" with value: \"" + self.dbm[key] + "\""
             del self.dbm[key]
             found = True
         if not found:
-            print "Key " + key + " not found."
+            print "Key: \"" + key + "\" not found."
             
     def display(self):
+        print '{:_^27} > {:_^25}'.format('KEY', 'VALUE')
+        print "\n"
         for key in self.dbm.keys():
-            print key + " " + self.dbm[key]
-    
+#            print key + " " + self.dbm[key]
+            print '{:27} > {:>25}'.format(key, self.dbm[key])
 
 if options.add:
     
@@ -63,7 +65,7 @@ if options.add:
         
         if add.get(key) == False:
             add.set(key,value)
-            print "added " +  key + " " + add.get(key)
+            print "added key: \"" +  key + "\" with value: \"" + add.get(key) + "\""
         else:
             print "Key already exists"
     
@@ -85,8 +87,10 @@ elif options.change:
         if change.get(key) != False:
             old_value = change.get(key)
             change.set(key,value)
-            print "Changed " + key + " from " + old_value + " to " + change.get(key)
-    
+            print "Changed \"" + key + "\" from \"" + old_value + "\" to \"" + change.get(key) + "\""
+        else:
+            print "Key \"" + key + "\" can not be changed, because he doesn't exist in database"
+        
         change.close()
 
     except:
