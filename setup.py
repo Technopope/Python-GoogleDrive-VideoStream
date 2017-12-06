@@ -116,11 +116,16 @@ elif options.imp:
     try:
         
         imp = dbfile(dbmfile, 'c')
-    
+        
+        regexp = r'\<setting id\=\"([^\"]+)\" value\=\"([^\"]+)" \/\>'
+        
+        if os.path.splitext(os.path.basename(options.imp))[1] == '.csv':
+           regexp = r'([^\,]+),([^\n]+)\n'
+        
         file = open(options.imp, "r")
         print "saving the following key,value pairs\n"
         for line in file:
-            result = re.search(r'\<setting id\=\"([^\"]+)\" value\=\"([^\"]+)" \/\>', str(line))
+            result = re.search(regexp, str(line))
             key = ''
             value = ''
             if result:
