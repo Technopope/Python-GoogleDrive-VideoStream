@@ -442,12 +442,12 @@ class contentengine(object):
 
         elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
 
-                self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'[enroll account]')
+                self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30203))+']')
 
                 if contextType != 'image':
                     path = settings.getSetting('cache_folder')
                     if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
-                        self.addMenu(self.PLUGIN_URL+'?mode=offline&content_type='+str(contextType),'<offline media>')
+                        self.addMenu(self.PLUGIN_URL+'?mode=offline&content_type='+str(contextType),'<'+str(addon.getLocalizedString(30204))+'>')
 
                 if contextType == 'image':
                     path = settings.getSetting('photo_folder')
