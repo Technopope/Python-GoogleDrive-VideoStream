@@ -4,7 +4,6 @@
 import sys
 import re
 import os
-
 import anydbm
 
 from optparse import OptionParser
@@ -72,7 +71,7 @@ if options.add:
     
     except:
         
-        print "Usage: %prog -a or --add <key> <value> (-d database.db else gdrive.db is used)"
+        print "Usage: " + __file__ + " -a or --add <key> <value> (-d database.db else gdrive.db is used)"
         print "If you want to change a value use -c/--change instead"
 
 elif options.change:
@@ -92,7 +91,7 @@ elif options.change:
 
     except:
         
-        print "Usage: %prog -c or --change <key> <value> (-d database.db else gdrive.db is used)"
+        print "Usage: " + __file__ + " -c or --change <key> <value> (-d database.db else gdrive.db is used)"
         print "If you want to add a value use -a/--add instead"
         
 elif options.show:
@@ -105,7 +104,7 @@ elif options.show:
     
     except:
         
-        print "Usage: %prog -s (-d database.db else gdrive.db is used)"
+        print "Usage: " + __file__ + " -s (-d database.db else gdrive.db is used)"
     
 
 elif options.imp:
@@ -130,7 +129,7 @@ elif options.imp:
     
     except:
         
-        print "Usage: %prog -i settings.xml (-d database.db else gdrive.db is used)"
+        print "Usage: " + __file__ + " -i settings.xml (-d database.db else gdrive.db is used)"
         
 elif options.remove:
     
@@ -142,6 +141,7 @@ elif options.remove:
     
     except:
         
-        print "Usage: %prog -r <key> (-d database.db else gdrive.db is used)"
+        print "Usage: " + __file__ + " -r <key> (-d database.db else gdrive.db is used)"
 else:
+    
     parser.print_help()
