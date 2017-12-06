@@ -1,21 +1,6 @@
 #http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
 import os, random, struct, string, re
 
-import constants
-
-if constants.CONST.DEBUG:
-    #debugging
-    import hashlib
-
-if KODI:
-
-    # cloudservice - standard XBMC modules
-    import xbmc
-
-else:
-    from resources.libgui import xbmc
-
-
 try:
     import Crypto.Random
     from Crypto.Cipher import AES
@@ -23,7 +8,6 @@ try:
     ENCRYPTION_ENABLE = 1
 except:
     ENCRYPTION_ENABLE = 0
-    xbmc.log("python-crypto not found")
 
 class encryption():
 
@@ -49,6 +33,7 @@ class encryption():
 
         if password != None and password != '':
             self.key = self.generateKey(password,)
+            #print self.key
 
 
     def generateKey(self,password, iterations=NUMBER_OF_ITERATIONS):
@@ -58,6 +43,7 @@ class encryption():
         assert iterations > 0
 
         key = str(password) + str(self.salt)
+        #print "iterations " + str(iterations)
         for i in range(iterations):
             key = hashlib.sha256(key).digest()
 
@@ -128,7 +114,7 @@ class encryption():
                         break
                     outfile.write(decryptor.decrypt(chunk))
 
-                outfile.truncate(origsize)
+                ##outfile.truncate(origsize)
 
     def decryptStream(self,response, chunksize=24*1024):
             if ENCRYPTION_ENABLE == 0:
@@ -146,73 +132,28 @@ class encryption():
 
                 outfile.truncate(origsize)
 
-
-
-    def decryptStreamChunk(self,response, wfile, adjStart, adjEnd, chunksize=16*1024):
+    def decryptStreamChunk44(self,response, wfile, chunksize=24*1024):
             if ENCRYPTION_ENABLE == 0:
                 return
-            #origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+    #    with open(in_filename, 'rb') as infile:
+            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
             decryptor = AES.new(self.key, AES.MODE_ECB)
 
-
-            sending=0
-            responseChunk = ''
-            count = 0
-            #firstChunkSize = chunksize + adjStart
-            #if adjStart > 0:
-            #    firstChunk = response.read(adjStart)
-            #    adjStart = 0
-            chunk = response.read(chunksize)
-
+            currentSize = origsize
             while True:
-                nextChunk = response.read(chunksize)
-                count = count + 1
+                chunk = response.read(chunksize)
+                currentSize = currentSize + chunksize
+
                 if len(chunk) == 0:
                     break
-
-                responseChunk = decryptor.decrypt(chunk)
-                if count == 1 and adjStart > 0 and len(nextChunk) == 0:
-                    wfile.write(responseChunk[adjStart:].strip())
-                    if constants.CONST.DEBUG:
-                        sending += len(responseChunk[adjStart:].strip())
-                        xbmc.log('x1 ' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:].strip())))
-                        xbmc.log("HASH = " + str(hashlib.md5(responseChunk[adjStart:].strip()).hexdigest()) + "\n")
-                    adjStart = 0
-                elif count == 1 and adjStart > 0:
-                    wfile.write(responseChunk[adjStart:])
-
-                    if constants.CONST.DEBUG:
-                        sending += len(responseChunk[adjStart:])
-                        xbmc.log('x2 ' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:])))
-                        xbmc.log("HASH = " + str(hashlib.md5(responseChunk[adjStart:]).hexdigest()) + "\n")
-                    adjStart = 0
-                elif len(nextChunk) == 0 and adjEnd > 0:
-                    wfile.write(responseChunk[:(len(responseChunk)-adjEnd)])
-
-                    if constants.CONST.DEBUG:
-                        sending += len(responseChunk[:(len(responseChunk)-adjEnd)])
-                        xbmc.log('z' + str(sending))
-                        xbmc.log("HASH = " + str(hashlib.md5(responseChunk[:(len(responseChunk)-adjEnd)]).hexdigest()) + "\n")
-                    adjEnd = 0
-
-                elif len(nextChunk) == 0: #adjEnd = 0
-                    wfile.write(responseChunk.strip())
-                    if constants.CONST.DEBUG:
-                        sending += len(responseChunk.strip())
-                        xbmc.log('y' + str(sending))
-                        xbmc.log( "HASH = " + str(hashlib.md5(responseChunk.strip()).hexdigest()) + "\n")
+                if currentSize <= origsize:
+                    wfile.write(decryptor.decrypt(chunk))
                 else:
-                    wfile.write(responseChunk)
-                    if constants.CONST.DEBUG:
-                        sending += len(responseChunk)
-                        xbmc.log('.' + str(sending))
-                        xbmc.log("HASH = " + str(hashlib.md5(responseChunk).hexdigest()) + "\n")
-                chunk = nextChunk
-            if constants.CONST.DEBUG:
-                xbmc.log("EXIT\n")
+                    deltaSize = currentSize - origsize
+                    fixSize = chunk - deltaSize
+                    wfile.write(decryptor.decrypt(chunk)[:])
 
-
-    def decryptCalculatePadding(self,response, chunksize=24*1024):
+    def decryptStreamChunk(self,response, wfile, chunksize=24*1024, startOffset=0):
             if ENCRYPTION_ENABLE == 0:
                 return
     #    with open(in_filename, 'rb') as infile:
@@ -227,17 +168,12 @@ class encryption():
                     break
 
                 responseChunk = decryptor.decrypt(chunk)
-                return int(len(chunk) - len(responseChunk.strip()))
-
-    def decryptCalculateSizing(self,response):
-            if ENCRYPTION_ENABLE == 0:
-                return
-    #    with open(in_filename, 'rb') as infile:
-            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
-            decryptor = AES.new(self.key, AES.MODE_ECB)
-
-            return origsize
-
+                if count == 1 and startOffset !=0:
+                    wfile.write(responseChunk[startOffset:])
+                elif (len(chunk)) < (len(responseChunk.strip())):
+                    wfile.write(responseChunk.strip())
+                else:
+                    wfile.write(responseChunk)
 
     def decryptStreamChunk2(self,response, wfile, chunksize=24*1024, startOffset=0):
             if ENCRYPTION_ENABLE == 0:

@@ -36,6 +36,7 @@ if KODI:
 
 
 import authorization
+import crashreport
 from resources.lib import package
 from resources.lib import file
 from resources.lib import folder
@@ -50,6 +51,8 @@ class gSheets_api4:
     def __init__(self, service, addon, user_agent):
         self.addon = addon
         self.service = service
+#        self.crashreport = crashreport
+#        self.crashreport.sendError('test','test')
 
         self.user_agent = user_agent
 
@@ -156,10 +159,12 @@ class gSheets_api4:
                     if e.msg != '':
                         xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), e.msg)
                         xbmc.log(self.addon.getAddonInfo('getSpreadsheetList') + ': ' + str(e), xbmc.LOGERROR)
+                        self.crashreport.sendError('getSpreadsheetList',str(e))
               else:
                 if e.msg != '':
                     xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), e.msg)
                     xbmc.log(self.addon.getAddonInfo('getSpreadsheetList') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getSpreadsheetList',str(e))
 
             response_data = response.read()
             response.close()

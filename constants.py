@@ -53,3 +53,5 @@ class CONST():
     SRT = False
     CC = False
     DEBUG = False
+    tvwindow = False
+    tmdb = False
