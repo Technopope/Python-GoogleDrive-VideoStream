@@ -17,8 +17,6 @@
 
 '''
 
-#debugging
-import hashlib
 
 
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
@@ -32,6 +30,14 @@ import sys
 import constants
 from resources.lib import default
 from resources.libgui import xbmcplugin
+
+
+if constants.CONST.DEBUG:
+
+    #debugging
+    import hashlib
+
+
 
 class ThreadedWebGUIServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
@@ -73,19 +79,19 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
         try:
 			from resources.lib import encryption
-            
+
 			try:
 				dbm['saltfile']
 				self.saltfile = dbm['saltfile']
 			except:
 				self.saltfile = 'saltfile'
 				print "No saltfile set, using file \'" + self.saltfile + "\' instead."
-						
+
 			self.encrypt = encryption.encryption(self.saltfile,self.password)
         except:
             self.encrypt = None
-            
-        
+
+
         try:
             self.cryptoSalt = dbm['crypto_salt']
             self.cryptoPassword = dbm['crypto_password']
@@ -150,6 +156,82 @@ class webGUI(BaseHTTPRequestHandler):
                 self.server.ready = False
                 print "Stopping server...\n"
             return
+
+
+        # redirect url to output
+        elif self.path == '/default.py?mode=enroll&default=false':
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            self.send_response(200)
+            self.end_headers()
+
+            for r in re.finditer('client_id\=([^\&]+)\&\client_secret\=([^\&]+)' ,
+                     post_data, re.DOTALL):
+                client_id = r.group(1)
+                client_secret = r.group(2)
+
+
+                self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id='+str(client_id)+'" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="/default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="default.py?mode=enroll" method="post">Client ID:<br /><input type="text" name="client_id" value="'+str(client_id)+'"><br />Client Secret:<br /><input type="text" name="client_secret" value="'+str(client_secret)+'"><br /><br /> <input type="submit" value="Submit"></form></body></html>')
+
+
+        # redirect url to output
+        elif self.path == '/default.py?mode=enroll':
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            self.send_response(200)
+            self.end_headers()
+            for r in re.finditer('account\=([^\&]+)\&code=([^\&]+)\&\client_id\=([^\&]+)\&\client_secret\=([^\&]+)' ,
+                     post_data, re.DOTALL):
+                account = r.group(1)
+                client_id = r.group(2)
+                client_secret = r.group(3)
+                code = r.group(4)
+
+                self.wfile.write('<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
+
+                count = 1
+                loop = True
+                while loop:
+                    instanceName = constants.PLUGIN_NAME +str(count)
+                    try:
+                        username = settings.getSetting(instanceName+'_username')
+                        if username == invokedUsername:
+                            addon.setSetting(instanceName + '_type', str(3))
+                            addon.setSetting(instanceName + '_code', str(code))
+                            addon.setSetting(instanceName + '_client_id', str(client_id))
+                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
+                            addon.setSetting(instanceName + '_code', str(code))
+
+                            addon.setSetting(instanceName + '_username', str(account))
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
+                            loop = False
+                        elif username == '':
+                            addon.setSetting(instanceName + '_type', str(3))
+                            addon.setSetting(instanceName + '_code', str(code))
+                            addon.setSetting(instanceName + '_client_id', str(client_id))
+                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
+                            addon.setSetting(instanceName + '_username', str(account))
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
+                            loop = False
+
+                    except:
+                        pass
+
+                    if count ==  default.numberOfAccounts(constants.PLUGIN_NAME):
+
+                        #fallback on first defined account
+                        addon.setSetting(instanceName + '_type', str(3))
+                        addon.setSetting(instanceName + '_code', code)
+                        addon.setSetting(instanceName + '_client_id', str(client_id))
+                        addon.setSetting(instanceName + '_client_secret', str(client_secret))
+                        addon.setSetting(instanceName + '_username', str(account))
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
+                        loop = False
+                    count = count + 1
+
+                self.server.ready = False
+                return
+
 
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
 
@@ -252,6 +334,34 @@ class webGUI(BaseHTTPRequestHandler):
             #self.server.ready = False
             return
 
+
+
+        # redirect url to output
+        elif self.path == '/default.py?mode=enroll':
+
+            self.send_response(200)
+            self.end_headers()
+
+            self.wfile.write('<html><body>Do you want to use a default client id / client secret or your own client id / client secret?  If you don\'t know what this means, select DEFAULT.<br /> <a href="default.py?mode=enroll&default=true">use default client id / client secret (DEFAULT)</a> <br /><br />OR use your own client id / client secret<br /><br /><form action="default.py?mode=enroll&default=false" method="post">Client ID:<br /><input type="text" name="client_id" value=""><br />Client Secret:<br /><input type="text" name="client_secret" value=""> <br/><input type="submit" value="Submit"></form></body></html>')
+            return
+
+        # redirect url to output
+        elif self.path == '/default.py?mode=enroll&default=true' or self.path == '/default.py?mode=enroll':
+
+            self.send_response(200)
+            self.end_headers()
+
+            self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="default.py?mode=enroll" method="post">Client ID:<br /><input type="hidden" name="client_id" value="value"><br />Client Secret:<br /><input type="hidden" name="client_secret" value="value"><br /><br /></br /> <input type="submit" value="Submit"></form></body></html>')
+            return
+        elif self.path == '/default.py?mode=enroll&default=false':
+
+            self.send_response(200)
+            self.end_headers()
+
+            self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><br /> <input type="submit" value="Submit"></form></body></html>')
+            return
+
+
         elif decryptkeyvalue == '/settings':
             self.send_response(200)
             self.end_headers()
@@ -333,7 +443,270 @@ class webGUI(BaseHTTPRequestHandler):
 
             endOffset = 0
             startOffset = 0
+            specialEnd = 0
+
+            if isEncrypted:
+
+                from resources.lib import  encryption
+                decrypt = encryption.encryption(self.server.cryptoSalt,self.server.cryptoPassword)
+
+                try:
+                    if xbmcplugin.playbackBuffer.playback[count]['length'] == -1:
+                        return
+                except:
+                    #for encrypted streams
+                    # need to fetch the last 16 bytes to calculate unpadded size
+                    if isEncrypted:
+                        req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
+                        try:
+                            response = urllib2.urlopen(req)
+                        except urllib2.URLError, e:
+                            if e.code == 403 or e.code == 401:
+                                print "STILL ERROR"+str(e.code)+"\n"
+                                return
+                            else:
+                                return
+                        response.close()
+                        xbmcplugin.playbackBuffer.playback[count]['length'] =  response.info().getheader('Content-Length')
+
+                        req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(int(xbmcplugin.playbackBuffer.playback[count]['length']) - 16 - 8 )+'-'})
+                        try:
+                            response = urllib2.urlopen(req)
+                        except urllib2.URLError, e:
+                            if e.code == 403 or e.code == 401:
+                                print "STILL ERROR"+str(e.code)+"\n"
+                                return
+                            else:
+                                return
+                        CHUNK = 16 * 1024
+
+                        #originalSize = decrypt.decryptCalculateSizing(response)
+                        #print "size " + response.info().getheader('Content-Length') + ' vs ' + str(originalSize) + "\n"
+                        #return
+                        finalChunkDifference = decrypt.decryptCalculatePadding(response,chunksize=CHUNK)
+                        #xbmcplugin.playbackBuffer.playback[count]['length'] = int(xbmcplugin.playbackBuffer.playback[count]['length']) - finalChunkDifference
+                        xbmcplugin.playbackBuffer.playback[count]['decryptedlength'] = int(xbmcplugin.playbackBuffer.playback[count]['length']) - finalChunkDifference - 8
+                        newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length'])- 1
+                        returnLength = int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])
+
+                        if constants.CONST.DEBUG:
+                            print "FINAL CHUNK SIZE DIFFERENCE " + str(finalChunkDifference) + "\n"
+                            print "length " +  str(xbmcplugin.playbackBuffer.playback[count]['length']) + "\n"
+                            print "decryptedlength " +  str(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) + "\n"
+
+                        response.close()
+
+
+
+                #
+                # 1) start > 16 bytes, back up to nearest whole chunk of 16
+                if ((start != '' and start > 16) and (end == '' or end == int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 )): # or end == (len -1)
+                    newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length'])-1
+                    offset = (16-(newEnd - start + 8 +1) % 16)
+                    newStart = start - offset + 8#0
+                    returnLength = int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - start
+                    skip = 0
+                    adjStart = offset #+8
+                    adjEnd = 0
+                    if constants.CONST.DEBUG:
+                        print "[3] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ '('+str(adjStart)+') , offset=' +str(offset)+ ' , E*=' +str(newEnd) +'('+str(adjEnd)+'), returnLength='+str(returnLength)+"\n"
+                # 2) start = 0, fetch all, return all
+                elif ( start == 0 and end != '' and end == int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
+                    finalChunkDifference = int(xbmcplugin.playbackBuffer.playback[count]['length']) - int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])
+                    newStart = 8 #=0
+                    newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length']) -1
+                    returnLength = int(xbmcplugin.playbackBuffer.playback[count]['length']) - finalChunkDifference - 8
+                    offset = 0
+                    adjStart = 0
+                    adjEnd = 0
+                    if constants.CONST.DEBUG:
+                        print "[2] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ '('+str(adjStart)+') , offset=' +str(offset)+ ' , E*=' +str(newEnd) +'('+str(adjEnd)+'), returnLength='+str(returnLength)+"\n"
+                # staart = 0, end < length -1
+                elif ( start == 0 and end > 16 and end <= int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
+                    newStart = 8#0
+                    offset = (16 - (end - newStart + 1)%16)
+                    newEnd = end + offset # +8
+                    returnLength = end - start + 1
+                    #skip = 8
+                    adjStart = 0
+                    adjEnd = offset#+8
+                    if constants.CONST.DEBUG:
+                        print "[4] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ '('+str(adjStart)+') , offset=' +str(offset)+ ' , E*=' +str(newEnd) +'('+str(adjEnd)+'), returnLength='+str(returnLength)+"\n"
+
+                #s > 0 e < len -1
+                elif (start != '' and start > 16 and end <= int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1 ):
+
+                    newStart = start - (start%16) + 8
+                    #newStart = start + 8
+                    #offset = 16 - (end  - start + 1)%16
+                    #newEnd = end + offset + 8
+                    newEnd = end + (16- (end%16)) + 8 -1
+                    #if newEnd > int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])-1:
+                    #    newEnd = end + 8
+                    #    newStart = start - offset + 8
+                    #    adjStart = offset
+                    #    adjEnd = 0
+                    #else:
+                    #    adjStart = 0
+                    #    adjEnd = offset
+                    adjStart = start%16
+                    adjEnd = 16 - end%16 -1
+                    offset = 0
+                    returnLength = end - start + 1
+                    if constants.CONST.DEBUG:
+                        print "[5] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ '('+str(adjStart)+') , offset=' +str(offset)+ ' , E*=' +str(newEnd) +'('+str(adjEnd)+'), returnLength='+str(returnLength)+"\n"
+                # special case - end < 16 (such as first 2 bytes (apple)
+                elif (end < 16):
+                    newStart = 8#0
+                    newEnd = 15 + 8
+                    returnLength = 2
+                    adjStart = 0#8
+                    adjEnd = 14
+                    offset = 0
+                    if constants.CONST.DEBUG:
+                        print "[1] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ '('+str(adjStart)+') , offset=' +str(offset)+ ' , E*=' +str(newEnd) +'('+str(adjEnd)+'), returnLength='+str(returnLength)+"\n"
+              #  elif start == "":
+              #      newStart = 8#0
+              #      adjStart = 0#8
+              #      adjEnd = 0
+              #      offset = 0
+              #      print "[0] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ '('+str(adjStart)+') , offset=' +str(offset)+ ", E*=TBD, returnLength=TBD\n"
+
+                else:
+                    newStart = 8#0
+                    newEnd = int(xbmcplugin.playbackBuffer.playback[count]['length'])- 1
+                    returnLength = int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])
+                    adjStart = 0#8
+                    adjEnd = 0
+                    offset = 0
+                    if constants.CONST.DEBUG:
+                        print "[0] S=" + str(start) + ', E=' + str(end) + ', S*='+str(newStart)+ '('+str(adjStart)+') , offset=' +str(offset)+ ' , E*=' +str(newEnd) +'('+str(adjEnd)+'), returnLength='+str(returnLength)+"\n"
+
+
+            if start == '' and not isEncrypted:
+#                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
+                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth})
+            elif isEncrypted:
+                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(newStart)+'-' + str(newEnd)})
+            else:
+                req = urllib2.Request(url,  None,  { 'Cookie' : 'DRIVE_STREAM='+ cookie, 'Authorization' : auth, 'Range': 'bytes='+str(start)+'-' + str(end)})
+
+            try:
+                response = urllib2.urlopen(req)
+                try:
+                    if xbmcplugin.playbackBuffer.playback[count]['length'] == -1:
+                        return
+                except:
+                    xbmcplugin.playbackBuffer.playback[count]['length'] =  response.info().getheader('Content-Length')
+
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    print "STILL ERROR"+str(e.code)+"\n"
+                    return
+                else:
+                    return
+
+
+            if start == '':
+                self.send_response(200)
+                #self.send_header('Content-Length',response.info().getheader('Content-Length'))
+                if isEncrypted:
+                    self.send_header('Content-Length',xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])
+                else:
+                    self.send_header('Content-Length',xbmcplugin.playbackBuffer.playback[count]['length'])
+            else:
+                self.send_response(206)
+                if isEncrypted:
+                    self.send_header('Content-Length', str(returnLength))
+                else:
+                    self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))))
+
+            print str(response.info()) + "\n"
+            self.send_header('Content-Type',response.info().getheader('Content-Type'))
+            if isEncrypted:
+                if end == '':
+                    end = int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength']) - 1
+                if start == '':
+                    start = 0
+                self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +  str(int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])))
+                if constants.CONST.DEBUG:
+                    print "SENDING =" + 'bytes ' + str(start) + '-' + str(end) + '/' + str( int(xbmcplugin.playbackBuffer.playback[count]['decryptedlength'])) + "\n"
+                #self.send_header('Content-Range', response.info().getheader('Content-Range'))
+                if constants.CONST.DEBUG and response.info().getheader('Content-Range') != None:
+                    print "received to process = " + response.info().getheader('Content-Range') + "\n"
+
+            else:
+                self.send_header('Content-Range', response.info().getheader('Content-Range'))
+                #print "RANGE = " +  response.info().getheader('Content-Range') + "\n"
+
+            self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+            self.send_header('Date',response.info().getheader('Date'))
+            self.send_header('Content-type','video/mp4')
+            self.send_header('Accept-Ranges','bytes')
+
+            self.end_headers()
+
+
+            if isEncrypted:
+
+                CHUNK = 16 * 1024
+                decrypt.decryptStreamChunk(response,self.wfile, adjStart,adjEnd, chunksize=CHUNK)
+
+            else:
+                CHUNK = 16 * 1024
+                while True:
+                    chunk = response.read(CHUNK)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+                    if constants.CONST.DEBUG:
+                        print "HASH = " + str(hashlib.md5(chunk).hexdigest()) + "\n"
+
+
+
+
+
+
+            #response_data = response.read()
+            response.close()
+            return
+
+        elif re.search(r'/play20171201', str(decryptkeyvalue)):
+#            self.send_response(200)
+#            self.end_headers()
+            count = 0
+            isEncrypted = False
+            results = re.search(r'/play\?count\=(\d+)\&encrypted\=true$', str(decryptkeyvalue))
+            #encrypted stream
+            if results:
+                count = int(results.group(1))
+                isEncrypted = True
+            #not encrypted stream
+            else:
+                results = re.search(r'/play\?count\=(\d+)$', str(decryptkeyvalue))
+                if results:
+                    count = int(results.group(1))
+
+            #self.send_response(200)
+            #self.end_headers()
+            #xbmcplugin.assignOutputBuffer(self.wfile)
+            #cookies = self.headers['Cookie']
+            cookie = xbmcplugin.playbackBuffer.playback[count]['cookie']
+            url = xbmcplugin.playbackBuffer.playback[count]['url']
+            auth = xbmcplugin.playbackBuffer.playback[count]['auth']
+            auth = auth.replace("+",' ')
+
+            length=0
+            try:
+                length = xbmcplugin.playbackBuffer.playback[count]['length']
+            except:
+                length = 0
+                start= ''
+
+            endOffset = 0
+            startOffset = 0
             newEnd = end
+            specialEnd = 0
 
             if isEncrypted:
 
@@ -378,9 +751,10 @@ class webGUI(BaseHTTPRequestHandler):
                     #start = start - (16 - (end % 16))
                     # startOffset = 16-(( int(length) - start) % 16)+8 ##GOOD
                     #startOffset = 16-(( int(end+1) - start) % 16)+8
-                    startOffset = 8
-                    endOffset = 16-(( int(end+1) - start) % 16)
-                    newEnd = end + endOffset
+                    startOffset = 0#8
+                    endOffset = 16-(( end - start + 1 +8 ) % 16)
+                    newEnd = end + endOffset + 8
+                    #specialEnd = endOffset
                     print "[3] START=" + str(start) + ', END=' + str(end) + ', length='+str(length)+ ' , startOffset=' +str(startOffset)+ ' , endOffset=' +str(endOffset) +', newEnd='+str(newEnd)+"\n"
                 #tested - good**
                 # special case - end < 16 (such as first 2 bytes (apple)
@@ -444,7 +818,6 @@ class webGUI(BaseHTTPRequestHandler):
                         else:
                             return
 
-            specialEnd = 0
 
             if start == '':
                 self.send_response(200)
@@ -535,7 +908,6 @@ class webGUI(BaseHTTPRequestHandler):
             #response_data = response.read()
             response.close()
             return
-
         # redirect url to output
         elif re.search(r'/\?', str(decryptkeyvalue)) or re.search(r'/default.py', str(decryptkeyvalue)):
 #            self.send_response(200)

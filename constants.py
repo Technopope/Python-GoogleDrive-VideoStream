@@ -52,3 +52,6 @@ class CONST():
     CACHE = False
     SRT = False
     CC = False
+    DEBUG = False
+    tvwindow = False
+    tmdb = False

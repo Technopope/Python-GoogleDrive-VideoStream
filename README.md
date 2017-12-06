@@ -34,11 +34,11 @@ At this stage, you cannot enroll an account with this application or modify user
 
 The DBM file contain's the user's settings and enrollment information for Google Drive.  To import your KODI settings, run:
 
-python dbm_setup.py <dbmfile> <kodi plugin settings.xml>
+python dbm_import.py <dbmfile> <kodi plugin settings.xml>
 
 such as:
 
-python dbm_setup.py ./gdrive.db /home/durdle/.kodi/userdata/addon_data/plugin.video.gdrive-testing/settings.xml
+python dbm_import.py ./gdrive.db /home/durdle/.kodi/userdata/addon_data/plugin.video.gdrive-testing/settings.xml
 
 To edit any single setting, you can use the KODI plugin to modify the setting or modify the parameter (if you know what you are doing) by running:
 
