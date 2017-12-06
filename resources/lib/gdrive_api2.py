@@ -36,7 +36,6 @@ from resources.lib import teamdrive
 from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
-from resources.lib import crashreport
 from resources.lib import cache
 from resources.lib import gSpreadsheets
 
@@ -103,8 +102,6 @@ class gdrive(cloudservice):
 
         if authenticate == True:
             self.type = int(self.getInstanceSetting('type'))
-            if KODI:
-                self.crashreport = crashreport.crashreport(self.addon)
 
         try:
             username = self.getInstanceSetting('username')
@@ -183,12 +180,12 @@ class gdrive(cloudservice):
 
                 req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(clientID)+'&client_secret='+str(clientSecret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
 
-            elif (self.type ==1):
-                url = 'http://dmdsoftware.net/api/gdrive.php'
-                values = {
-                      'code' : code
-                      }
-                req = urllib2.Request(url, urllib.urlencode(values), header)
+            #elif (self.type ==1):
+            #    url = 'http://dmdsoftware.net/api/gdrive.php'
+            #    values = {
+            #          'code' : code
+            #          }
+            #    req = urllib2.Request(url, urllib.urlencode(values), header)
 
             else:
                 url = 'https://script.google.com/macros/s/AKfycbw8fdhaq-WRVJXfOSMK5TZdVnzHvY4u41O1BfW9C8uAghMzNhM/exec'
@@ -292,14 +289,15 @@ class gdrive(cloudservice):
 
                 req = urllib2.Request(url, 'client_id='+clientID+'&client_secret='+clientSecret+'&refresh_token='+self.authorization.getToken('auth_refresh_token')+'&grant_type=refresh_token', header)
 
-            elif (self.type ==1):
-                url = 'http://dmdsoftware.net/api/gdrive.php'
-                values = {
-                      'refresh_token' : self.authorization.getToken('auth_refresh_token')
-                      }
-                req = urllib2.Request(url, urllib.urlencode(values), header)
+            #elif (self.type ==1):
+            #    url = 'http://dmdsoftware.net/api/gdrive.php'
+            #    values = {
+            #          'refresh_token' : self.authorization.getToken('auth_refresh_token')
+            #          }
+            #    req = urllib2.Request(url, urllib.urlencode(values), header)
 
             else:
+
                 url = 'https://script.google.com/macros/s/AKfycbxgFuUcvNlXLlB5GZLiEjEaZDqZLS2oMd-f4yL-4Y2K50shGoY/exec'
                 values = {
                       'refresh_token' : self.authorization.getToken('auth_refresh_token')
@@ -444,12 +442,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log(e)
-                  self.crashreport.sendError('getMediaList',str(e))
+                  xbmc.log('getMediaList ' + e)
                   return
               else:
-                xbmc.log(e)
-                self.crashreport.sendError('getMediaList',str(e))
+                xbmc.log('getMediaList ' + e)
                 return
 
             response_data = response.read()
@@ -542,12 +538,10 @@ class gdrive(cloudservice):
                 except socket.timeout, e:
                     return ([],nextPageToken,changeToken)
                 except urllib2.URLError, e:
-                  xbmc.log(e)
-                  self.crashreport.sendError('getChangeList',str(e))
+                  xbmc.log('getChangeList '+str(e))
                   return
               else:
-                xbmc.log(e)
-                self.crashreport.sendError('getChangeList',str(e))
+                xbmc.log('getChangeList '+str(e))
                 return
             except socket.timeout, e:
                 return ([],nextPageToken,changeToken)
@@ -585,7 +579,6 @@ class gdrive(cloudservice):
                              response_data, re.DOTALL):
                 nextPageToken = r.group(1)
 
-            print 'nextPageToken = '+ str(nextPageToken) + ' nextPageToken = ' + str(maxChangeID) + "\n"
             return (mediaFiles, nextPageToken, maxChangeID)
 
             # are there more pages to process?
@@ -649,12 +642,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log(e)
-                  self.crashreport.sendError('getMediaList',str(e))
+                  xbmc.log('getMediaList '+str(e))
                   return
               else:
-                xbmc.log(e)
-                self.crashreport.sendError('getMediaList',str(e))
+                xbmc.log('getMediaList '+str(e))
                 return
 
             response_data = response.read()
@@ -995,13 +986,9 @@ class gdrive(cloudservice):
                     response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                     #skip SRT
-                    #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    #self.crashreport.sendError('getSRT',str(e))
                   return
               else:
                 #skip SRT
-                #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                #self.crashreport.sendError('getSRT',str(e))
                 return
 
             response_data = response.read()
@@ -1106,12 +1093,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log(e)
-                  self.crashreport.sendError('getTTS',str(e))
+                  xbmc.log('getTTS '+str(e))
                   return
               else:
-                xbmc.log(e)
-                self.crashreport.sendError('getTTS',str(e))
+                xbmc.log('getTTS '+str(e))
                 return
 
             response_data = response.read()
@@ -1164,12 +1149,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log(e)
-                  self.crashreport.sendError('getRootID',str(e))
+                  xbmc.log('getRootID '+str(e))
                   return
               else:
-                xbmc.log(e)
-                self.crashreport.sendError('getRootID',str(e))
+                xbmc.log('getRootID ' +str(e))
                 return
 
             response_data = response.read()
@@ -1223,12 +1206,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log(e)
-                  self.crashreport.sendError('getTeamDrives',str(e))
+                  xbmc.log('getTeamDrives '+str(e))
                   return
               else:
-                xbmc.log(e)
-                self.crashreport.sendError('getTeamDrives',str(e))
+                xbmc.log('getTeamDrives '+str(e))
                 return
 
             response_data = response.read()
@@ -1291,12 +1272,10 @@ class gdrive(cloudservice):
                     try:
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
-                        xbmc.log(e)
-                        self.crashreport.sendError('getDownloadURL',str(e))
+                        xbmc.log('getDownloadURL '+str(e))
                         return
                 else:
-                    xbmc.log(e)
-                    self.crashreport.sendError('getDownloadURL',str(e))
+                    xbmc.log('getDownloadURL '+str(e))
                     return
 
             response_data = response.read()
@@ -1336,12 +1315,10 @@ class gdrive(cloudservice):
                     try:
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
-                        xbmc.log(e)
-                        self.crashreport.sendError('getDownloadURL',str(e))
+                        xbmc.log('getDownloadURL '+str(e))
                         return
                 else:
-                    xbmc.log(e)
-                    self.crashreport.sendError('getDownloadURL',str(e))
+                    xbmc.log('getDownloadURL '+str(e))
                     return
 
             response_data = response.read()
@@ -1410,12 +1387,10 @@ class gdrive(cloudservice):
                     try:
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
-                        xbmc.log(e)
-                        self.crashreport.sendError('getPlaybackCall-0',str(e))
+                        xbmc.log('getPlaybackCall-0 '+str(e))
                         return
                 else:
-                    xbmc.log(e)
-                    self.crashreport.sendError('getPlaybackCall-0',str(e))
+                    xbmc.log('getPlaybackCall-0 '+str(e))
                     return
 
             response_data = response.read()
@@ -1455,12 +1430,10 @@ class gdrive(cloudservice):
                         try:
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
-                            xbmc.log(e)
-                            self.crashreport.sendError('getPlaybackCall-1',str(e))
+                            xbmc.log('getPlaybackCall-1'+str(e))
                             return
                     else:
-                        xbmc.log(e)
-                        self.crashreport.sendError('getPlaybackCall-1',str(e))
+                        xbmc.log('getPlaybackCall-1'+str(e))
                         return
 
                 response_data = response.read()
@@ -1505,12 +1478,10 @@ class gdrive(cloudservice):
                      try:
                          response = urllib2.urlopen(req)
                      except urllib2.URLError, e:
-                         xbmc.log(e)
-                         self.crashreport.sendError('getPlaybackCall-2',str(e))
+                         xbmc.log('getPlaybackCall-2'+str(e))
                          return
                  else:
-                     xbmc.log(e)
-                     self.crashreport.sendError('getPlaybackCall-2',str(e))
+                     xbmc.log('getPlaybackCall-2'+str(e))
                      return
 
             response_data = response.read()
@@ -1520,7 +1491,6 @@ class gdrive(cloudservice):
             for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
                 cookieType,cookieValue = r.groups()
                 if cookieType == 'DRIVE_STREAM':
-                    print cookieValue
                     self.authorization.setToken(cookieType,cookieValue)
 
             # decode resulting player URL (URL is composed of many sub-URLs)
@@ -1549,13 +1519,10 @@ class gdrive(cloudservice):
                         try:
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
-                            xbmc.log(e)
-                            self.crashreport.sendError('getPlaybackCall-3',str(e))
+                            xbmc.log('getPlaybackCall-3'+str(e))
                             return
                     else:
                         #return what we have -- video file may not have streams (not processed yet)
-                        #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        #self.crashreport.sendError('getPlaybackCall-3',str(e))
                         return (mediaURLs, package)
 
             response_data = response.read()
@@ -1705,8 +1672,7 @@ class gdrive(cloudservice):
               try:
                   response = urllib2.urlopen(req)
               except urllib2.URLError, e:
-                xbmc.log(e)
-                self.crashreport.sendError('downloadTTS',str(e))
+                xbmc.log('downloadTTS ' + str(e))
                 return
 
         response_data = response.read()
@@ -1772,12 +1738,10 @@ class gdrive(cloudservice):
               try:
                 response = urllib2.urlopen(req)
               except urllib2.URLError, e:
-                xbmc.log(e)
-                self.crashreport.sendError('getPublicStream',str(e))
+                xbmc.log('getPublicStream '+str(e))
                 return
             else:
-                xbmc.log(e)
-                self.crashreport.sendError('getPublicStream',str(e))
+                xbmc.log('getPublicStream '+str(e))
                 return
 
         response_data = response.read()
@@ -1787,13 +1751,12 @@ class gdrive(cloudservice):
         for r in re.finditer('([^\s]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
             cookieType,cookieValue = r.groups()
             if cookieType == 'DRIVE_STREAM':
-                print cookieValue
                 self.authorization.setToken(cookieType,cookieValue)
 
+        fmtlist = None
         for r in re.finditer('\"fmt_list\"\,\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
             fmtlist = r.group(1)
-
         title = ''
         for r in re.finditer('\"title\"\,\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
@@ -1802,110 +1765,117 @@ class gdrive(cloudservice):
 
         itagDB={}
         containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
-        for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
-                               fmtlist, re.DOTALL):
-              (itag,resolution1,resolution2,codec) = r.groups()
+        if fmtlist is not None:
+            for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
+                                   fmtlist, re.DOTALL):
+                  (itag,resolution1,resolution2,codec) = r.groups()
 
-              if codec == '9/0/115':
-                itagDB[itag] = {'resolution': resolution2, 'codec': 'h.264/aac'}
-              elif codec == '99/0/0':
-                itagDB[itag] = {'resolution': resolution2, 'codec': 'VP8/vorbis'}
-              else:
-                itagDB[itag] = {'resolution': resolution2}
+                  if codec == '9/0/115':
+                    itagDB[itag] = {'resolution': resolution2, 'codec': 'h.264/aac'}
+                  elif codec == '99/0/0':
+                    itagDB[itag] = {'resolution': resolution2, 'codec': 'VP8/vorbis'}
+                  else:
+                    itagDB[itag] = {'resolution': resolution2}
 
-        for r in re.finditer('\"url_encoded_fmt_stream_map\"\,\"([^\"]+)\"' ,
+            for r in re.finditer('\"url_encoded_fmt_stream_map\"\,\"([^\"]+)\"' ,
+                                 response_data, re.DOTALL):
+                urls = r.group(1)
+
+
+
+            urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
+            urls = re.sub('\\\\u003d', '=', urls)
+            urls = re.sub('\\\\u0026', '&', urls)
+
+
+            urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
+
+
+
+            # fetch format type and quality for each stream
+            count=0
+            for r in re.finditer('\@([^\@]+)' ,urls):
+                    videoURL = r.group(1)
+                    for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
+                                 videoURL, re.DOTALL):
+                        (itag,container,quality) = q.groups()
+                        count = count + 1
+                        order=0
+                        if pquality > -1 or pformat > -1 or acodec > -1:
+                            if int(itagDB[itag]['resolution']) == 1080:
+                                if pquality == 0:
+                                    order = order + 1000
+                                elif pquality == 1:
+                                    order = order + 3000
+                                elif pquality == 3:
+                                    order = order + 9000
+                            elif int(itagDB[itag]['resolution']) == 720:
+                                if pquality == 0:
+                                    order = order + 2000
+                                elif pquality == 1:
+                                    order = order + 1000
+                                elif pquality == 3:
+                                    order = order + 9000
+                            elif int(itagDB[itag]['resolution']) == 480:
+                                if pquality == 0:
+                                    order = order + 3000
+                                elif pquality == 1:
+                                    order = order + 2000
+                                elif pquality == 3:
+                                    order = order + 1000
+                            elif int(itagDB[itag]['resolution']) < 480:
+                                if pquality == 0:
+                                    order = order + 4000
+                                elif pquality == 1:
+                                    order = order + 3000
+                                elif pquality == 3:
+                                    order = order + 2000
+                        try:
+                            if itagDB[itag]['codec'] == 'VP8/vorbis':
+                                if acodec == 1:
+                                    order = order + 90000
+                                else:
+                                    order = order + 10000
+                        except :
+                            order = order + 30000
+
+                        try:
+                            if containerDB[container] == 'MP4':
+                                if pformat == 0 or pformat == 1:
+                                    order = order + 100
+                                elif pformat == 3 or pformat == 4:
+                                    order = order + 200
+                                else:
+                                    order = order + 300
+                            elif containerDB[container] == 'flv':
+                                if pformat == 2 or pformat == 3:
+                                    order = order + 100
+                                elif pformat == 1 or pformat == 5:
+                                    order = order + 200
+                                else:
+                                    order = order + 300
+                            elif containerDB[container] == 'WebM':
+                                if pformat == 4 or pformat == 5:
+                                    order = order + 100
+                                elif pformat == 0 or pformat == 1:
+                                    order = order + 200
+                                else:
+                                    order = order + 300
+                            else:
+                                order = order + 100
+                        except :
+                            pass
+
+                        try:
+                            mediaURLs.append( mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
+                        except KeyError:
+                            mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
+
+        for r in re.finditer('\"https\://drive.google.com/uc\?id\\\u003d([^\\\]+)\\\u0026export\\\u003ddownload\"' ,
                              response_data, re.DOTALL):
-            urls = r.group(1)
+            id = r.group(1)
+            mediaURLs.append(mediaurl.mediaurl('https://drive.google.com/uc?id='+str(id)+'&export=download', 'original',0,9999))
 
-
-
-        urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
-        urls = re.sub('\\\\u003d', '=', urls)
-        urls = re.sub('\\\\u0026', '&', urls)
-
-
-        urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
-
-
-
-        # fetch format type and quality for each stream
-        count=0
-        for r in re.finditer('\@([^\@]+)' ,urls):
-                videoURL = r.group(1)
-                for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
-                             videoURL, re.DOTALL):
-                    (itag,container,quality) = q.groups()
-                    count = count + 1
-                    order=0
-                    if pquality > -1 or pformat > -1 or acodec > -1:
-                        if int(itagDB[itag]['resolution']) == 1080:
-                            if pquality == 0:
-                                order = order + 1000
-                            elif pquality == 1:
-                                order = order + 3000
-                            elif pquality == 3:
-                                order = order + 9000
-                        elif int(itagDB[itag]['resolution']) == 720:
-                            if pquality == 0:
-                                order = order + 2000
-                            elif pquality == 1:
-                                order = order + 1000
-                            elif pquality == 3:
-                                order = order + 9000
-                        elif int(itagDB[itag]['resolution']) == 480:
-                            if pquality == 0:
-                                order = order + 3000
-                            elif pquality == 1:
-                                order = order + 2000
-                            elif pquality == 3:
-                                order = order + 1000
-                        elif int(itagDB[itag]['resolution']) < 480:
-                            if pquality == 0:
-                                order = order + 4000
-                            elif pquality == 1:
-                                order = order + 3000
-                            elif pquality == 3:
-                                order = order + 2000
-                    try:
-                        if itagDB[itag]['codec'] == 'VP8/vorbis':
-                            if acodec == 1:
-                                order = order + 90000
-                            else:
-                                order = order + 10000
-                    except :
-                        order = order + 30000
-
-                    try:
-                        if containerDB[container] == 'MP4':
-                            if pformat == 0 or pformat == 1:
-                                order = order + 100
-                            elif pformat == 3 or pformat == 4:
-                                order = order + 200
-                            else:
-                                order = order + 300
-                        elif containerDB[container] == 'flv':
-                            if pformat == 2 or pformat == 3:
-                                order = order + 100
-                            elif pformat == 1 or pformat == 5:
-                                order = order + 200
-                            else:
-                                order = order + 300
-                        elif containerDB[container] == 'WebM':
-                            if pformat == 4 or pformat == 5:
-                                order = order + 100
-                            elif pformat == 0 or pformat == 1:
-                                order = order + 200
-                            else:
-                                order = order + 300
-                        else:
-                            order = order + 100
-                    except :
-                        pass
-
-                    try:
-                        mediaURLs.append( mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
-                    except KeyError:
-                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
 
         return mediaURLs
 
@@ -1942,8 +1912,6 @@ class gdrive(cloudservice):
                     if e.code == 401 or e.code == 403:
                         return
                     else:
-                      #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                      #self.crashreport.sendError('setProperty',str(e))
                       return
 
               #maybe doesn't exist - try to create
@@ -1959,8 +1927,6 @@ class gdrive(cloudservice):
                       if e.code == 401 or e.code == 403:
                         return
                       else:
-                        #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        #self.crashreport.sendError('setProperty',str(e))
                         return
               # some other kind of error
               else:
@@ -1989,12 +1955,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log(e)
-                  self.crashreport.sendError('getMediaList',str(e))
+                  xbmc.log('getMediaList'+str(e))
                   return
               else:
-                xbmc.log(e)
-                self.crashreport.sendError('getMediaList',str(e))
+                xbmc.log('getMediaList'+str(e))
                 return
 
             response_data = response.read()
@@ -2042,7 +2006,6 @@ class gdrive(cloudservice):
                 url = nextURL
 
             #if ($$newDocuments{$resourceID}[pDrive::DBM->D->{'title'}] eq $folderName){
-            #        print STDERR "returning $resourceID\n " if (pDrive::Config->DEBUG);
             #        return $resourceID;
         return '';
 

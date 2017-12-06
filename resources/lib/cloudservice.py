@@ -112,24 +112,27 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None):
 
-        import xbmcvfs
-        xbmcvfs.mkdir(path)
 
-        #musicPath = path + '/music'
-        #moviePath = path + '/movies'
-        #tvPath = path + '/tv'
-        #videoPath = path + '/video-other'
-        musicPath = path
-        moviePath = path
-        tvPath = path
-        videoPath = path
+        if catalog:
+            if musicPath is None:
+                musicPath = path + '/music'
+            if moviePath is None:
+                moviePath = path + '/movies'
+            if tvPath is None:
+                tvPath = path + '/tv'
+            if videoPath is None:
+                videoPath = path + '/video-other'
+            import xbmcvfs
+            xbmcvfs.mkdir(musicPath)
+            xbmcvfs.mkdir(tvPath)
+            xbmcvfs.mkdir(videoPath)
+            xbmcvfs.mkdir(moviePath)
+        else:
+            import xbmcvfs
+            xbmcvfs.mkdir(path)
 
-        #xbmcvfs.mkdir(musicPath)
-        #xbmcvfs.mkdir(tvPath)
-        #xbmcvfs.mkdir(videoPath)
-        #xbmcvfs.mkdir(moviePath)
 
 
         mediaItems = self.getMediaList(folderID,contentType=contentType)
@@ -139,7 +142,10 @@ class cloudservice(object):
 
                 url = 0
                 if item.file is None:
-                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
+                    if catalog:
+                        self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath)
+                    else:
+                        self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
                 else:
                     #'content_type': 'video',
                     values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
@@ -158,49 +164,67 @@ class cloudservice(object):
                         pDialog.update(message=title)
 
                     if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
-                        filename = str(path) + '/' + str(title)+'.strm'
-                        strmFile = xbmcvfs.File(filename, "w")
+                        if not catalog:
+                            filename = str(path) + '/' + str(title)+'.strm'
+                            strmFile = xbmcvfs.File(filename, "w")
 
-                        strmFile.write(url+'\n')
-                        strmFile.close()
-
-                        episode = ''
-                        # nekwebdev contribution
-                        pathLib = ''
-
-
-                        tv = item.file.regtv1.match(title)
-                        if not tv:
-                            tv = item.file.regtv2.match(title)
-                        if not tv:
-                            tv = item.file.regtv3.match(title)
-
-                        if 0 and tv:
-                            show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
-                            show = show.rstrip("\.")
-                            season = tv.group(2)
-                            episode = tv.group(3)
-                            pathLib = tvPath + '/' + show
-                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                            pathLib = pathLib + '/Season ' + season
-                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                            strmFile.write(url+'\n')
+                            strmFile.close()
                         else:
-                            movie = item.file.regmovie.match(title)
-                            if movie:
-                                pathLib = moviePath
-                            else:
-                                pathLib = videoPath
+                            episode = ''
+                            # nekwebdev contribution
+                            pathLib = ''
 
-                        if pathLib != '':
-                            filename = str(pathLib) + '/' + str(title)+'.strm'
-                            if item.file.deleted and xbmcvfs.exists(filename):
-                                xbmcvfs.delete(filename)
-                            elif not item.file.deleted and not xbmcvfs.exists(filename):
-                                strmFile = xbmcvfs.File(filename, "w")
-                                strmFile.write(url+'\n')
-                                strmFile.close()
+                            filename = str(title)
+                            tv = False
+                            tv = item.file.cleantv.match(title)
+                            if not tv:
+                                tv = item.file.regtv1.match(title)
+                            if not tv:
+                                tv = item.file.regtv2.match(title)
+                            if not tv:
+                                tv = item.file.regtv3.match(title)
+
+                            if tv:
+                                show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
+                                show = show.rstrip("\.")
+                                if not show:
+                                    show = tv.group(1).replace("\S{2,}\-\S{2,}", " ")
+                                    show = show.rstrip("\-")
+                                show = show.strip('.').lower()
+                                season = tv.group(2)
+                                if len(season) < 2:
+                                    season = '0' + str(season)
+                                episode = tv.group(3)
+                                pathLib = tvPath + '/' + show
+                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                pathLib = pathLib +  '/season ' + str(season)
+                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                filename = 'S' + str(season) + 'E' + str(episode)
+                            else:
+                                movie = item.file.cleanmovie.match(title)
+                                if not movie:
+                                    movie = item.file.regmovie.match(title)
+                                if movie:
+                                    title = movie.group(1)
+                                    title = title.strip('.').lower()
+                                    year = movie.group(2)
+
+                                    filename = str(title) + '(' + str(year) + ')'
+                                    pathLib = moviePath
+                                else:
+                                    pathLib = videoPath
+
+                            if pathLib != '':
+                                filename = str(pathLib) + '/' + str(filename)+'.strm'
+                                if item.file.deleted and xbmcvfs.exists(filename):
+                                    xbmcvfs.delete(filename)
+                                elif not item.file.deleted and not xbmcvfs.exists(filename):
+                                    strmFile = xbmcvfs.File(filename, "w")
+                                    strmFile.write(url+'\n')
+                                    strmFile.close()
 
                         if spreadsheetFile is not None:
                             spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
@@ -333,7 +357,8 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM2(self, path, contentType=1, pDialog=None, spreadsheetFile=None):
+   # def buildSTRM2(self, path, contentType=1, pDialog=None, spreadsheetFile=None):
+    def buildSTRM2(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None):
 
         import xbmcvfs
         xbmcvfs.mkdir(path)
@@ -370,7 +395,7 @@ class cloudservice(object):
                         values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
                         if item.file.type == 1:
                             url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
-                            filename = musicPath + '/' + str(title)+'.strm'
+                            filename = musicPath + '/' + str(item.file.title)+'.strm'
 
                             if item.file.deleted and xbmcvfs.exists(filename):
                                 xbmcvfs.delete(filename)
@@ -537,7 +562,6 @@ class cloudservice(object):
                 f = xbmcvfs.File(playbackFile, 'w')
 
 
-            #print "DEBUG url = " + mediaURL.url + ", sizeDownload = " + str(sizeDownload) + ", playback = " + str(playback) + ", playbackFile = " + str(playbackFile)
 #            if playbackURL != '':
 #                progress = xbmcgui.DialogProgress()
 #                progressBar = sizeDownload
@@ -557,8 +581,7 @@ class cloudservice(object):
                   response = urllib2.urlopen(req)
 
               except urllib2.URLError, e:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadMediaFile',str(e))
+                xbmc.log(self.addon.getAddonInfo('name') + ': downloadMediaFile ' + str(e), xbmc.LOGERROR)
                 return
 
             downloadedBytes = 0
@@ -579,7 +602,6 @@ class cloudservice(object):
                 player.PlayStream(playbackFile, item, package.file.resume, startPlayback=True, package=package)
             while not (player.isPlaying()) and not player.isExit:
                 xbmc.sleep(1000)
-                #print str(player.playStatus)
         try:
             count =1
             while True:
@@ -675,8 +697,7 @@ class cloudservice(object):
                       response = urllib2.urlopen(req)
 
                   except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('downloadMediaFile',str(e))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': downloadMediaFile ' + str(e), xbmc.LOGERROR)
                     return
 
             else:
@@ -696,8 +717,7 @@ class cloudservice(object):
                       response = urllib2.urlopen(req)
 
                   except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('downloadMediaFile',str(e))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': downloadMediaFile ' + str(e), xbmc.LOGERROR)
                     return
 
                 while sizeDownload > downloadedBytes:
@@ -721,7 +741,6 @@ class cloudservice(object):
                 #player.PlayStream(playbackURL, item, package.file.resume, startPlayback=True, package=package)
 #                while not (player.isPlaying()) and not player.isExit:
 #                    xbmc.sleep(1000)
-                    #print str(player.playStatus)
 
                     # load captions
             if (self.settings.srt or self.settings.cc):
@@ -833,8 +852,7 @@ class cloudservice(object):
               response = urllib2.urlopen(req)
 
           except urllib2.URLError, e:
-            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-            self.crashreport.sendError('downloadMediaFile',str(e))
+            xbmc.log(self.addon.getAddonInfo('name') + ': downloadMediaFile ' + str(e), xbmc.LOGERROR)
             return
 
         CHUNK = 4096*100
@@ -909,7 +927,6 @@ class cloudservice(object):
                 #player.PlayStream(playbackURL, item, package.file.resume, startPlayback=True, package=package)
 #                while not (player.isPlaying()) and not player.isExit:
 #                    xbmc.sleep(1000)
-                    #print str(player.playStatus)
 
                     # load captions
             if (self.settings.srt or self.settings.cc):
@@ -953,8 +970,7 @@ class cloudservice(object):
                   f.write(urllib2.urlopen(req).read())
                   f.close()
                 except urllib2.URLError, e:
-                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                  self.crashreport.sendError('downloadGeneralFle',str(e))
+                  xbmc.log(self.addon.getAddonInfo('name') + ': downloadGeneralFle ' + str(e), xbmc.LOGERROR)
                   return None
         #can't write to cache for some reason
         except IOError:
@@ -1056,8 +1072,7 @@ class cloudservice(object):
                   response = urllib2.urlopen(req)
 
               except urllib2.URLError, e:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadMediaFile',str(e))
+                xbmc.log(self.addon.getAddonInfo('name') + ': downloadMediaFile ' + str(e), xbmc.LOGERROR)
                 return
 
             downloadedBytes = 0
@@ -1187,6 +1202,7 @@ class cloudservice(object):
                         values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
+                        cm.append(( self.addon.getLocalizedString(30201), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm2&'+ urllib.urlencode(values)+')', ))
 
                     #encfs
                     elif contextType != 'image':
@@ -1240,6 +1256,7 @@ class cloudservice(object):
                         values = {'username': self.authorization.username, 'title': folder.title,  'content_type': contextType }
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
+                        cm.append(( self.addon.getLocalizedString(30201), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm2&'+ urllib.urlencode(values)+')', ))
 
 
                 listitem.addContextMenuItems(cm, False)
@@ -1407,6 +1424,7 @@ class cloudservice(object):
             else:
                 valuesBS = {'username': self.authorization.username, 'title': package.file.title, 'filename': package.file.id, 'content_type': 'video'}
                 cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&type='+str(package.file.type)+'&'+urllib.urlencode(valuesBS)+')', ))
+                #cm.append(( self.addon.getLocalizedString(30201), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm2&type='+str(package.file.type)+'&'+urllib.urlencode(valuesBS)+')', ))
 
             if (self.protocol == 2):
                 # play-original for video only
@@ -1570,8 +1588,7 @@ class cloudservice(object):
                   f.write(urllib2.urlopen(req).read())
                   f.close()
                 except urllib2.URLError, e:
-                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                  self.crashreport.sendError('downloadPicture',str(e))
+                  xbmc.log(self.addon.getAddonInfo('name') + ': downloadPicture ' + str(e), xbmc.LOGERROR)
                   return None
         #can't write to cache for some reason
         except IOError:

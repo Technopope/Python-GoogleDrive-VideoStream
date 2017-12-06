@@ -36,7 +36,6 @@ from resources.lib import teamdrive
 from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
-from resources.lib import crashreport
 from resources.lib import cache
 from resources.lib import gSpreadsheets
 
@@ -53,6 +52,7 @@ if KODI:
 else:
     from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
+    from resources.libgui import xbmc
 
 
 SERVICE_NAME = 'dmdgdrive'
@@ -102,7 +102,6 @@ class gdrive(cloudservice):
 
             if authenticate == True:
                 self.type = int(self.getInstanceSetting('type'))
-                self.crashreport = crashreport.crashreport(self.addon)
 
             try:
                 username = self.getInstanceSetting('username')
@@ -111,7 +110,6 @@ class gdrive(cloudservice):
             self.authorization = authorization.authorization(username)
 
         else:
-            self.crashreport = None
             username = instanceName
             self.authorization = authorization.authorization(username)
             import anydbm
@@ -121,7 +119,6 @@ class gdrive(cloudservice):
                 self.type = int(self.DBM['type'])
             except:
                 self.type = 2
-                print "ERROR: define your settings in the DBM first"
                 return
 
 
@@ -149,7 +146,7 @@ class gdrive(cloudservice):
                 elif self.DBM['code']:
                     self.getToken(self.DBM['code'])
                 else:
-                    print 'ERROR:' + str(e)
+                    xbmc.log('ERROR:' + str(e))
             #***
 
             self.cache = None
@@ -471,11 +468,9 @@ class gdrive(cloudservice):
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                   xbmc.log(e)
-                  self.crashreport.sendError('getMediaList',str(e))
                   return
               else:
                 xbmc.log(e)
-                self.crashreport.sendError('getMediaList',str(e))
                 return
 
             response_data = response.read()
@@ -569,11 +564,9 @@ class gdrive(cloudservice):
                     return ([],nextPageToken,changeToken)
                 except urllib2.URLError, e:
                   xbmc.log(e)
-                  self.crashreport.sendError('getChangeList',str(e))
                   return
               else:
                 xbmc.log(e)
-                self.crashreport.sendError('getChangeList',str(e))
                 return
             except socket.timeout, e:
                 return ([],nextPageToken,changeToken)
@@ -611,7 +604,6 @@ class gdrive(cloudservice):
                              response_data, re.DOTALL):
                 nextPageToken = r.group(1)
 
-            print 'nextPageToken = '+ str(nextPageToken) + ' nextPageToken = ' + str(maxChangeID) + "\n"
             return (mediaFiles, nextPageToken, maxChangeID)
 
             # are there more pages to process?
@@ -676,11 +668,9 @@ class gdrive(cloudservice):
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                   xbmc.log(e)
-                  self.crashreport.sendError('getMediaList',str(e))
                   return
               else:
                 xbmc.log(e)
-                self.crashreport.sendError('getMediaList',str(e))
                 return
 
             response_data = response.read()
@@ -1021,13 +1011,9 @@ class gdrive(cloudservice):
                     response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                     #skip SRT
-                    #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    #self.crashreport.sendError('getSRT',str(e))
                   return
               else:
                 #skip SRT
-                #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                #self.crashreport.sendError('getSRT',str(e))
                 return
 
             response_data = response.read()
@@ -1133,11 +1119,9 @@ class gdrive(cloudservice):
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                   xbmc.log(e)
-                  self.crashreport.sendError('getTTS',str(e))
                   return
               else:
                 xbmc.log(e)
-                self.crashreport.sendError('getTTS',str(e))
                 return
 
             response_data = response.read()
@@ -1191,11 +1175,9 @@ class gdrive(cloudservice):
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                   xbmc.log(e)
-                  self.crashreport.sendError('getRootID',str(e))
                   return
               else:
                 xbmc.log(e)
-                self.crashreport.sendError('getRootID',str(e))
                 return
 
             response_data = response.read()
@@ -1250,11 +1232,9 @@ class gdrive(cloudservice):
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                   xbmc.log(e)
-                  self.crashreport.sendError('getTeamDrives',str(e))
                   return
               else:
                 xbmc.log(e)
-                self.crashreport.sendError('getTeamDrives',str(e))
                 return
 
             response_data = response.read()
@@ -1318,11 +1298,9 @@ class gdrive(cloudservice):
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
                         xbmc.log(e)
-                        self.crashreport.sendError('getDownloadURL',str(e))
                         return
                 else:
                     xbmc.log(e)
-                    self.crashreport.sendError('getDownloadURL',str(e))
                     return
 
             response_data = response.read()
@@ -1363,11 +1341,9 @@ class gdrive(cloudservice):
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
                         xbmc.log(e)
-                        self.crashreport.sendError('getDownloadURL',str(e))
                         return
                 else:
                     xbmc.log(e)
-                    self.crashreport.sendError('getDownloadURL',str(e))
                     return
 
             response_data = response.read()
@@ -1437,11 +1413,9 @@ class gdrive(cloudservice):
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
                         xbmc.log(e)
-                        self.crashreport.sendError('getPlaybackCall-0',str(e))
                         return
                 else:
                     xbmc.log(e)
-                    self.crashreport.sendError('getPlaybackCall-0',str(e))
                     return
 
             response_data = response.read()
@@ -1482,11 +1456,9 @@ class gdrive(cloudservice):
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
                             xbmc.log(e)
-                            self.crashreport.sendError('getPlaybackCall-1',str(e))
                             return
                     else:
                         xbmc.log(e)
-                        self.crashreport.sendError('getPlaybackCall-1',str(e))
                         return
 
                 response_data = response.read()
@@ -1532,11 +1504,9 @@ class gdrive(cloudservice):
                          response = urllib2.urlopen(req)
                      except urllib2.URLError, e:
                          xbmc.log(e)
-                         self.crashreport.sendError('getPlaybackCall-2',str(e))
                          return
                  else:
                      xbmc.log(e)
-                     self.crashreport.sendError('getPlaybackCall-2',str(e))
                      return
 
             response_data = response.read()
@@ -1546,7 +1516,6 @@ class gdrive(cloudservice):
             for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
                 cookieType,cookieValue = r.groups()
                 if cookieType == 'DRIVE_STREAM':
-                    print cookieValue
                     self.authorization.setToken(cookieType,cookieValue)
 
             # decode resulting player URL (URL is composed of many sub-URLs)
@@ -1576,12 +1545,9 @@ class gdrive(cloudservice):
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
                             xbmc.log(e)
-                            self.crashreport.sendError('getPlaybackCall-3',str(e))
                             return
                     else:
                         #return what we have -- video file may not have streams (not processed yet)
-                        #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        #self.crashreport.sendError('getPlaybackCall-3',str(e))
                         return (mediaURLs, package)
 
             response_data = response.read()
@@ -1732,7 +1698,6 @@ class gdrive(cloudservice):
                   response = urllib2.urlopen(req)
               except urllib2.URLError, e:
                 xbmc.log(e)
-                self.crashreport.sendError('downloadTTS',str(e))
                 return
 
         response_data = response.read()
@@ -1799,11 +1764,9 @@ class gdrive(cloudservice):
                 response = urllib2.urlopen(req)
               except urllib2.URLError, e:
                 xbmc.log(e)
-                self.crashreport.sendError('getPublicStream',str(e))
                 return
             else:
                 xbmc.log(e)
-                self.crashreport.sendError('getPublicStream',str(e))
                 return
 
         response_data = response.read()
@@ -1813,7 +1776,6 @@ class gdrive(cloudservice):
         for r in re.finditer('([^\s]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
             cookieType,cookieValue = r.groups()
             if cookieType == 'DRIVE_STREAM':
-                print cookieValue
                 self.authorization.setToken(cookieType,cookieValue)
 
         for r in re.finditer('\"fmt_list\"\,\"([^\"]+)\"' ,
@@ -1968,8 +1930,6 @@ class gdrive(cloudservice):
                     if e.code == 401 or e.code == 403:
                         return
                     else:
-                      #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                      #self.crashreport.sendError('setProperty',str(e))
                       return
 
               #maybe doesn't exist - try to create
@@ -1985,8 +1945,6 @@ class gdrive(cloudservice):
                       if e.code == 401 or e.code == 403:
                         return
                       else:
-                        #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        #self.crashreport.sendError('setProperty',str(e))
                         return
               # some other kind of error
               else:
