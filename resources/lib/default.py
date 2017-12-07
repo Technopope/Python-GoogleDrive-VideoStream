@@ -32,6 +32,7 @@ else:
     from resources.libgui import xbmcgui
     from resources.libgui import xbmcplugin
     from resources.libgui import xbmcvfs
+    from resources.libgui import xbmc
 
 
 from resources.lib import settings
@@ -332,18 +333,19 @@ class contentengine(object):
         elif mode == 'enroll':
 
 
-            from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-            from resources.lib import enroll_proxy
-            import urllib, urllib2
-            from SocketServer import ThreadingMixIn
-            import threading
+            if KODI:
+                from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+                from resources.lib import enroll_proxy
+                import urllib, urllib2
+                from SocketServer import ThreadingMixIn
+                import threading
 
-            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), '')
-            server = enroll_proxy.MyHTTPServer(('',  9999), enroll_proxy.enrollBrowser)
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), '')
+                server = enroll_proxy.MyHTTPServer(('',  9999), enroll_proxy.enrollBrowser)
 
-            while server.ready:
-                server.handle_request()
-            server.socket.close()
+                while server.ready:
+                    server.handle_request()
+                server.socket.close()
 
             if 0:
 
@@ -445,7 +447,8 @@ class contentengine(object):
                 if KODI:
                     self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
                 else:
-                    self.addMenu(self.PLUGIN_URL+'?mode=enroll','['+str(addon.getLocalizedString(30207))+']')
+                    self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
+#                    self.addMenu(self.PLUGIN_URL+'?mode=enroll','['+str(addon.getLocalizedString(30207))+']')
 
                 if contextType != 'image':
                     path = settings.getSetting('cache_folder')
@@ -596,11 +599,14 @@ class contentengine(object):
 
                 ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
 
-                #fallback on first defined account
-                if accounts[ret] == 'public':
-                    return None
+                if KODI:
+                    #fallback on first defined account
+                    if accounts[ret] == 'public':
+                        return None
+                    else:
+                        return accounts[ret]
                 else:
-                    return accounts[ret]
+                    return None
 
 
 
@@ -742,7 +748,8 @@ class contentengine(object):
         if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
             self.accountActions(addon, mode, instanceName, numberOfAccounts)
-
+            mode = 'main'
+            instanceName = ''
         #create strm files
         elif mode == 'buildstrm':
 
@@ -1217,7 +1224,8 @@ class contentengine(object):
                     service.gSpreadsheet.setMediaStatus(service.worksheetID,package)
                 elif action == 'recentwatched' or action == 'recentstarted' or action == 'library' or action == 'queued':
 
-                    mediaItems = service.gSpreadsheet.updateMediaPackage(service.worksheetID, criteria=action)
+                    if constants.CONST.spreadsheet:
+                        mediaItems = service.gSpreadsheet.updateMediaPackage(service.worksheetID, criteria=action)
 
                     #ensure that folder view playback
                     if contextType == '':

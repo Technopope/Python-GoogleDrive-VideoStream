@@ -33,6 +33,14 @@ class log(object):
     def __init__(self,message,type=None):
         return
 
+class executebuiltin(object):
+    ##
+    def __init__(self,message):
+#        if message == 'XBMC.Container.Refresh':
+#            plugin_handle.send_header('Location', '/list')
+
+        return
+
 class LOGNOTICE(object):
     ##
     def __init__(self,message):
