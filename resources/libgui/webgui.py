@@ -77,6 +77,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                 self.keyvalue = True
         except: pass
 
+
         try:
 			from resources.lib import encryption
 
@@ -159,7 +160,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # redirect url to output
-        elif self.path == '/default.py?mode=enroll&default=false':
+        elif re.search(r'/default.py\?mode\=enroll\&default\=false', str(decryptkeyvalue)):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self.send_response(200)
@@ -175,7 +176,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # redirect url to output
-        elif self.path == '/default.py?mode=enroll':
+        elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self.send_response(200)
@@ -194,42 +195,20 @@ class webGUI(BaseHTTPRequestHandler):
                 while loop:
                     instanceName = constants.PLUGIN_NAME +str(count)
                     try:
-                        username = settings.getSetting(instanceName+'_username')
-                        if username == invokedUsername:
-                            addon.setSetting(instanceName + '_type', str(3))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_client_id', str(client_id))
-                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                            addon.setSetting(instanceName + '_code', str(code))
-
-                            addon.setSetting(instanceName + '_username', str(account))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
-                            loop = False
-                        elif username == '':
-                            addon.setSetting(instanceName + '_type', str(3))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_client_id', str(client_id))
-                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                            addon.setSetting(instanceName + '_username', str(account))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
-                            loop = False
-
+                        username = self.server.addon.getSetting(instanceName+'_username')
                     except:
-                        pass
+                        username = ''
 
-                    if count ==  default.numberOfAccounts(constants.PLUGIN_NAME):
-
-                        #fallback on first defined account
-                        addon.setSetting(instanceName + '_type', str(3))
-                        addon.setSetting(instanceName + '_code', code)
-                        addon.setSetting(instanceName + '_client_id', str(client_id))
-                        addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                        addon.setSetting(instanceName + '_username', str(account))
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
+                    if username == account or username == '':
+                        self.server.addon.setSetting(instanceName + '_type', str(3))
+                        self.server.addon.setSetting(instanceName + '_code', str(code))
+                        self.server.addon.setSetting(instanceName + '_client_id', str(client_id))
+                        self.server.addon.setSetting(instanceName + '_client_secret', str(client_secret))
+                        self.server.addon.setSetting(instanceName + '_username', str(account))
                         loop = False
+
                     count = count + 1
 
-                self.server.ready = False
                 return
 
 
@@ -337,7 +316,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # redirect url to output
-        elif self.path == '/default.py?mode=enroll':
+        elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
 
             self.send_response(200)
             self.end_headers()
@@ -346,14 +325,14 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         # redirect url to output
-        elif self.path == '/default.py?mode=enroll&default=true' or self.path == '/default.py?mode=enroll':
+        elif  re.search(r'/default.py\?mode\=enroll\&default\=true', str(decryptkeyvalue)) or  re.search(r'/default.py?mode=enroll', str(decryptkeyvalue)):
 
             self.send_response(200)
             self.end_headers()
 
             self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="default.py?mode=enroll" method="post">Client ID:<br /><input type="hidden" name="client_id" value="value"><br />Client Secret:<br /><input type="hidden" name="client_secret" value="value"><br /><br /></br /> <input type="submit" value="Submit"></form></body></html>')
             return
-        elif self.path == '/default.py?mode=enroll&default=false':
+        elif  re.search(r'/default.py\?mode\=enroll\&default\=false', str(decryptkeyvalue)):
 
             self.send_response(200)
             self.end_headers()

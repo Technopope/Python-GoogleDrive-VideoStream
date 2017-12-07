@@ -99,38 +99,17 @@ class enrollBrowser(BaseHTTPRequestHandler):
                     instanceName = constants.PLUGIN_NAME +str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username')
-                        if username == invokedUsername:
-                            addon.setSetting(instanceName + '_type', str(3))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_client_id', str(client_id))
-                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                            addon.setSetting(instanceName + '_code', str(code))
-
-                            addon.setSetting(instanceName + '_username', str(account))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
-                            loop = False
-                        elif username == '':
-                            addon.setSetting(instanceName + '_type', str(3))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_client_id', str(client_id))
-                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                            addon.setSetting(instanceName + '_username', str(account))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
-                            loop = False
-
                     except:
-                        pass
+                        username = ''
 
-                    if count ==  default.numberOfAccounts(constants.PLUGIN_NAME):
-
-                        #fallback on first defined account
+                    if username == invokedUsername or username == '':
                         addon.setSetting(instanceName + '_type', str(3))
-                        addon.setSetting(instanceName + '_code', code)
+                        addon.setSetting(instanceName + '_code', str(code))
                         addon.setSetting(instanceName + '_client_id', str(client_id))
                         addon.setSetting(instanceName + '_client_secret', str(client_secret))
                         addon.setSetting(instanceName + '_username', str(account))
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
                         loop = False
+
                     count = count + 1
 
                 self.server.ready = False
