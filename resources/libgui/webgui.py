@@ -285,7 +285,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             else:
                 mediaEngine = default.contentengine()
-                mediaEngine.run(self, query, DBM=self.server.dbm, addon=self.server.addon)
+                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
 
 
         # redirect url to output

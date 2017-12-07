@@ -92,7 +92,7 @@ class enrollBrowser(BaseHTTPRequestHandler):
                 code = r.group(2)
                 code = code.replace('%2F','/')
 
-                self.wfile.write('<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
+                #self.wfile.write('<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
 
                 count = 1
                 loop = True
@@ -146,8 +146,8 @@ class enrollBrowser(BaseHTTPRequestHandler):
                                  '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?' ,
                                  response_data, re.DOTALL):
                     accessToken,refreshToken = r.groups()
-                    addon.setSetting(instanceName + '_auth_access_token', str(accessToken))
-                    addon.setSetting(instanceName + '_auth_refresh_token', str(refreshToken))
+                    constants.addon.setSetting(instanceName + '_auth_access_token', str(accessToken))
+                    constants.addon.setSetting(instanceName + '_auth_refresh_token', str(refreshToken))
 
                     self.wfile.write('Successfully enrolled account.')
                     self.server.ready = False
