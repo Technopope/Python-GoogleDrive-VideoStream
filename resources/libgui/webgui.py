@@ -187,7 +187,6 @@ class webGUI(BaseHTTPRequestHandler):
                 code = r.group(2)
                 code = code.replace('%2F','/')
 
-                self.wfile.write('<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
 
                 count = 1
                 loop = True
