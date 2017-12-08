@@ -442,10 +442,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log('getMediaList ' + e)
+                  xbmc.log('getMediaList ' + str(e))
                   return
               else:
-                xbmc.log('getMediaList ' + e)
+                xbmc.log('getMediaList ' + str(e))
                 return
 
             response_data = response.read()
