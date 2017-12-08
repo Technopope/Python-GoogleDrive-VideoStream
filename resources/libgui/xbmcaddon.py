@@ -19,6 +19,7 @@
 
 import anydbm
 import re
+import os
 
 
 # The purpose of this class is to override  xbmcaddon and supply equivalent subroutines when ran without KODI
@@ -40,7 +41,10 @@ class xbmcaddon:
     def __init__(self):
 
         self.dbmfile = './gdrive.db'
-        self.dbm = anydbm.open(self.dbmfile,'r')
+        if os.path.exists(self.dbmfile):
+            self.dbm = anydbm.open(self.dbmfile,'r')
+        else:
+            self.dbm = anydbm.open(self.dbmfile,'c')
         self.language = {}
         file = open('./resources/language/english/strings.xml', "r")
         for line in file:
@@ -69,6 +73,7 @@ class xbmcaddon:
            return self.dbm[key]
         except:
            return ''
+
 
 
     ##

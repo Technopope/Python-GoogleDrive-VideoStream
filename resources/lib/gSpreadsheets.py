@@ -18,10 +18,8 @@
 
 '''
 
-import os
 import re
 import urllib, urllib2
-import cookielib
 import sys
 
 KODI = True
@@ -29,9 +27,12 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
     KODI = False
 
 if KODI:
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmc, xbmcgui
+else:
+    from resources.libgui import xbmc
+    from resources.libgui import xbmcgui
 
-import authorization
+
 from resources.lib import package
 from resources.lib import file
 from resources.lib import folder
@@ -151,7 +152,7 @@ class gSpreadsheets:
             return False
 
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -184,7 +185,7 @@ class gSpreadsheets:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -226,7 +227,7 @@ class gSpreadsheets:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -259,7 +260,7 @@ class gSpreadsheets:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -575,7 +576,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -622,7 +622,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -668,7 +667,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -752,7 +750,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:(\d+)' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -798,7 +795,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -1085,7 +1081,6 @@ class gSpreadsheets:
 
             response_data = response.read()
 
-            previous = ''
             append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
@@ -1190,7 +1185,6 @@ class gSpreadsheets:
 
             response_data = response.read()
 
-            previous = ''
             append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
@@ -1383,9 +1377,9 @@ class gSpreadsheets:
         response.close()
 
         editURL=''
-        for r in re.finditer('<link rel=\'(edit)\' type=\'application/atom\+xml\' href=\'([^\']+)\'/>' ,
+        for r in re.finditer('<link rel=\'edit\' type=\'application/atom\+xml\' href=\'([^\']+)\'/>' ,
                              response_data, re.DOTALL):
-            (x,editURL) = r.groups(1)
+            editURL = r.group(1)
 
         for r in re.finditer('<link rel=\'edit\' [^\>]+>(.*?</entry>)' ,
                              response_data, re.DOTALL):

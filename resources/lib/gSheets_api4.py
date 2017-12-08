@@ -18,11 +18,8 @@
 
 '''
 
-import os
 import re
 import urllib, urllib2
-import cookielib
-import json
 import sys
 
 KODI = True
@@ -31,11 +28,10 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 
 if KODI:
 
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmc, xbmcgui
 
 
 
-import authorization
 from resources.lib import package
 from resources.lib import file
 from resources.lib import folder
@@ -89,7 +85,7 @@ class gSheets_api4:
             return False
 
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -126,7 +122,7 @@ class gSheets_api4:
             return False
 
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -215,7 +211,7 @@ class gSheets_api4:
             return False
 
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -248,7 +244,7 @@ class gSheets_api4:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -290,7 +286,7 @@ class gSheets_api4:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -323,7 +319,7 @@ class gSheets_api4:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -732,7 +728,6 @@ class gSheets_api4:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -793,7 +788,6 @@ class gSheets_api4:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:(\d+)' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -839,7 +833,6 @@ class gSheets_api4:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -1126,8 +1119,6 @@ class gSheets_api4:
 
             response_data = response.read()
 
-            previous = ''
-            append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
 
@@ -1231,8 +1222,6 @@ class gSheets_api4:
 
             response_data = response.read()
 
-            previous = ''
-            append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
 
@@ -1424,9 +1413,9 @@ class gSheets_api4:
         response.close()
 
         editURL=''
-        for r in re.finditer('<link rel=\'(edit)\' type=\'application/atom\+xml\' href=\'([^\']+)\'/>' ,
+        for r in re.finditer('<link rel=\'edit\' type=\'application/atom\+xml\' href=\'([^\']+)\'/>' ,
                              response_data, re.DOTALL):
-            (x,editURL) = r.groups(1)
+            editURL = r.group(1)
 
         for r in re.finditer('<link rel=\'edit\' [^\>]+>(.*?</entry>)' ,
                              response_data, re.DOTALL):
@@ -1469,7 +1458,7 @@ class gSheets_api4:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e.read()), xbmc.LOGERROR)
 
 
-        response_data = response.read()
+        response.read()
 
         response.close()
 
@@ -1544,7 +1533,7 @@ class gSheets_api4:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e.read()), xbmc.LOGERROR)
 
 
-            response_data = response.read()
+            response.read()
             response.close()
         else:
             if resume != '' and watched != '':
