@@ -98,7 +98,7 @@ class cloudservice(object):
     # return the appropriate "headers" for requests that include 1) user agent, 2) any authorization cookies/tokens
     #   returns: list containing the header
     ##
-    def getHeadersList(self):
+    def getHeadersList(self, isPOST=False, additionalHeader=None, additionalValue=None, isJSON=False):
         return { 'User-Agent' : self.user_agent }
 
     ##
@@ -809,8 +809,6 @@ class cloudservice(object):
         if CHUNK < 1024:
             CHUNK = 131072
 
-        count = 0
-
 
         path = re.sub(r'\/[^\/]+$', r'', folderName)
         if folderName == path:
@@ -822,8 +820,6 @@ class cloudservice(object):
 
         playbackFile = folderName
 
-
-        downloadedBytes = 0
 
         #seek to end of file for append
         # - must use python for append (xbmcvfs not supported)
@@ -981,8 +977,6 @@ class cloudservice(object):
 
         if CHUNK < 1024:
             CHUNK = 131072
-
-        count = 0
 
 
         if encfs:
@@ -1224,7 +1218,8 @@ class cloudservice(object):
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
 
-                    cm.append(( self.addon.getLocalizedString(30163), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=scan&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
+                    if KODI:
+                        cm.append(( self.addon.getLocalizedString(30163), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=scan&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
                 else:
 
