@@ -202,9 +202,9 @@
         <setting id="encfs_cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" enable="eq(-3,false)" />
         <setting id="encfs_chunk_size" type="slider" subsetting="true" label="30091" option="int" range="131072,8192,8388608" default="163840" enable="eq(-4,false)" />
         <setting label="30037" type="lsep"/>
-        <setting id="context_evideo" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Don't Filter" default="0"/>
-        <setting id="context_emusic" type="enum" subsetting="true" label="30023" values="Music only|Don't Filter" default="0"/>
-        <setting id="context_ephoto" type="enum" subsetting="true" label="30024" values="Photos only|Don't Filter" default="0"/>
+        <setting id="context_evideo" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Don't Filter" default="0" />
+        <setting id="context_emusic" type="enum" subsetting="true" label="30023" values="Music only|Don't Filter" default="0" />
+        <setting id="context_ephoto" type="enum" subsetting="true" label="30024" values="Photos only|Don't Filter" default="0" />
         <setting label="30166" subsetting="true" type="lsep"/>
     </category>
 	<!-- advanced properties -->

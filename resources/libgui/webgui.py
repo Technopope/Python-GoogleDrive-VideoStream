@@ -399,11 +399,11 @@ class webGUI(BaseHTTPRequestHandler):
             for line in file:
                 result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]+)\" default\=\"([^\"]*)\" label\=\"([^\"]+)\" \/\>', str(line))
                 if result is None:
-                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"( )label\=\"([^\"]+)\" default\=\"([^\"]*)\" \/\>', str(line))
-                if result is None:
                     result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"(.*?)label\=\"([^\"]+)\" default\=\"([^\"]*)\" \/\>\n', str(line))
                 if result is None:
                     result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"(.*?)label\=\"([^\"]+)\" default\=\"([^\"]*)\" option\=\"([^\"]*)\" range\=\"([^\"]*)\" \/\>\n', str(line))
+                if result is None:
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"(.*?)label\=\"([^\"]+)\" values\=\"([^\"]+)\" default\=\"([^\"]*)\" \/\>\n', str(line))
 
 
         #<setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
