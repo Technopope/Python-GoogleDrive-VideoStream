@@ -1935,7 +1935,7 @@ class contentengine(object):
                             server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
                             server.setAccount(service, '')
                             #if we make it here, streamer was not already running as a service, so we need to abort and playback using normal method, otherwise we will lock
-
+                            useStreamer = True
                         except:
                             useStreamer = True
 
@@ -2556,6 +2556,7 @@ class contentengine(object):
                                     server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
                                     server.setAccount(service, '')
                                     #if we make it here, streamer was not already running as a service, so we need to abort and playback using normal method, otherwise we will lock
+                                    useStreamer = True
 
                                 except:
                                     useStreamer = True

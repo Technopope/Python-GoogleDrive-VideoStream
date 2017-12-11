@@ -38,6 +38,15 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class MyHTTPServer(ThreadingMixIn,HTTPServer):
 
+    def run(self):
+        try:
+            self.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            # Clean-up server (close socket, etc.)
+            self.server_close()
+
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)
         self.ready = True
