@@ -153,21 +153,21 @@
         <setting label="30115" enable="eq(-1,false)" type="lsep"/>
     	<setting id="preferred_quality" type="enum" enable="eq(-2,false)" subsetting="true" label="30011" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
     	<setting id="preferred_format" type="enum" enable="eq(-3,false)" subsetting="true" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
-    	<setting id="avoid_codec" type="enum" enable="eq(-4,false)" subsetting="true" label="30013" values="none|VP8/vorbis" default="0"/>
-    	<setting id="avoid_format" type="enum" enable="eq(-5,false)" subsetting="true" label="30167" values="none|flv" default="0"/>
+    	<setting id="avoid_codec" type="enum" enable="eq(-4,false)" subsetting="true" label="30013" values="none|VP8/vorbis" default="0" />
+    	<setting id="avoid_format" type="enum" enable="eq(-5,false)" subsetting="true" label="30167" values="none|flv" default="0" />
         <setting subsetting="true" label="30168" type="lsep"/>
     </category>
 
 	<!-- music properties -->
     <category label="30094">
         <setting label="30037" type="lsep"/>
-        <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0"/>
+        <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0" />
     </category>
 
    	<!-- photo properties -->
     <category label="30160">
         <setting label="30037" type="lsep"/>
-        <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0"/>
+        <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0" />
         <setting id="photo_folder" type="folder" label="30038" default="" />
         <setting id="photo_resolution" type="enum" label="30185" values="720p|1080p|4k|8k|16k|480p|original" default="0" />
     </category>
@@ -181,7 +181,7 @@
     	<setting id="always_cache" type="bool" subsetting="true" label="30121" default="false" />
         <setting id="cache_single" type="bool" subsetting="true" label="30132" default="false" />
         <setting id="cache_continue" type="bool" subsetting="true" label="30174" default="false" />
-        <setting id="chunk_size" type="slider" subsetting="true" label="30091" option="int" range="131072,8192,8388608" default="163840" />
+        <setting id="chunk_size" type="slider" subsetting="true" label="30091" default="163840" option="int" range="131072,8192,8388608" />
         <setting id="cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
     </category>
 
@@ -200,7 +200,7 @@
         <setting id="encfs_cache_single" type="bool" subsetting="true" label="30132" default="false" enable="eq(-2,false)" />
         <setting id="encfs_continue" type="bool" subsetting="true" label="30174" default="false" enable="eq(-3,false)" />
         <setting id="encfs_cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" enable="eq(-3,false)" />
-        <setting id="encfs_chunk_size" type="slider" subsetting="true" label="30091" option="int" range="131072,8192,8388608" default="163840" enable="eq(-4,false)" />
+        <setting id="encfs_chunk_size" type="slider" subsetting="true" label="30091" default="163840" option="int" range="131072,8192,8388608" enable="eq(-4,false)" />
         <setting label="30037" type="lsep"/>
         <setting id="context_evideo" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Don't Filter" default="0" />
         <setting id="context_emusic" type="enum" subsetting="true" label="30023" values="Music only|Don't Filter" default="0" />
