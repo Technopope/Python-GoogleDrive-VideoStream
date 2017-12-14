@@ -393,17 +393,50 @@ class webGUI(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
+            self.wfile.write('<html><form action="/list" method="post">')
+
             self.setings = {}
             file = open('./resources/settings.xml', "r")
             print "LOAD SETTINGS\n\n\n"
             for line in file:
-                result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]+)\" default\=\"([^\"]*)\" label\=\"([^\"]+)\" \/\>', str(line))
+
+                id = ''
+                type = ''
+                values = ''
+                default = ''
+                label = ''
+                result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\" label\=\"(\d+)\" \/\>', str(line))
+                if result:
+                    id = str(result.group(1))
+                    type = str(result.group(2))
+                    values = str(result.group(3))
+                    default = str(result.group(4))
+                    label = str(result.group(5))
+
                 if result is None:
-                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"([^/]+)label\=\"([^\"]+)\" default\=\"([^\"]*)\"([^/]+)\/\>\n', str(line))
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\"([^/]+)\/\>\n', str(line))
+                    if result:
+                        id = str(result.group(1))
+                        type = str(result.group(2))
+                        default = str(result.group(4))
+                        label = str(result.group(3))
+
                 if result is None:
-                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"([^/]+)label\=\"([^\"]+)\" default\=\"([^\"]*)\" option\=\"([^\"]*)\" range\=\"([^\"]*)\"([^/]+)\/\>\n', str(line))
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\" option\=\"([^\"]*)\" range\=\"([^\"]*)\"[^/]+\/\>\n', str(line))
+                    if result:
+                        id = str(result.group(1))
+                        type = str(result.group(2))
+                        default = str(result.group(4))
+                        label = str(result.group(3))
+
                 if result is None:
-                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"(.*?)label\=\"([^\"]+)\" values\=\"([^\"]+)\" default\=\"([^\"]*)\"[^\/]* \/\>\n', str(line))
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\".*?label\=\"(\d+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\"[^\/]* \/\>\n', str(line))
+                    if result:
+                        id = str(result.group(1))
+                        type = str(result.group(2))
+                        default = str(result.group(5))
+                        label = str(result.group(3))
+                        values = str(result.group(4))
 
 
         #<setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
@@ -411,11 +444,7 @@ class webGUI(BaseHTTPRequestHandler):
         #<setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
 
 
-                id = ''
-                type = ''
-                values = ''
-                defaults = ''
-                label = ''
+
                 if result:
                     id = str(result.group(1))
                     type = str(result.group(2))
@@ -423,6 +452,15 @@ class webGUI(BaseHTTPRequestHandler):
                     defaults = str(result.group(4))
                     label = str(result.group(5))
                     print "ID = " + id + "\n"
+                    if type == 'text':
+                        self.wfile.write(str(label) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(values)+'" /><br />')
+                    elif type == 'number':
+                        self.wfile.write(str(label) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(values)+'" /><br />')
+                    elif type == 'bool':
+                        self.wfile.write(str(label) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" value="" /><br />')
+
+            self.wfile.write('<input type="submit" value="Save" /></form></html>')
+
 
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
             self.send_response(200)
