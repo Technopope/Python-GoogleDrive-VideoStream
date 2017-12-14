@@ -17,7 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import os
 import sys
 import re
 import urllib, urllib2
@@ -28,10 +27,11 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 
 if KODI:
 
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmc, xbmcgui
 
 else:
     from resources.libgui import  xbmc
+    from resources.libgui import  xbmcgui
 
 
 import constants
@@ -44,7 +44,7 @@ class gPlayer(xbmc.Player):
         # stdoutToServer and stderrToServer redirect stdout and stderr to eclipse console
         pydevd.settrace('localhost', stdoutToServer=True, stderrToServer=True)
     except :
-        pass
+        pydevd = ''
 
     def __init__( self, *args, **kwargs ):
         xbmc.Player.__init__( self )
@@ -58,8 +58,11 @@ class gPlayer(xbmc.Player):
         self.currentURL = ''
 
 
+
+
     def setService(self,service):
         self.service = service
+
 
     def setWorksheet(self,worksheet):
         self.worksheet = worksheet
@@ -100,7 +103,7 @@ class gPlayer(xbmc.Player):
             if newTime > self.seek:
                 self.time = newTime
         except:
-            pass
+            return
 
     def PlayStream(self, url, item, seek, startPlayback=True, package=None):
 
@@ -138,7 +141,6 @@ class gPlayer(xbmc.Player):
 
             playbackURL = ''
             playbackQuality = ''
-            playbackPath = ''
             if service.settings.promptQuality:
                 if len(options) > 1:
                     ret = xbmcgui.Dialog().select(service.addon.getLocalizedString(30033), options)
@@ -269,12 +271,26 @@ class gPlayer(xbmc.Player):
                         if self.service.settings and foundMatch==1:
                             xbmc.log(self.service.addon.getAddonInfo('name') + ': Found local movie db  id='+str(self.package.file.MOVIEID), xbmc.LOGNOTICE)
 
-        except: pass
+        except: return
 
 
     def onPlayBackEnded(self):
         xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK ENDED', xbmc.LOGNOTICE)
 #        self.next()
+
+        #shutdown streamer if running
+        if self.service.settings.streamer:
+            url = 'http://localhost:' + str(self.service.settings.streamPort) + '/kill'
+            req = urllib2.Request(url, None)
+
+            try:
+                response = urllib2.urlopen(req)
+                response.close()
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+
+
+
         if self.package is not None:
             try:
                 if constants.CONST.spreadsheet and self.service.cloudResume == '1' and  self.service.protocol == 2 and self.time > self.package.file.resume:
@@ -306,7 +322,7 @@ class gPlayer(xbmc.Player):
 #                xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
 
 
-            except: pass
+            except: return
 
             try:
 
@@ -354,7 +370,7 @@ class gPlayer(xbmc.Player):
                             if self.service.settings and foundMatch==1:
                                 xbmc.log(self.service.addon.getAddonInfo('name') + ': 2 Updated local movie db id='+str(self.package.file.MOVIEID) + ' playcount='+ str(int(self.package.file.playcount)+1), xbmc.LOGNOTICE)
 
-            except: pass
+            except: return
 
             #try:
 
@@ -367,6 +383,18 @@ class gPlayer(xbmc.Player):
 
     def onPlayBackStopped(self):
         xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK STOPPED', xbmc.LOGNOTICE)
+
+
+        #shutdown streamer if running
+        if self.service.settings.streamer:
+            url = 'http://localhost:' + str(self.service.settings.streamPort) + '/kill'
+            req = urllib2.Request(url, None)
+
+            try:
+                response = urllib2.urlopen(req)
+                response.close()
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
         if self.package is not None:
             try:
@@ -393,7 +421,7 @@ class gPlayer(xbmc.Player):
                 #result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"], "limits":{"end":3}}, "id": "1"}')
 
 
-            except: pass
+            except: return
 
         try:
 
@@ -463,7 +491,7 @@ class gPlayer(xbmc.Player):
                                         xbmc.log(self.service.addon.getAddonInfo('name') + ': 3 Updated local movie db playcount='+ str(int(self.package.file.playcount)) + ' time=' +self.time+' duration='+self.package.file.duration , xbmc.LOGNOTICE)
 
 
-        except: pass
+        except: return
 
 
         #self.current = self.current +1

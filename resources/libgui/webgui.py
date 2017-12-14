@@ -77,6 +77,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                 self.keyvalue = True
         except: pass
 
+
         try:
 			from resources.lib import encryption
 
@@ -159,7 +160,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # redirect url to output
-        elif self.path == '/default.py?mode=enroll&default=false':
+        elif re.search(r'/default.py\?mode\=enroll\&default\=false', str(decryptkeyvalue)):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self.send_response(200)
@@ -175,61 +176,87 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # redirect url to output
-        elif self.path == '/default.py?mode=enroll':
+        elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
-            self.send_response(200)
-            self.end_headers()
             for r in re.finditer('account\=([^\&]+)\&code=([^\&]+)\&\client_id\=([^\&]+)\&\client_secret\=([^\&]+)' ,
                      post_data, re.DOTALL):
                 account = r.group(1)
-                client_id = r.group(2)
-                client_secret = r.group(3)
-                code = r.group(4)
+                client_id = r.group(3)
+                client_secret = r.group(4)
+                code = r.group(2)
+                code = code.replace('%2F','/')
 
-                self.wfile.write('<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
 
                 count = 1
                 loop = True
                 while loop:
                     instanceName = constants.PLUGIN_NAME +str(count)
                     try:
-                        username = settings.getSetting(instanceName+'_username')
-                        if username == invokedUsername:
-                            addon.setSetting(instanceName + '_type', str(3))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_client_id', str(client_id))
-                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                            addon.setSetting(instanceName + '_code', str(code))
-
-                            addon.setSetting(instanceName + '_username', str(account))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
-                            loop = False
-                        elif username == '':
-                            addon.setSetting(instanceName + '_type', str(3))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_client_id', str(client_id))
-                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                            addon.setSetting(instanceName + '_username', str(account))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
-                            loop = False
-
+                        username = self.server.addon.getSetting(instanceName+'_username')
                     except:
-                        pass
+                        username = ''
 
-                    if count ==  default.numberOfAccounts(constants.PLUGIN_NAME):
-
-                        #fallback on first defined account
-                        addon.setSetting(instanceName + '_type', str(3))
-                        addon.setSetting(instanceName + '_code', code)
-                        addon.setSetting(instanceName + '_client_id', str(client_id))
-                        addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                        addon.setSetting(instanceName + '_username', str(account))
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
+                    if username == account or username == '':
+                        self.server.addon.setSetting(instanceName + '_type', str(3))
+                        self.server.addon.setSetting(instanceName + '_code', str(code))
+                        self.server.addon.setSetting(instanceName + '_client_id', str(client_id))
+                        self.server.addon.setSetting(instanceName + '_client_secret', str(client_secret))
+                        self.server.addon.setSetting(instanceName + '_username', str(account))
                         loop = False
+
                     count = count + 1
 
-                self.server.ready = False
+                results = re.search(r'\?(.*)$', str(decryptkeyvalue))
+                if results:
+                    query = str(results.group(1))
+
+
+                url = 'https://accounts.google.com/o/oauth2/token'
+                header = { 'User-Agent' : self.server.addon.getSetting('user_agent')  , 'Content-Type': 'application/x-www-form-urlencoded'}
+
+                req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(client_id)+'&client_secret='+str(client_secret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
+
+
+                # try login
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    if e.code == 403:
+                        #login issue
+                        self.send_response(200)
+                        self.end_headers()
+                        self.wfile.write(str(e))
+                        return
+                    else:
+                        self.send_response(200)
+                        self.end_headers()
+                        self.wfile.write(str(e))
+                    return
+
+
+                response_data = response.read()
+                response.close()
+
+                # retrieve authorization token
+                for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' +
+                                 '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?' ,
+                                 response_data, re.DOTALL):
+                    accessToken,refreshToken = r.groups()
+                    self.server.addon.setSetting(instanceName + '_auth_access_token', str(accessToken))
+                    self.server.addon.setSetting(instanceName + '_auth_refresh_token', str(refreshToken))
+
+                    mediaEngine = default.contentengine()
+                    mediaEngine.run(self,  DBM=self.server.dbm, addon=self.server.addon)
+
+
+                for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
+                                 response_data, re.DOTALL):
+                    errorMessage = r.group(1)
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write(errorMessage)
+
                 return
 
 
@@ -335,9 +362,17 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
 
+        # redirect url to output
+        elif  re.search(r'/default.py\?mode\=enroll\&default\=true', str(decryptkeyvalue)):# or  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
+
+            self.send_response(200)
+            self.end_headers()
+
+            self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="default.py?mode=enroll" method="post">Client ID:<br /><input type="hidden" name="client_id" value="772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com"><br />Client Secret:<br /><input type="hidden" name="client_secret" value="PgteSoD4uagqHA1_nLERLDx9"><br /><br /></br /> <input type="submit" value="Submit"></form></body></html>')
+            return
 
         # redirect url to output
-        elif self.path == '/default.py?mode=enroll':
+        elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
 
             self.send_response(200)
             self.end_headers()
@@ -345,15 +380,7 @@ class webGUI(BaseHTTPRequestHandler):
             self.wfile.write('<html><body>Do you want to use a default client id / client secret or your own client id / client secret?  If you don\'t know what this means, select DEFAULT.<br /> <a href="default.py?mode=enroll&default=true">use default client id / client secret (DEFAULT)</a> <br /><br />OR use your own client id / client secret<br /><br /><form action="default.py?mode=enroll&default=false" method="post">Client ID:<br /><input type="text" name="client_id" value=""><br />Client Secret:<br /><input type="text" name="client_secret" value=""> <br/><input type="submit" value="Submit"></form></body></html>')
             return
 
-        # redirect url to output
-        elif self.path == '/default.py?mode=enroll&default=true' or self.path == '/default.py?mode=enroll':
-
-            self.send_response(200)
-            self.end_headers()
-
-            self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="default.py?mode=enroll" method="post">Client ID:<br /><input type="hidden" name="client_id" value="value"><br />Client Secret:<br /><input type="hidden" name="client_secret" value="value"><br /><br /></br /> <input type="submit" value="Submit"></form></body></html>')
-            return
-        elif self.path == '/default.py?mode=enroll&default=false':
+        elif  re.search(r'/default.py\?mode\=enroll\&default\=false', str(decryptkeyvalue)):
 
             self.send_response(200)
             self.end_headers()
@@ -366,19 +393,58 @@ class webGUI(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
+            self.wfile.write('<html><form action="/list" method="post">')
+
             self.setings = {}
             file = open('./resources/settings.xml', "r")
             print "LOAD SETTINGS\n\n\n"
             for line in file:
-                result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]+)\" default\=\"([^\"]+)\" label\=\"([^\"]+)\" \/\>', str(line))
-                if result is None:
-                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"( )label\=\"([^\"]+)\" default\=\"([^\"]+)\" \/\>', str(line))
 
                 id = ''
                 type = ''
                 values = ''
-                defaults = ''
+                default = ''
                 label = ''
+                result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\" label\=\"(\d+)\" \/\>', str(line))
+                if result:
+                    id = str(result.group(1))
+                    type = str(result.group(2))
+                    values = str(result.group(3))
+                    default = str(result.group(4))
+                    label = str(result.group(5))
+
+                if result is None:
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\"([^/]+)\/\>\n', str(line))
+                    if result:
+                        id = str(result.group(1))
+                        type = str(result.group(2))
+                        default = str(result.group(4))
+                        label = str(result.group(3))
+
+                if result is None:
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\" option\=\"([^\"]*)\" range\=\"([^\"]*)\"[^/]+\/\>\n', str(line))
+                    if result:
+                        id = str(result.group(1))
+                        type = str(result.group(2))
+                        default = str(result.group(4))
+                        label = str(result.group(3))
+
+                if result is None:
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\".*?label\=\"(\d+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\"[^\/]* \/\>\n', str(line))
+                    if result:
+                        id = str(result.group(1))
+                        type = str(result.group(2))
+                        default = str(result.group(5))
+                        label = str(result.group(3))
+                        values = str(result.group(4))
+
+
+        #<setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
+
+        #<setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
+
+
+
                 if result:
                     id = str(result.group(1))
                     type = str(result.group(2))
@@ -386,6 +452,15 @@ class webGUI(BaseHTTPRequestHandler):
                     defaults = str(result.group(4))
                     label = str(result.group(5))
                     print "ID = " + id + "\n"
+                    if type == 'text':
+                        self.wfile.write(str(label) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(values)+'" /><br />')
+                    elif type == 'number':
+                        self.wfile.write(str(label) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(values)+'" /><br />')
+                    elif type == 'bool':
+                        self.wfile.write(str(label) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" value="" /><br />')
+
+            self.wfile.write('<input type="submit" value="Save" /></form></html>')
+
 
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
             self.send_response(200)

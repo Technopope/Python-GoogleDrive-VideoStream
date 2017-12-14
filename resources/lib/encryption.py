@@ -1,11 +1,17 @@
 #http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
 import os, random, struct, string, re
+import sys
 
 import constants
 
 if constants.CONST.DEBUG:
     #debugging
     import hashlib
+
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
+
 
 if KODI:
 
@@ -55,7 +61,8 @@ class encryption():
 
         if ENCRYPTION_ENABLE == 0:
             return
-        assert iterations > 0
+        if not iterations > 0:
+            return
 
         key = str(password) + str(self.salt)
         for i in range(iterations):
@@ -146,9 +153,29 @@ class encryption():
 
                 outfile.truncate(origsize)
 
+    def decryptStreamChunkOld(self,response, wfile, chunksize=24*1024, startOffset=0):
+            if ENCRYPTION_ENABLE == 0:
+                return
+    #    with open(in_filename, 'rb') as infile:
+            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+            decryptor = AES.new(self.key, AES.MODE_ECB)
 
+            count = 0
+            while True:
+                chunk = response.read(chunksize)
+                count = count + 1
+                if len(chunk) == 0:
+                    break
 
-    def decryptStreamChunk(self,response, wfile, adjStart, adjEnd, chunksize=16*1024):
+                responseChunk = decryptor.decrypt(chunk)
+                if count == 1 and startOffset !=0:
+                    wfile.write(responseChunk[startOffset:])
+                elif (len(chunk)) < (len(responseChunk.strip())):
+                    wfile.write(responseChunk.strip())
+                else:
+                    wfile.write(responseChunk)
+
+    def decryptStreamChunk(self,response, wfile, adjStart=0, adjEnd=0, chunksize=16*1024):
             if ENCRYPTION_ENABLE == 0:
                 return
             #origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]

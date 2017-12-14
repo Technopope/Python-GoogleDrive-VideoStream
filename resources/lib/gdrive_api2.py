@@ -26,7 +26,6 @@ import urllib, urllib2
 import socket
 
 import cookielib
-import unicodedata
 
 # cloudservice - standard modules
 from cloudservice import cloudservice
@@ -47,12 +46,12 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 if KODI:
 
     # cloudservice - standard XBMC modules
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
+    import xbmc, xbmcgui, xbmcvfs
 
 else:
-    from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
     from resources.libgui import xbmc
+    from resources.libgui import xbmcvfs
 
 
 SERVICE_NAME = 'dmdgdrive'
@@ -120,7 +119,7 @@ class gdrive(cloudservice):
                 self.getToken(self.getInstanceSetting('code'))
             else:
                 xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
-                xbmc.log(str(e))
+
         #***
         self.cache = cache.cache()
 
@@ -138,7 +137,8 @@ class gdrive(cloudservice):
 
                     spreadsheets = self.gSpreadsheet.getSpreadsheetList()
                 except:
-                    pass
+                    self.gSpreadsheet = None
+                    spreadsheets = None
 
                 for title in spreadsheets.iterkeys():
                     if title == self.cloudSpreadsheet:#'CLOUD_DB':
@@ -442,10 +442,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log('getMediaList ' + e)
+                  xbmc.log('getMediaList ' + str(e))
                   return
               else:
-                xbmc.log('getMediaList ' + e)
+                xbmc.log('getMediaList ' + str(e))
                 return
 
             response_data = response.read()
@@ -564,10 +564,6 @@ class gdrive(cloudservice):
                     if media is not None:
                         mediaFiles.append(media)
 
-            # look for more pages of videos
-            for r in re.finditer('\"largestChangeId\"\:\s+\"(\d)\"' ,
-                             response_data, re.DOTALL):
-                largestChangeId = r.group(1)
 
             # look for more pages of videos
             for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
@@ -582,10 +578,10 @@ class gdrive(cloudservice):
             return (mediaFiles, nextPageToken, maxChangeID)
 
             # are there more pages to process?
-            if nextURL == '':
-                break
-            else:
-                url = nextURL
+            #if nextURL == '':
+            #    break
+            #else:
+            #    url = nextURL
 
         return (mediaFiles, nextPageToken, maxChangeID)
 
@@ -835,7 +831,7 @@ class gdrive(cloudservice):
                                 mediaFile.playcount = mediaFile.playcount + 1
 
 
-                    except: pass
+                    except: return media
                     return media
 
 
@@ -902,10 +898,7 @@ class gdrive(cloudservice):
                 resourceType = ''
                 title = ''
                 fileSize = 0
-                thumbnail = ''
-                fileExtension = ''
 
-                url = ''
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   resourceID = r.group(1)
@@ -918,13 +911,10 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   title = r.group(1)
                   break
-                for r in re.finditer('\"thumbnailLink\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  thumbnail = r.group(1)
-                for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  fileExtension = r.group(1)
-                  break
+                #for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
+                #             entry, re.DOTALL):
+                #  fileExtension = r.group(1)
+                #  break
 
                 # entry is a photo
                 if ('fanart' in title and (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType)):
@@ -1003,7 +993,6 @@ class gdrive(cloudservice):
                 entry = r1.group(1)
 
                 resourceID = 0
-                resourceType = ''
                 title = ''
                 url = ''
                 fileExtension = ''
@@ -1105,8 +1094,8 @@ class gdrive(cloudservice):
             # parsing page for videos
             # video-entry
             count=0
-            for r in re.finditer('\<track id\=\"\d+\" .*? lang_code\=\"([^\"]+)\" .*? lang_translated\=\"([^\"]+)\" [^\>]+\>' ,response_data, re.DOTALL):
-                lang,language = r.groups()
+            for r in re.finditer('\<track id\=\"\d+\" .*? lang_code\=\"([^\"]+)\" .*? lang_translated\=\"[^\"]+\" [^\>]+\>' ,response_data, re.DOTALL):
+                lang = r.group(1)
                 cc.append([ '.'+str(count) + '.'+ str(lang) + '.srt',baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1'])
 
             # look for more pages of videos
@@ -1462,7 +1451,6 @@ class gdrive(cloudservice):
         # fetch streams (video)
         if docid != '':
             # player using docid
-            params = urllib.urlencode({'docid': docid})
             url = self.PROTOCOL+ 'drive.google.com/get_video_info?docid=' + str(docid)
 
 
@@ -1932,7 +1920,7 @@ class gdrive(cloudservice):
               else:
                   return
 
-        response_data = response.read()
+        response.read()
         response.close()
 
 
@@ -1940,7 +1928,7 @@ class gdrive(cloudservice):
     def getSubFolderID(self,folderName, parentID):
 
 
-        URL = 'https://www.googleapis.com/drive/v2/files?includeTeamDriveItems=true&supportsTeamDrives=true&q=\''+parentID+'\'+in+parents+and+trashed%3Dfalse&fields=nextLink%2Citems(kind%2Cid%2CmimeType%2Ctitle%2CfileSize%2CmodifiedDate%2CcreatedDate%2CdownloadUrl%2Cparents/parentLink%2Cmd5Checksum)';
+        url = 'https://www.googleapis.com/drive/v2/files?includeTeamDriveItems=true&supportsTeamDrives=true&q=\''+parentID+'\'+in+parents+and+trashed%3Dfalse&fields=nextLink%2Citems(kind%2Cid%2CmimeType%2Ctitle%2CfileSize%2CmodifiedDate%2CcreatedDate%2CdownloadUrl%2Cparents/parentLink%2Cmd5Checksum)';
 
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
