@@ -28,7 +28,7 @@ import urllib, urllib2
 import sys
 
 import constants
-from resources.lib import default
+from resources.lib import engine
 from resources.libgui import xbmcplugin
 
 
@@ -246,7 +246,7 @@ class webGUI(BaseHTTPRequestHandler):
                     self.server.addon.setSetting(instanceName + '_auth_access_token', str(accessToken))
                     self.server.addon.setSetting(instanceName + '_auth_refresh_token', str(refreshToken))
 
-                    mediaEngine = default.contentengine()
+                    mediaEngine = engine.contentengine()
                     mediaEngine.run(self,  DBM=self.server.dbm, addon=self.server.addon)
 
 
@@ -276,7 +276,7 @@ class webGUI(BaseHTTPRequestHandler):
                          post_data, re.DOTALL):
                     password = r.group(1)
                 if self.server.username == username and self.server.password == password:
-                    mediaEngine = default.contentengine()
+                    mediaEngine = engine.contentengine()
                     mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
                 else:
                     self.send_response(200)
@@ -284,7 +284,7 @@ class webGUI(BaseHTTPRequestHandler):
                     self.wfile.write("Wrong username/password")
 
             else:
-                mediaEngine = default.contentengine()
+                mediaEngine = engine.contentengine()
                 mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
 
 
@@ -405,6 +405,7 @@ class webGUI(BaseHTTPRequestHandler):
                 values = ''
                 default = ''
                 label = ''
+                range = ''
                 result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\" label\=\"(\d+)\" \/\>', str(line))
                 if result:
                     id = str(result.group(1))
@@ -412,7 +413,7 @@ class webGUI(BaseHTTPRequestHandler):
                     values = str(result.group(3))
                     default = str(result.group(4))
                     label = str(result.group(5))
-
+                    print "label = "+ str(label) + "\n"
                 if result is None:
                     result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\"([^/]+)\/\>\n', str(line))
                     if result:
@@ -428,7 +429,7 @@ class webGUI(BaseHTTPRequestHandler):
                         type = str(result.group(2))
                         default = str(result.group(4))
                         label = str(result.group(3))
-
+                        range = str(result.group(6))
                 if result is None:
                     result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\".*?label\=\"(\d+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\"[^\/]* \/\>\n', str(line))
                     if result:
@@ -438,6 +439,19 @@ class webGUI(BaseHTTPRequestHandler):
                         label = str(result.group(3))
                         values = str(result.group(4))
 
+                #<setting label="30205" type="lsep"/>
+                if result is None:
+                    result = re.search(r'\<setting label\=\"(\d+)\" type\=\"lsep\"\/\>\n', str(line))
+                    if result:
+                        label = str(result.group(1))
+                        self.wfile.write(str('<br /><b>' + self.server.addon.getLocalizedString(label)) + '</b><br /> ')
+                #    <category label="30196">
+                if result is None:
+                    result = re.search(r'\<category label\=\"(\d+)\"\>\n', str(line))
+                    if result:
+                        label = str(result.group(1))
+                        self.wfile.write(str('<input type="submit" value="Save" /><h2>' + self.server.addon.getLocalizedString(label)) + '</h2>')
+
 
         #<setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
 
@@ -446,18 +460,58 @@ class webGUI(BaseHTTPRequestHandler):
 
 
                 if result:
-                    id = str(result.group(1))
-                    type = str(result.group(2))
-                    values = str(result.group(3))
-                    defaults = str(result.group(4))
-                    label = str(result.group(5))
+
                     print "ID = " + id + "\n"
-                    if type == 'text':
-                        self.wfile.write(str(label) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(values)+'" /><br />')
-                    elif type == 'number':
-                        self.wfile.write(str(label) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(values)+'" /><br />')
+                    if type == 'text' or type == 'number':
+                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(values)+'" /><br />')
+                    if type == 'file':
+                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')><input name="'+str(id)+'" type="text" value="'+str(values)+'" /> <sub>[select server path to file]</sub><br />')
+                    elif type == 'labelenum':
+                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
+
+                        for r in re.finditer('(\d+)(?:\||$)' ,
+                                         values, re.DOTALL):
+                            if r.group(1) == int(default):
+                                self.wfile.write('<option value="'+str(r.group(1))+'" selected/>'+str(r.group(1)) + '</option>')
+                            else:
+                                self.wfile.write('<option value="'+str(r.group(1))+'"/>'+str(r.group(1)) + '</option>')
+
+                        self.wfile.write('</select><br />')
+                    elif type == 'enum':
+                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
+
+                        count = 0
+                        for r in re.finditer('([^\|]+)(?:\||$)' ,
+                                         values, re.DOTALL):
+
+                            if count == int(default):
+                                self.wfile.write('<option value="'+str(count)+'" selected/>'+str(r.group(1)) + '</option>')
+                            else:
+                                self.wfile.write('<option value="'+str(count)+'"/>'+str(r.group(1)) + '</option>')
+                            count += 1
+
+                        self.wfile.write('</select><br />')
+                    elif type == 'slider':
+                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
+
+                        for r in re.finditer('(\d+)\,(\d+)\,(\d+)' ,
+                                         range, re.DOTALL):
+
+                            min = r.group(1)
+                            increment = r.group(2)
+                            max = r.group(3)
+
+                            for i in range (min,max,increment):
+
+                                if i == int(default):
+                                    self.wfile.write('<option value="'+str(i)+'" selected/>'+str(i) + '</option>')
+                                else:
+                                    self.wfile.write('<option value="'+str(i)+'"/>'+str(i) + '</option>')
+
+                        self.wfile.write('</select><br />')
+
                     elif type == 'bool':
-                        self.wfile.write(str(label) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" value="" /><br />')
+                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" value="" /><br />')
 
             self.wfile.write('<input type="submit" value="Save" /></form></html>')
 
@@ -477,7 +531,7 @@ class webGUI(BaseHTTPRequestHandler):
             #self.end_headers()
             #xbmcplugin.assignOutputBuffer(self.wfile)
 
-            mediaEngine = default.contentengine()
+            mediaEngine = engine.contentengine()
             mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
             #self.wfile.write(outputBuffer)
             return
@@ -992,7 +1046,7 @@ class webGUI(BaseHTTPRequestHandler):
             if results:
                 query = str(results.group(1))
 
-            mediaEngine = default.contentengine()
+            mediaEngine = engine.contentengine()
             mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon)
             return
 

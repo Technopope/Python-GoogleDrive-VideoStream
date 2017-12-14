@@ -10,8 +10,6 @@
 		<!-- individual account settings -->
         <setting id="gdrive_numaccounts" type="integer" hidden="true" default="9" label="30022" />
 
-        <setting label="30205" type="lsep"/>
-
         <setting id="accounts" type="labelenum" values="1|2|3|4|5|6|7|8|9" default="1" label="" />
 
         <setting id="gdrive1_type" subsetting="true" type="enum" label="30010" visible="eq(-1,0)" values="ClientLogin -- no longer works|dmdsoftware OAUTH2|private OAUTH2|your own OAUTH2|Google Apps" default="4" />
