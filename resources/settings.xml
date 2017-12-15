@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <category label="30008">
+    <category  label="30008">
 
         <setting id="account_default" type="labelenum" values="1|2|3|4|5|6|7|8|9" default="1" label="30188" />
 
@@ -9,8 +9,6 @@
 
 		<!-- individual account settings -->
         <setting id="gdrive_numaccounts" type="integer" hidden="true" default="9" label="30022" />
-
-        <setting label="30205" type="lsep"/>
 
         <setting id="accounts" type="labelenum" values="1|2|3|4|5|6|7|8|9" default="1" label="" />
 
@@ -120,14 +118,14 @@
     <category label="30196">
 
     	<!-- testing streamer -->
-        <setting id="streamer" type="bool" label="30194" default="false" />
-        <setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
-        <setting id="local_db" type="bool" subsetting="true" label="30199" default="false" />
+        <setting id="streamer" type="bool" label="30194" default="false"/>
+        <setting id="stream_port" type="number" subsetting="true" label="30195" default="8011"/>
+        <setting id="local_db" type="bool" subsetting="true" label="30199" default="false"/>
 
 
     	<!-- update watch status -->
-        <setting id="tv_db_watch" type="bool" label="30197" default="false" />
-        <setting id="movie_db_watch" type="bool" label="30198" default="false" />
+        <setting id="tv_db_watch" type="bool" label="30197" default="false"/>
+        <setting id="movie_db_watch" type="bool" label="30198" default="false"/>
 
 		<!-- crypto properties -->
         <setting label="30190" type="lsep"/>
@@ -142,7 +140,7 @@
 
         <setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
         <setting label="30037" type="lsep"/>
-        <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
+        <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0" />
         <setting label="30006" type="lsep"/>
     	<setting id="prompt_quality" type="bool" subsetting="true" label="30019" default="true" />
     	<setting id="never_stream" type="bool" subsetting="true" label="30122" default="false" />
@@ -155,30 +153,30 @@
     </category>
 
 	<!-- music properties -->
-    <category label="30094">
-        <setting label="30037" type="lsep"/>
-        <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0" />
+    <category  label="30094">
+        <setting  label="30037" type="lsep"/>
+        <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0"/>
     </category>
 
    	<!-- photo properties -->
     <category label="30160">
         <setting label="30037" type="lsep"/>
-        <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0" />
-        <setting id="photo_folder" type="folder" label="30038" default="" />
+        <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0"/>
+        <setting id="photo_folder" type="folder" label="30038" default=""/>
         <setting id="photo_resolution" type="enum" label="30185" values="720p|1080p|4k|8k|16k|480p|original" default="0" />
     </category>
 
 	<!-- cache properties -->
-    <category label="30116">
-        <setting id="cache_folder" type="folder" label="30090" default="" />
-    	<setting id="cache_thumbnails" type="bool" subsetting="true" label="30182" default="false" />
-    	<setting id="cache_srt" type="bool" subsetting="true" label="30181" default="false" />
-        <setting label="30031" type="lsep"/>
-    	<setting id="always_cache" type="bool" subsetting="true" label="30121" default="false" />
-        <setting id="cache_single" type="bool" subsetting="true" label="30132" default="false" />
-        <setting id="cache_continue" type="bool" subsetting="true" label="30174" default="false" />
-        <setting id="chunk_size" type="slider" subsetting="true" label="30091" default="163840" option="int" range="131072,8192,8388608" />
-        <setting id="cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
+    <category  label="30116">
+        <setting id="cache_folder" type="folder" label="30090" default=""/>
+    	<setting id="cache_thumbnails" type="bool" subsetting="true" label="30182" default="false"/>
+    	<setting id="cache_srt" type="bool" subsetting="true" label="30181" default="false"/>
+        <setting  label="30031" type="lsep"/>
+    	<setting id="always_cache" type="bool" subsetting="true" label="30121" default="false"/>
+        <setting id="cache_single" type="bool" subsetting="true" label="30132" default="false"/>
+        <setting id="cache_continue" type="bool" subsetting="true" label="30174" default="false"/>
+        <setting id="chunk_size" type="slider" subsetting="true" label="30091" default="163840" option="int" range="131072,8192,8388608"/>
+        <setting id="cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100"/>
     </category>
 
 
@@ -201,15 +199,15 @@
         <setting id="context_evideo" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Don't Filter" default="0" />
         <setting id="context_emusic" type="enum" subsetting="true" label="30023" values="Music only|Don't Filter" default="0" />
         <setting id="context_ephoto" type="enum" subsetting="true" label="30024" values="Photos only|Don't Filter" default="0" />
-        <setting label="30166" subsetting="true" type="lsep"/>
+        <setting subsetting="true" label="30166" type="lsep"/>
     </category>
 	<!-- advanced properties -->
-    <category label="30134">
+    <category  label="30134">
 <!-->    	<setting id="integrated_player" type="bool" label="30133" default="false" />-->
-    	<setting id="cc" type="bool" label="30149" default="true" />
-    	<setting id="srt" type="bool" label="30150" default="true" />
-    	<setting id="parse_tv" type="bool" label="30156" default="true" />
-    	<setting id="parse_music" type="bool" label="30157" default="true" />
+    	<setting id="cc" type="bool" label="30149" default="true"/>
+    	<setting id="srt" type="bool" label="30150" default="true"/>
+    	<setting id="parse_tv" type="bool" label="30156" default="true"/>
+    	<setting id="parse_music" type="bool" label="30157" default="true"/>
 
     </category>
 
@@ -222,9 +220,9 @@
         <setting id="strm" type="bool"  subsetting="true" label="30189" default="false" />
 
         <setting id="strm_path" type="folder"  subsetting="true" label="30026" default="" />
-<!--        <setting id="library" type="bool" label="30064" default="false" />
-        <setting id="library_account" type="labelenum"  values="1|2|3|4|5|6|7|8|9" default="1" label="30062" />
-        <setting id="library_filename" type="text" label="30063" default="" />-->
+<!--        <setting id="library" type="bool" label="30064" default="false"/>
+        <setting id="library_account" type="labelenum"  values="1|2|3|4|5|6|7|8|9" default="1" label="30062"/>
+        <setting id="library_filename" type="text" label="30063" default=""/>-->
     </category>
 
 

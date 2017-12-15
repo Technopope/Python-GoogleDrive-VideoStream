@@ -353,6 +353,7 @@ class contentengine(object):
                 if KODI:
                     self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
                 else:
+                    self.addMenu('/settings?','['+str(addon.getLocalizedString(30217))+']')
                     self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
 #                    self.addMenu(self.PLUGIN_URL+'?mode=enroll','['+str(addon.getLocalizedString(30207))+']')
 
@@ -660,7 +661,7 @@ class contentengine(object):
                 returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
 
-            if path != '' and returnPrompt:
+            if path != '' and (not KODI or returnPrompt):
 
                 if silent != 2:
                     try:
@@ -1928,7 +1929,6 @@ class contentengine(object):
                         # test streamer
                         from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                         from resources.lib import streamer
-                        import urllib, urllib2
                         from SocketServer import ThreadingMixIn
                         import threading
                         try:
@@ -2549,7 +2549,6 @@ class contentengine(object):
                                 # test streamer
                                 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                                 from resources.lib import streamer
-                                import urllib, urllib2
                                 from SocketServer import ThreadingMixIn
                                 import threading
                                 try:

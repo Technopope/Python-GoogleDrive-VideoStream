@@ -60,7 +60,7 @@ class addDirectoryItem(object):
                 url = str(url) + '&kv=' +plugin_handle.server.encrypt.encryptString(url)
 
         if listitem.thumbnailImage is not None:
-            outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\"><img src=\""+listitem.thumbnailImage+"\" /><br />"+ str(label) + "</a>"+ listitem.detail+"<br />\n"
+            outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\"><img src=\""+listitem.thumbnailImage+"\" /><br />"+ str(label) + "</a>"+ listitem.detail+  listitem.menu+"<br />\n"
         else:
             outputBuffer.output =  outputBuffer.output + "<a href=\"" + str(url)+ "\">"+ str(label) + "</a> "+ listitem.menu+"<br />\n"
         return
