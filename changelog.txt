@@ -1,3 +1,5 @@
+- enable settings
+- implemented: configuring your plugin settings #13
 - fix audio playback
 - add [switch to photos] context switch
 - add sorting for encrypted items

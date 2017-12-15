@@ -176,12 +176,19 @@ class webGUI(BaseHTTPRequestHandler):
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self.send_response(200)
             self.end_headers()
+            print post_data
 
-
-            for r in re.finditer('([^\=]+)\=([^\&]+)' ,
+            for r in re.finditer('\&?([^\=]+)\=([^\&]+)' ,
                      post_data, re.DOTALL):
                 key = r.group(1)
                 value = r.group(2)
+                value = value.replace("%2F",'/')
+                value = value.replace("%3F",'?')
+                value = value.replace("%26",'&')
+                value = value.replace("%5c",'\\')
+                value = value.replace("%24",'$')
+
+                print "saving key, value " + str(key) +str(value)+ "\n"
                 self.server.dbm.setSetting(key,value)
 
             self.wfile.write('<html><body>Changes saved.</body></html>')
@@ -401,11 +408,26 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
 
-        elif decryptkeyvalue == '/settings':
+        elif  re.search(r'/settings', str(decryptkeyvalue)):
             self.send_response(200)
             self.end_headers()
 
             self.wfile.write('<html><form action="/settings" method="post">')
+
+            self.wfile.write('<h1>Plugin Configuration:</h1>')
+            self.wfile.write('<b>Secure Login</b><br />Username <input name="username" type="text" value="'+str(self.server.dbm.getSetting('username'))+'" /><br />')
+            self.wfile.write('Password <input name="password" type="text" value="'+str(self.server.dbm.getSetting('password'))+'" /><br />')
+            self.wfile.write('<br />Hide parameters <select name="hide">')
+            if self.server.dbm.getSetting('hide') == 'true':
+                self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
+            else:
+                self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
+            self.wfile.write('<br />Generate keyvalue parameters <select name="keyvalue">')
+            if self.server.dbm.getSetting('keyvalue') == 'true':
+                self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
+            else:
+                self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
+            self.wfile.write('<br /><input type="submit" value="Save" /><h1>Media Configuration:</h1>')
 
             self.setings = {}
             file = open('./resources/settings.xml', "r")
@@ -472,18 +494,17 @@ class webGUI(BaseHTTPRequestHandler):
 
                 if result:
 
-                    print "ID = " + id + "\n"
 
                     if id != '':
                         currentValue = self.server.dbm.getSetting(id)
                         if currentValue is None:
                             currentValue = default
                         if type == 'text' or type == 'number':
-                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /><br />')
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /><br />')
                         if type == 'file' or type == 'folder':
-                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')><input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /> <sub>[select server path to '+str(type)+']</sub><br />')
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /> <sub>[select server path to '+str(type)+']</sub><br />')
                         elif type == 'labelenum':
-                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
 
                             for r in re.finditer('(\d+)(?:\||$)' ,
                                              values, re.DOTALL):
@@ -494,7 +515,7 @@ class webGUI(BaseHTTPRequestHandler):
 
                             self.wfile.write('</select><br />')
                         elif type == 'enum':
-                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
 
                             count = 0
                             for r in re.finditer('([^\|]+)(?:\||$)' ,
@@ -508,7 +529,7 @@ class webGUI(BaseHTTPRequestHandler):
 
                             self.wfile.write('</select><br />')
                         elif type == 'slider':
-                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
                             print "MIN =" + str(range) + "\n"
 
                             for r in re.finditer('(\d+)\,(\d+)\,(\d+)' ,
@@ -528,11 +549,16 @@ class webGUI(BaseHTTPRequestHandler):
                             self.wfile.write('</select><br />')
 
                         elif type == 'bool':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
                             if currentValue == 'true':
-                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" checked /><br />')
+                                #self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" value="true" checked /><br />')
+                                self.wfile.write('<option value="true" selected/>true</option>')
+                                self.wfile.write('<option value="false"/>false</option>')
                             else:
-                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" /><br />')
+                                self.wfile.write('<option value="false" selected/>false</option>')
+                                self.wfile.write('<option value="true"/>true</option>')
 
+                            self.wfile.write('</select><br />')
             self.wfile.write('<input type="submit" value="Save" /></form></html>')
 
 

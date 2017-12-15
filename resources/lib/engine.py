@@ -353,6 +353,7 @@ class contentengine(object):
                 if KODI:
                     self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
                 else:
+                    self.addMenu('/settings?','['+str(addon.getLocalizedString(30217))+']')
                     self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
 #                    self.addMenu(self.PLUGIN_URL+'?mode=enroll','['+str(addon.getLocalizedString(30207))+']')
 
