@@ -852,7 +852,7 @@ class contentengine(object):
                 returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
 
-            if path != '' and returnPrompt:
+            if path != '' and  (not KODI or returnPrompt):
 
                 if silent != 2:
                     try:

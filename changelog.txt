@@ -1,3 +1,4 @@
+- fix for TV/Movies STRM generation
 - implemented search function
 - redirect dialogs to screen
 - fixup settings pane "autocomplete"ing the fields
