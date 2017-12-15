@@ -72,7 +72,7 @@ class xbmcaddon:
         try:
            return self.dbm[key]
         except:
-           return ''
+           return None
 
 
 

@@ -36,6 +36,7 @@ else:
     from resources.libgui import xbmc
 
 
+
 from resources.lib import settings
 
 
@@ -574,6 +575,7 @@ class contentengine(object):
 
 
 
+
         if KODI:
             #global variables
             self.PLUGIN_URL = sys.argv[0]
@@ -581,7 +583,6 @@ class contentengine(object):
             plugin_queries = settings.parse_query(sys.argv[2][1:])
 
         else:
-            self.PLUGIN_URL = 'default.py'
             self.plugin_handle = writer
             plugin_queries = ''
 
@@ -591,15 +592,22 @@ class contentengine(object):
 
         self.debugger()
 
-
         # cloudservice - create settings module
         settings = settings.settings(addon)
+
+        if not KODI:
+            protocol = settings.getSetting('protocol', 'http://')
+            hostname = settings.getSetting('hostname', 'localhost')
+            port = settings.getSetting('port', '9988')
+            self.PLUGIN_URL = str(protocol) + str(hostname) + ':' + str(port)  + '/' +  'default.py'
+
 
         # retrieve settings
         user_agent = settings.getSetting('user_agent')
         #obsolete, replace, revents audio from streaming
         #if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
         #    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
+
 
 
 
@@ -680,8 +688,23 @@ class contentengine(object):
                         filename = path + '/' + title+'.strm'
                         strmFile = xbmcvfs.File(filename, "w")
 
+                        if not KODI:
+                            if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+
+                                if params and plugin_handle.server.hide:
+                                    base = str(params.group(1))
+                                    extended = str(params.group(1))
+                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                else:
+                                    url = str(url) + '&kv=' +plugin_handle.server.encrypt.encryptString(url)
+
+
                         strmFile.write(url+'\n')
                         strmFile.close()
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file.')
+
+
                 else:
 
                     folderID = settings.getParameter('folder')
@@ -735,13 +758,16 @@ class contentengine(object):
                             if titleDecrypted is not None:
                                 title = titleDecrypted.group(1)
 
-
+                        count = 0
                         if constants.CONST.spreadsheet and service.cloudResume == '2':
                             spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
-                            service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
+                            count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
                             spreadsheetFile.close()
                         else:
-                            service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
+                            count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
+                        #count
+
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created '+str(count)+'STRM file(s).')
 
                     elif filename != '':
                                     if encfs:
@@ -765,6 +791,7 @@ class contentengine(object):
                                     strmFile = xbmcvfs.File(filename, "w")
                                     strmFile.write(url+'\n')
                                     strmFile.close()
+                                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file.')
 
                     else:
 

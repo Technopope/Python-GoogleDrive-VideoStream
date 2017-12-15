@@ -57,8 +57,10 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.cryptoPassword = None
 
     # set DBM
-    def setDBM(self, dbm):
-        self.dbm = settingsdbm.settingsdbm(dbm)
+    def setDBM(self, dbm=None):
+        if dbm is not None:
+            self.dbm = settingsdbm.settingsdbm(dbm)
+
         # login password?
         try:
             self.username = self.dbm.getSetting('username')
@@ -70,8 +72,12 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         try:
             if self.dbm.getSetting('hide') == 'true' and self.password != None:
                 self.hide = True
+            else:
+                self.hide = False
             if self.dbm.getSetting('keyvalue') == 'true':
                 self.keyvalue = True
+            else:
+                self.keyValue = False
         except: pass
 
 
@@ -79,8 +85,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 			from resources.lib import encryption
 
 			try:
-				self.dbm.getSetting('saltfile')
-				self.saltfile = self.dbm.getSetting('saltfile')
+				self.saltfile = self.dbm.getSetting('saltfile', default='saltfile')
 			except:
 				self.saltfile = 'saltfile'
 				print "No saltfile set, using file \'" + self.saltfile + "\' instead."
@@ -187,11 +192,15 @@ class webGUI(BaseHTTPRequestHandler):
                 value = value.replace("%26",'&')
                 value = value.replace("%5c",'\\')
                 value = value.replace("%24",'$')
+                value = value.replace("%3A",':')
+                value = value.replace('passwrd','password')
+
+
 
                 print "saving key, value " + str(key) +str(value)+ "\n"
                 self.server.dbm.setSetting(key,value)
 
-            self.wfile.write('<html><body>Changes saved.</body></html>')
+            self.wfile.write('<html><body>Changes saved.  You must restart the service or click <a href="/reload">reload</a> to make the changes take in effect.</body></html>')
 
 
         # redirect url to output
@@ -307,6 +316,7 @@ class webGUI(BaseHTTPRequestHandler):
                 mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
 
 
+
         # redirect url to output
         elif re.search(r'/play.py', str(decryptkeyvalue)):
 
@@ -412,12 +422,13 @@ class webGUI(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            self.wfile.write('<html><form action="/settings" method="post">')
+            self.wfile.write('<html><form autocomplete="off" action="/settings" method="post">')
 
             self.wfile.write('<h1>Plugin Configuration:</h1>')
             self.wfile.write('<b>Secure Login</b><br />Username <input name="username" type="text" value="'+str(self.server.dbm.getSetting('username'))+'" /><br />')
-            self.wfile.write('Password <input name="password" type="text" value="'+str(self.server.dbm.getSetting('password'))+'" /><br />')
-            self.wfile.write('<br />Hide parameters <select name="hide">')
+            self.wfile.write('Password <input name="passwrd" type="text" value="'+str(self.server.dbm.getSetting('password'))+'" /><br />')
+
+            self.wfile.write('<br /><br /><b><i>The following settings affect creating secure URLs:</i></b><br />Hide parameters <select name="hide">')
             if self.server.dbm.getSetting('hide') == 'true':
                 self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
             else:
@@ -427,6 +438,17 @@ class webGUI(BaseHTTPRequestHandler):
                 self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
             else:
                 self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
+
+            self.wfile.write('<br />Salt file <input name="saltfile" type="text" value="'+str(self.server.dbm.getSetting('saltfile'))+'"><sub>[select server path to file]</sub>')
+
+            self.wfile.write('<br /><br /><b><i>The following settings affect path included in STRM files created:</i></b><br /> Protocol <select name="protocol">')
+            if self.server.dbm.getSetting('protocol') == 'https://':
+                self.wfile.write('<option value="https://" selected >https://</option><option value="http://">http://</option><br /></select>')
+            else:
+                self.wfile.write('<option value="https://">https://</option><option value="http://" selected>http://</opton><br /></select>')
+            self.wfile.write('<br />Hostname <input name="hostname" type="text" value="'+str(self.server.dbm.getSetting('hostname', default='localhost'))+'" /><br />')
+            self.wfile.write('<br />Port <input name="port" type="text" value="'+str(self.server.dbm.getSetting('port',default='9988'))+'" /><br />')
+
             self.wfile.write('<br /><input type="submit" value="Save" /><h1>Media Configuration:</h1>')
 
             self.setings = {}
@@ -530,7 +552,6 @@ class webGUI(BaseHTTPRequestHandler):
                             self.wfile.write('</select><br />')
                         elif type == 'slider':
                             self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
-                            print "MIN =" + str(range) + "\n"
 
                             for r in re.finditer('(\d+)\,(\d+)\,(\d+)' ,
                                              range, re.DOTALL):
@@ -573,14 +594,20 @@ class webGUI(BaseHTTPRequestHandler):
             #self.server.ready = False
             return
 
-            #self.send_response(200)
-            #self.end_headers()
-            #xbmcplugin.assignOutputBuffer(self.wfile)
+        elif decryptkeyvalue == '/reload':
+            self.server.setDBM()
+            self.send_response(200)
+            self.end_headers()
+            if self.server.username is not None:
+                self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
+            else:
+                self.wfile.write('<html><form action="/list" method="post"><input type="submit" value="Login"></form></html>')
 
-            mediaEngine = engine.contentengine()
-            mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
-            #self.wfile.write(outputBuffer)
+            #self.server.ready = False
             return
+
+
+
 
 
         # redirect url to output
