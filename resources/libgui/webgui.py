@@ -30,6 +30,7 @@ import sys
 import constants
 from resources.lib import engine
 from resources.libgui import xbmcplugin
+from resources.libgui import settingsdbm
 
 
 if constants.CONST.DEBUG:
@@ -57,23 +58,19 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
     # set DBM
     def setDBM(self, dbm):
-        self.dbm = dbm
-        #setup encryption password
-        import anydbm
-
-        dbm = anydbm.open(dbm,'r')
+        self.dbm = settingsdbm.settingsdbm(dbm)
         # login password?
         try:
-            self.username = dbm['username']
-            self.password = dbm['password']
+            self.username = self.dbm.getSetting('username')
+            self.password = self.dbm.getSetting('password')
         except:
             self.username = None
             self.password = None
 
         try:
-            if dbm['hide'] == 'true' and self.password != None:
+            if self.dbm.getSetting('hide') == 'true' and self.password != None:
                 self.hide = True
-            if dbm['keyvalue'] == 'true':
+            if self.dbm.getSetting('keyvalue') == 'true':
                 self.keyvalue = True
         except: pass
 
@@ -82,8 +79,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 			from resources.lib import encryption
 
 			try:
-				dbm['saltfile']
-				self.saltfile = dbm['saltfile']
+				self.dbm.getSetting('saltfile')
+				self.saltfile = self.dbm.getSetting('saltfile')
 			except:
 				self.saltfile = 'saltfile'
 				print "No saltfile set, using file \'" + self.saltfile + "\' instead."
@@ -94,11 +91,10 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
 
         try:
-            self.cryptoSalt = dbm['crypto_salt']
-            self.cryptoPassword = dbm['crypto_password']
+            self.cryptoSalt = self.dbm.getSetting('crypto_salt')
+            self.cryptoPassword = self.dbm.getSetting('crypto_password')
         except: pass
 
-        dbm.close()
 
 
 class webGUI(BaseHTTPRequestHandler):
@@ -173,6 +169,22 @@ class webGUI(BaseHTTPRequestHandler):
 
 
                 self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id='+str(client_id)+'" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="/default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="default.py?mode=enroll" method="post">Client ID:<br /><input type="text" name="client_id" value="'+str(client_id)+'"><br />Client Secret:<br /><input type="text" name="client_secret" value="'+str(client_secret)+'"><br /><br /> <input type="submit" value="Submit"></form></body></html>')
+
+        # redirect url to output
+        elif re.search(r'/settings', str(decryptkeyvalue)):
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            self.send_response(200)
+            self.end_headers()
+
+
+            for r in re.finditer('([^\=]+)\=([^\&]+)' ,
+                     post_data, re.DOTALL):
+                key = r.group(1)
+                value = r.group(2)
+                self.server.dbm.setSetting(key,value)
+
+            self.wfile.write('<html><body>Changes saved.</body></html>')
 
 
         # redirect url to output
@@ -393,7 +405,7 @@ class webGUI(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            self.wfile.write('<html><form action="/list" method="post">')
+            self.wfile.write('<html><form action="/settings" method="post">')
 
             self.setings = {}
             file = open('./resources/settings.xml', "r")
@@ -413,15 +425,6 @@ class webGUI(BaseHTTPRequestHandler):
                     values = str(result.group(3))
                     default = str(result.group(4))
                     label = str(result.group(5))
-                    print "label = "+ str(label) + "\n"
-                if result is None:
-                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\"([^/]+)\/\>\n', str(line))
-                    if result:
-                        id = str(result.group(1))
-                        type = str(result.group(2))
-                        default = str(result.group(4))
-                        label = str(result.group(3))
-
                 if result is None:
                     result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\" option\=\"([^\"]*)\" range\=\"([^\"]*)\"[^/]+\/\>\n', str(line))
                     if result:
@@ -430,6 +433,14 @@ class webGUI(BaseHTTPRequestHandler):
                         default = str(result.group(4))
                         label = str(result.group(3))
                         range = str(result.group(6))
+                if result is None:
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\"([^/]+)\/\>\n', str(line))
+                    if result:
+                        id = str(result.group(1))
+                        type = str(result.group(2))
+                        default = str(result.group(4))
+                        label = str(result.group(3))
+
                 if result is None:
                     result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\".*?label\=\"(\d+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\"[^\/]* \/\>\n', str(line))
                     if result:
@@ -441,7 +452,7 @@ class webGUI(BaseHTTPRequestHandler):
 
                 #<setting label="30205" type="lsep"/>
                 if result is None:
-                    result = re.search(r'\<setting label\=\"(\d+)\" type\=\"lsep\"\/\>\n', str(line))
+                    result = re.search(r'\<setting.*label\=\"(\d+)\" type\=\"lsep\"\/\>\n', str(line))
                     if result:
                         label = str(result.group(1))
                         self.wfile.write(str('<br /><b>' + self.server.addon.getLocalizedString(label)) + '</b><br /> ')
@@ -462,56 +473,65 @@ class webGUI(BaseHTTPRequestHandler):
                 if result:
 
                     print "ID = " + id + "\n"
-                    if type == 'text' or type == 'number':
-                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(values)+'" /><br />')
-                    if type == 'file':
-                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')><input name="'+str(id)+'" type="text" value="'+str(values)+'" /> <sub>[select server path to file]</sub><br />')
-                    elif type == 'labelenum':
-                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
 
-                        for r in re.finditer('(\d+)(?:\||$)' ,
-                                         values, re.DOTALL):
-                            if r.group(1) == int(default):
-                                self.wfile.write('<option value="'+str(r.group(1))+'" selected/>'+str(r.group(1)) + '</option>')
-                            else:
-                                self.wfile.write('<option value="'+str(r.group(1))+'"/>'+str(r.group(1)) + '</option>')
+                    if id != '':
+                        currentValue = self.server.dbm.getSetting(id)
+                        if currentValue is None:
+                            currentValue = default
+                        if type == 'text' or type == 'number':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /><br />')
+                        if type == 'file' or type == 'folder':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')><input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /> <sub>[select server path to '+str(type)+']</sub><br />')
+                        elif type == 'labelenum':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
 
-                        self.wfile.write('</select><br />')
-                    elif type == 'enum':
-                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
-
-                        count = 0
-                        for r in re.finditer('([^\|]+)(?:\||$)' ,
-                                         values, re.DOTALL):
-
-                            if count == int(default):
-                                self.wfile.write('<option value="'+str(count)+'" selected/>'+str(r.group(1)) + '</option>')
-                            else:
-                                self.wfile.write('<option value="'+str(count)+'"/>'+str(r.group(1)) + '</option>')
-                            count += 1
-
-                        self.wfile.write('</select><br />')
-                    elif type == 'slider':
-                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
-
-                        for r in re.finditer('(\d+)\,(\d+)\,(\d+)' ,
-                                         range, re.DOTALL):
-
-                            min = r.group(1)
-                            increment = r.group(2)
-                            max = r.group(3)
-
-                            for i in range (min,max,increment):
-
-                                if i == int(default):
-                                    self.wfile.write('<option value="'+str(i)+'" selected/>'+str(i) + '</option>')
+                            for r in re.finditer('(\d+)(?:\||$)' ,
+                                             values, re.DOTALL):
+                                if r.group(1) == int(currentValue):
+                                    self.wfile.write('<option value="'+str(r.group(1))+'" selected/>'+str(r.group(1)) + '</option>')
                                 else:
-                                    self.wfile.write('<option value="'+str(i)+'"/>'+str(i) + '</option>')
+                                    self.wfile.write('<option value="'+str(r.group(1))+'"/>'+str(r.group(1)) + '</option>')
 
-                        self.wfile.write('</select><br />')
+                            self.wfile.write('</select><br />')
+                        elif type == 'enum':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
 
-                    elif type == 'bool':
-                        self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" value="" /><br />')
+                            count = 0
+                            for r in re.finditer('([^\|]+)(?:\||$)' ,
+                                             values, re.DOTALL):
+
+                                if count == int(currentValue):
+                                    self.wfile.write('<option value="'+str(count)+'" selected/>'+str(r.group(1)) + '</option>')
+                                else:
+                                    self.wfile.write('<option value="'+str(count)+'"/>'+str(r.group(1)) + '</option>')
+                                count += 1
+
+                            self.wfile.write('</select><br />')
+                        elif type == 'slider':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<select name="'+str(id)+'"/>')
+                            print "MIN =" + str(range) + "\n"
+
+                            for r in re.finditer('(\d+)\,(\d+)\,(\d+)' ,
+                                             range, re.DOTALL):
+
+                                min = int(r.group(1))
+                                increment = int(r.group(2))
+                                max = int(r.group(3))
+                                i = min
+                                while i < max:
+
+                                    if i == int(currentValue):
+                                        self.wfile.write('<option value="'+str(i)+'" selected/>'+str(i) + '</option>')
+                                    else:
+                                        self.wfile.write('<option value="'+str(i)+'"/>'+str(i) + '</option>')
+                                    i = i + increment
+                            self.wfile.write('</select><br />')
+
+                        elif type == 'bool':
+                            if currentValue == 'true':
+                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" checked /><br />')
+                            else:
+                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" /><br />')
 
             self.wfile.write('<input type="submit" value="Save" /></form></html>')
 
