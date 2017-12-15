@@ -1,3 +1,4 @@
+- hide settings that only pertain to kodi
 - enable settings
 - implemented: configuring your plugin settings #13
 - fix audio playback
