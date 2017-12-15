@@ -57,6 +57,8 @@ def getParameterInt(key,default=0):
             return True
         elif value == 'false':
             return False
+        elif value is None:
+            return default
         else:
             return value
     except:
@@ -83,6 +85,8 @@ def getSettingInt(key,default=0):
             return True
         elif value == 'false':
             return False
+        elif value is None:
+            return default
         else:
             return value
     except:
@@ -250,6 +254,8 @@ class settings:
                 return True
             elif value == 'false':
                 return False
+            elif value is None:
+                return default
             else:
                 return value
         except:
