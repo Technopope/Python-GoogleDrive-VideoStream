@@ -36,6 +36,15 @@ class Dialog(object):
         return
     def yesno(self, heading, line1):
         return
+    def inputText(self, variable, name, url, parameters):
+        hidden = ''
+        for r in re.finditer('([^\=]+)\=([^\&]+)(?:\&|$)' ,
+                 parameters, re.DOTALL):
+            key = r.group(1)
+            value = r.group(2)
+            hidden = hidden + '<input type="hidden" name="'+str(key)+'" value="'+str(value)+'" />'
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<form post="'+str(url)+'" method="GET"><input type="text" name="'+str(variable)+'"/>'+hidden+'<input type="submit" value="'+str(name)+'"/></form><br/>'
+        return
 
 class WindowXMLDialog(object):
 

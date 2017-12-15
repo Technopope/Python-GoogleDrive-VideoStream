@@ -1180,7 +1180,7 @@ class cloudservice(object):
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
 
-                    elif contextType == 'image':
+                    elif KODI and contextType == 'image':
                         # slideshow
                         if encfs:
                             values = {'encfs': 'true', 'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
@@ -1189,16 +1189,16 @@ class cloudservice(object):
                         #cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
 
                     if (self.protocol == 2):
-                        if contextType != 'image':
+                        if KODI and contextType != 'image':
                             #download folder
                             values = {'instance': self.instanceName, 'title': folder.title, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
 
-                        if contextType == 'audio' and not encfs:
+                        if KODI and contextType == 'audio' and not encfs:
                             #playback entire folder
                             values = {'instance': self.instanceName, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=audio&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
-                        elif contextType == 'video' and not encfs:
+                        elif KODI and contextType == 'video' and not encfs:
                             #playback entire folder
                             values = {'instance': self.instanceName, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
@@ -1208,13 +1208,14 @@ class cloudservice(object):
                         if not encfs:
                             cm.append((  self.addon.getLocalizedString(30192), 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
                         cm.append((  self.addon.getLocalizedString(30193), 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
+
                         #if within encfs and pictures, disable right-click default photo options; add download-folder
-                        if encfs and contextType == 'image':
+                        if KODI and encfs and contextType == 'image':
                             values = {'instance': self.instanceName, 'epath': epath, 'foldername': folder.title, 'folder': folder.id}
 
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
                             listitem.addContextMenuItems(cm, True)
-                        elif contextType == 'image':
+                        elif KODI and contextType == 'image':
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
 
@@ -1399,7 +1400,7 @@ class cloudservice(object):
 
             if (self.protocol == 2):
                 # play-original for video only
-                if (contextType == 'video'):
+                if (KODI and contextType == 'video'):
                     if (package.file.type != package.file.AUDIO and self.settings.promptQuality) and not encfs:
                         cm.append(( self.addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&strm=false&original=true'+')', ))
                     else:
@@ -1417,7 +1418,7 @@ class cloudservice(object):
 #                    folderurl = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 #                    cm.append(( 'folder', 'XBMC.RunPlugin('+folderurl+')', ))
 
-                if contextType != 'image':
+                if KODI and contextType != 'image':
                     # download
                     cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
 
@@ -1427,7 +1428,7 @@ class cloudservice(object):
 
 
 
-        elif package.file.type ==  package.file.PICTURE: #contextType == 'image':
+        elif KODI and package.file.type ==  package.file.PICTURE: #contextType == 'image':
 
                 cm.append(( self.addon.getLocalizedString(30126), 'XBMC.SlideShow('+self.PLUGIN_URL+ '?mode=index&' + urllib.urlencode(values)+')', ))
 
