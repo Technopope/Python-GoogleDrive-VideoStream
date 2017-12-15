@@ -16,7 +16,7 @@
 
 
 '''
-
+import os
 
 #
 # The purpose of this class is to override  xbmcgui and supply equivalent subroutines when ran without KODI
@@ -27,14 +27,17 @@
 def File(filename, type):
     return open(filename, type)
 
-
-class exists(object):
-
-
-    ##
-    ##
-    def __init__(self,path):
+def mkdir(path):
+    try:
+        os.mkdir(path)
+    except:
         return
+
+def exists(path):
+    os.path.isdir(path)
+
+
+
 
 
 class xbmcvfs:

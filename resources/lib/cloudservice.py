@@ -38,6 +38,7 @@ else:
     from resources.libgui import xbmc
     from resources.libgui import xbmcgui
     from resources.libgui import xbmcplugin
+    from resources.libgui import xbmcvfs
 
 
 from resources.lib import mediaurl
@@ -115,7 +116,7 @@ class cloudservice(object):
     ##
     def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None):
 
-
+        count = 0
         if catalog:
             if musicPath is None:
                 musicPath = path + '/music'
@@ -125,13 +126,11 @@ class cloudservice(object):
                 tvPath = path + '/tv'
             if videoPath is None:
                 videoPath = path + '/video-other'
-            import xbmcvfs
             xbmcvfs.mkdir(musicPath)
             xbmcvfs.mkdir(tvPath)
             xbmcvfs.mkdir(videoPath)
             xbmcvfs.mkdir(moviePath)
         else:
-            import xbmcvfs
             xbmcvfs.mkdir(path)
 
 
@@ -144,9 +143,9 @@ class cloudservice(object):
                 url = 0
                 if item.file is None:
                     if catalog:
-                        self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath)
+                        count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath)
                     else:
-                        self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
+                        count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
                 else:
                     #'content_type': 'video',
                     values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
@@ -171,6 +170,7 @@ class cloudservice(object):
 
                             strmFile.write(url+'\n')
                             strmFile.close()
+                            count += 1
                         else:
                             episode = ''
                             # nekwebdev contribution
@@ -226,6 +226,7 @@ class cloudservice(object):
                                     strmFile = xbmcvfs.File(filename, "w")
                                     strmFile.write(url+'\n')
                                     strmFile.close()
+                                    count += 1
 
                         if spreadsheetFile is not None:
                             spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
@@ -353,7 +354,7 @@ class cloudservice(object):
 
                             strmFile.write(url+'\n')
                             strmFile.close()
-
+        return count
     ##
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
@@ -361,7 +362,6 @@ class cloudservice(object):
    # def buildSTRM2(self, path, contentType=1, pDialog=None, spreadsheetFile=None):
     def buildSTRM2(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None):
 
-        import xbmcvfs
         xbmcvfs.mkdir(path)
 
         musicPath = path + '/music'

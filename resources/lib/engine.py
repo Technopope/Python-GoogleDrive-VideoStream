@@ -36,6 +36,7 @@ else:
     from resources.libgui import xbmc
 
 
+
 from resources.lib import settings
 
 
@@ -701,6 +702,9 @@ class contentengine(object):
 
                         strmFile.write(url+'\n')
                         strmFile.close()
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file.')
+
+
                 else:
 
                     folderID = settings.getParameter('folder')
@@ -754,13 +758,16 @@ class contentengine(object):
                             if titleDecrypted is not None:
                                 title = titleDecrypted.group(1)
 
-
+                        count = 0
                         if constants.CONST.spreadsheet and service.cloudResume == '2':
                             spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
-                            service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
+                            count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
                             spreadsheetFile.close()
                         else:
-                            service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
+                            count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
+                        #count
+
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created '+str(count)+'STRM file(s).')
 
                     elif filename != '':
                                     if encfs:
@@ -784,6 +791,7 @@ class contentengine(object):
                                     strmFile = xbmcvfs.File(filename, "w")
                                     strmFile.write(url+'\n')
                                     strmFile.close()
+                                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file.')
 
                     else:
 
