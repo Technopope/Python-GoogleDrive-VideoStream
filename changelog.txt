@@ -1,4 +1,4 @@
-- redirect dialogs to screen
+c- redirect dialogs to screen
 - fixup settings pane "autocomplete"ing the fields
 - hide settings that only pertain to kodi
 - enable settings
