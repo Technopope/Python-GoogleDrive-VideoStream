@@ -32,6 +32,8 @@ class Dialog(object):
     def select(self, heading, line1, line2='', line3=''):
         #print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         return
+    def yesno(self, heading, line1):
+        return
 
 
 class WindowXMLDialog(object):
@@ -99,7 +101,7 @@ class ListItem(object):
             duration = str(params.group(1))
             resolution = str(params.group(2))
         self.detail = '<sup><b>' + str(resolution) + 'p</b></sup><i>['+ str(int(duration)/60) + 'mins]</i>'
-        #self.menu =  '<button title="+" onclick="if(document.getElementById(\''+str(self.label)+'\').style.display==\'none\'){document.getElementById(\''+str(self.label)+'\').style.display=\'\'}else{document.getElementById(\''+str(self.label)+'\').style.display=\'none\'}">+</button><div style="display: none" id="'+str(self.label)+'"> <strong>'+str(value)+'</strong></div>'
+        self.menu =  '<button title="+" onclick="if(document.getElementById(\''+str(self.label)+'\').style.display==\'none\'){document.getElementById(\''+str(self.label)+'\').style.display=\'\'}else{document.getElementById(\''+str(self.label)+'\').style.display=\'none\'}">+</button><div style="display: none" id="'+str(self.label)+'"> <strong>'+str(value)+'</strong></div>'
         return
 
     def __str__(self):

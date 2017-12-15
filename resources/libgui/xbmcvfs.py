@@ -22,6 +22,12 @@
 # The purpose of this class is to override  xbmcgui and supply equivalent subroutines when ran without KODI
 #
 
+
+
+def File(filename, type):
+    return open(filename, type)
+
+
 class exists(object):
 
 
@@ -41,52 +47,4 @@ class xbmcvfs:
         return
 
 
-    ##
-    # Get the token of name with value provided.
-    # returns: str
-    ##
-    def getToken(self,name):
-        if name in self.auth:
-            return self.auth[name]
-        else:
-            return ''
 
-    ##
-    # Get the count of authorization tokens
-    # returns: int
-    ##
-    def getTokenCount(self):
-        return len(self.auth)
-
-    ##
-    # Save the latest authorization tokens
-    ##
-    def saveTokens(self,instanceName,addon):
-        for token in self.auth:
-            addon.setSetting(instanceName + '_'+token, self.auth[token])
-
-    ##
-    # load the latest authorization tokens
-    ##
-    def loadToken(self,instanceName,addon, token):
-        try:
-            tokenValue = addon.getSetting(instanceName + '_'+token)
-            if tokenValue != '':
-              self.auth[token] = tokenValue
-              return True
-            else:
-              return False
-        except:
-            return False
-
-    ##
-    # load the latest authorization tokens
-    ##
-    def isToken(self,instanceName, addon, token):
-        try:
-            if self.auth[token] != '':
-              return True
-            else:
-              return False
-        except:
-            return False
