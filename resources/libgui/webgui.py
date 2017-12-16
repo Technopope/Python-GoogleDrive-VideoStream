@@ -405,14 +405,15 @@ class webGUI(BaseHTTPRequestHandler):
 
                 count = 1
                 loop = True
-                while loop:
+                while loop and count < 10:
                     instanceName = constants.PLUGIN_NAME +str(count)
                     try:
                         username = self.server.addon.getSetting(instanceName+'_username')
                     except:
-                        username = ''
+                        username = None
 
-                    if username == account or username == '':
+                    print "USERNAME " + str(username) + "\n"
+                    if username == account or username is None:
                         self.server.addon.setSetting(instanceName + '_type', str(3))
                         self.server.addon.setSetting(instanceName + '_code', str(code))
                         self.server.addon.setSetting(instanceName + '_client_id', str(client_id))

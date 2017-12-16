@@ -360,16 +360,16 @@ class contentengine(object):
 
                 if contextType != 'image':
                     path = settings.getSetting('cache_folder')
-                    if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                    if path != '' and  path is not None and (xbmcvfs.exists(path) or os.path.exists(path)):
                         self.addMenu(self.PLUGIN_URL+'?mode=offline&content_type='+str(contextType),'<'+str(addon.getLocalizedString(30208))+'>')
 
                 if contextType == 'image':
                     path = settings.getSetting('photo_folder')
-                    if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                    if path != '' and  path is not None and (xbmcvfs.exists(path) or os.path.exists(path)):
                         self.addMenu(path,'<offline photos>')
 
                 path = settings.getSetting('encfs_target')
-                if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                if path != '' and path is not None and (xbmcvfs.exists(path) or os.path.exists(path)):
                     self.addMenu(path,'<offline encfs>')
 
 
@@ -379,11 +379,12 @@ class contentengine(object):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username')
-                        if username != '':
+                        if username is not None and username != '':
                             self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
                     except:
-                        username = ''
+                        username = None
+
                     if count == numberOfAccounts:
                         break
                     count = count + 1
@@ -405,11 +406,11 @@ class contentengine(object):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username')
-                        if username != '':
+                        if username != '' and username is not None:
                             options.append(username)
                             accounts.append(instanceName)
 
-                        if username != '':
+                        if username != '' and username is not None:
 
                             return instanceName
                     except:
@@ -432,7 +433,7 @@ class contentengine(object):
                 try:
                     username = settings.getSetting('username')
 
-                    if username != '':
+                    if username != '' and username is not None:
                         addon.setSetting(self.PLUGIN_NAME+'1_username', username)
                         addon.setSetting(self.PLUGIN_NAME+'1_password', settings,getSetting('password'))
                         addon.setSetting(self.PLUGIN_NAME+'1_auth_writely', settings.getSetting('auth_writely'))
@@ -465,7 +466,7 @@ class contentengine(object):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username')
-                        if username != '':
+                        if username != '' and username is not None:
                             options.append(username)
                             accounts.append(instanceName)
 
@@ -494,7 +495,7 @@ class contentengine(object):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username',10)
-                        if username != '':
+                        if username != '' and username is not None:
                             options.append(username)
                             accounts.append(instanceName)
                     except:
@@ -661,15 +662,15 @@ class contentengine(object):
                 path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
                 addon.setSetting('strm_path', path)
 
-            if path == '':
+            if path == '' or path is None:
                 path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
                 addon.setSetting('strm_path', path)
 
-            if path != '':
+            if path != '' and path is not None:
                 returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
 
-            if path != '' and (not KODI or returnPrompt):
+            if path != '' and path is not None and (not KODI or returnPrompt):
 
                 if silent != 2:
                     try:
@@ -800,7 +801,7 @@ class contentengine(object):
                             instanceName = constants.PLUGIN_NAME+str(count)
                             username = settings.getSetting(instanceName+'_username')
 
-                            if username != '' and username == invokedUsername:
+                            if username != '' and username is not None and username == invokedUsername:
                                 #if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                 #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
                                 #else:
@@ -844,15 +845,15 @@ class contentengine(object):
                 path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
                 addon.setSetting('strm_path', path)
 
-            if path == '':
+            if path == '' or path is None:
                 path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
                 addon.setSetting('strm_path', path)
 
-            if path != '':
+            if path != '' and path is not None:
                 returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
 
-            if path != '' and  (not KODI or returnPrompt):
+            if path != '' and path is not None and (not KODI or returnPrompt):
 
                 if silent != 2:
                     try:
@@ -958,7 +959,7 @@ class contentengine(object):
                             instanceName = constants.PLUGIN_NAME+str(count)
                             username = settings.getSetting(instanceName+'_username')
 
-                            if username != '' and username == invokedUsername:
+                            if username != '' and username is not None and username == invokedUsername:
                                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                 service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=True)
@@ -1023,7 +1024,7 @@ class contentengine(object):
                 path = ''
 
 
-            if path != '':
+            if path != '' and path is not None:
 
                 try:
                     pDialog = xbmcgui.DialogProgressBG()
@@ -2054,7 +2055,7 @@ class contentengine(object):
                     # right-click or integrated player (no opening stream dialog...)
                     if contextType == '':
                         # for STRM (force resolve) -- resolve-only
-                        if settings.username != '':
+                        if settings.username != '' and username is not None:
                             resolvedPlayback = True
                             startPlayback = False
                         else:
@@ -2429,7 +2430,7 @@ class contentengine(object):
                                 resolvedPlayback = False
 
                             # STRM (force resolve) -- resolve-only
-                            elif settings.username != '' or settings.strm:
+                            elif settings.username != '' and username is not None or settings.strm:
                                 startPlayback = False
                                 resolvedPlayback = True
 
@@ -2524,7 +2525,7 @@ class contentengine(object):
                                 resolvedPlayback = False
 
                             # for STRM (force resolve) -- resolve-only
-                            elif settings.username != '':
+                            elif settings.username != '' and username is not None:
                                 startPlayback = False
 
                             #download & playback
