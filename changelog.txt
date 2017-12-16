@@ -1,3 +1,4 @@
+- secure settings pane
 - fix for TV/Movies STRM generation
 - implemented search function
 - redirect dialogs to screen
