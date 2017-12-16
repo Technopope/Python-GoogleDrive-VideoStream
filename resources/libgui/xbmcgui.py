@@ -70,11 +70,11 @@ class ListItem(object):
         return
 
     def setProperty(self,key,value):
-        print "setProperty " + str(key) + ',' + str(value) + "\n"
+        #print "setProperty " + str(key) + ',' + str(value) + "\n"
         return
 
     def setInfo(self,key=None,value=None,type=None,infoLabels=None):
-        print "setInfo " + str(key) + ',' + str(value) + "\n"
+        #print "setInfo " + str(key) + ',' + str(value) + "\n"
         return
 
     def setPath(self,path):
@@ -83,7 +83,7 @@ class ListItem(object):
 
 
     def addContextMenuItems(self,cm,value):
-        print "setInfo " +str(value) + "\n"
+        #print "setInfo " +str(value) + "\n"
         i=0
         menuItems = ''
         while i < len(cm):
@@ -103,8 +103,6 @@ class ListItem(object):
     def addStreamInfo(self,cm,value):
         value = str(value)
         value = value.replace("\'",'')
-        print "streaminfo " + str(value) + "\n"
-        print "cm " + str(cm) + "\n"
         params = re.search(r'duration\: (\d+).* height\: (\d+)', str(value))
         duration = ''
         resolution = ''
