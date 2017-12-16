@@ -85,7 +85,6 @@ class xbmcaddon:
         self.dbm[key] = value
         self.dbm.close()
         self.dbm = anydbm.open(self.dbmfile,'r')
-        print "setting key " + key + "\n"
         return
 
 

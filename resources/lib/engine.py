@@ -852,7 +852,7 @@ class contentengine(object):
                 returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
 
-            if path != '' and returnPrompt:
+            if path != '' and  (not KODI or returnPrompt):
 
                 if silent != 2:
                     try:
@@ -1306,6 +1306,8 @@ class contentengine(object):
 
                 if KODI:
                     self.addMenu(self.PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+                else:
+                    xbmcgui.Dialog().inputText('title', 'search', self.PLUGIN_URL+'?', 'mode=search&instance='+str(service.instanceName)+'&content_type='+contextType)
                 self.addMenu(self.PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<'+addon.getLocalizedString(30211)+'>')
                 if constants.CONST.testing_features:
                     self.addMenu(self.PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'['+addon.getLocalizedString(30212)+']')

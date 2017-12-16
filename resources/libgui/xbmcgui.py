@@ -36,6 +36,15 @@ class Dialog(object):
         return
     def yesno(self, heading, line1):
         return
+    def inputText(self, variable, name, url, parameters):
+        hidden = ''
+        for r in re.finditer('([^\=]+)\=([^\&]+)(?:\&|$)' ,
+                 parameters, re.DOTALL):
+            key = r.group(1)
+            value = r.group(2)
+            hidden = hidden + '<input type="hidden" name="'+str(key)+'" value="'+str(value)+'" />'
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<form post="'+str(url)+'" method="GET"><input type="text" name="'+str(variable)+'"/>'+hidden+'<input type="submit" value="'+str(name)+'"/></form><br/>'
+        return
 
 class WindowXMLDialog(object):
 
@@ -56,15 +65,16 @@ class ListItem(object):
         self.label = label
         self.path = None
         self.menu = ''
+        self.detail = ''
 
         return
 
     def setProperty(self,key,value):
-        print "setProperty " + str(key) + ',' + str(value) + "\n"
+        #print "setProperty " + str(key) + ',' + str(value) + "\n"
         return
 
     def setInfo(self,key=None,value=None,type=None,infoLabels=None):
-        print "setInfo " + str(key) + ',' + str(value) + "\n"
+        #print "setInfo " + str(key) + ',' + str(value) + "\n"
         return
 
     def setPath(self,path):
@@ -73,7 +83,7 @@ class ListItem(object):
 
 
     def addContextMenuItems(self,cm,value):
-        print "setInfo " +str(value) + "\n"
+        #print "setInfo " +str(value) + "\n"
         i=0
         menuItems = ''
         while i < len(cm):
@@ -93,8 +103,6 @@ class ListItem(object):
     def addStreamInfo(self,cm,value):
         value = str(value)
         value = value.replace("\'",'')
-        print "streaminfo " + str(value) + "\n"
-        print "cm " + str(cm) + "\n"
         params = re.search(r'duration\: (\d+).* height\: (\d+)', str(value))
         duration = ''
         resolution = ''
