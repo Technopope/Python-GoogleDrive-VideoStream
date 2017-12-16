@@ -65,6 +65,7 @@ class ListItem(object):
         self.label = label
         self.path = None
         self.menu = ''
+        self.detail = ''
 
         return
 

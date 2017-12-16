@@ -1,3 +1,4 @@
+- implement: support for photos playback #10
 - secure settings pane
 - fix for TV/Movies STRM generation
 - implemented search function

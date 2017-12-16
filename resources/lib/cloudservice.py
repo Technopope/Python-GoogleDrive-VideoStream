@@ -1342,7 +1342,8 @@ class cloudservice(object):
 #            listitem.setProperty('IsPlayable', 'false')
             listitem.setProperty('IsPlayable', 'true')
             if package.mediaurl.url != '':
-                url = package.mediaurl.url +'|' + self.getHeadersEncoded()
+                # resized photos do not need authentication
+                url = package.mediaurl.url# +'|' + self.getHeadersEncoded()
             else:
                 url = package.file.download+'|' + self.getHeadersEncoded()
             xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,

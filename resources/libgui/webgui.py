@@ -267,6 +267,9 @@ class webGUI(BaseHTTPRequestHandler):
                     default = ''
                     label = ''
                     range = ''
+                    #special override -- display all files within video view
+                    if id == 'context_video':
+                        default = 2
                     result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\" label\=\"(\d+)\" \/\>', str(line))
                     if result:
                         id = str(result.group(1))
