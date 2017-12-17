@@ -151,7 +151,7 @@ class contentengine(object):
             if encfs:
                 contentTypeDecider =  int(settings.getSettingInt('context_evideo',0))
 
-                if contentTypeDecider == 1:
+                if contentTypeDecider == 1 or contentTypeDecider == 2 :
                     contentType = 8
                 else:
                     contentType = 9
@@ -1355,6 +1355,8 @@ class contentengine(object):
                         else:# contentType == 11:
                             mediaList = ['.jpg', '.png']
                         media_re = re.compile("|".join(mediaList), re.I)
+                        photoList = ['.jpg', '.png']
+                        photos_re = re.compile("|".join(mediaList), re.I)
 
                         #sort encrypted items by title:
                         sortedMediaItems = {}
@@ -1385,10 +1387,18 @@ class contentengine(object):
                                     item.folder.displaytitle = str(item.folder.title)
                             else:
                                 try:
+
                                     item.file.displaytitle = encrypt.decryptString(str(item.file.title))
+                                    print "file = " + str(item.file.title) + str(item.file.displaytitle ) + str(contentType) + "\n"
                                     item.file.title =  item.file.displaytitle
-                                    if contentType < 9 or media_re.search(str(item.file.title)):
+                                    # is it a encrypted photo?
+                                    if  photos_re.search(str(item.file.title)):
+                                        #change contextType = image
+                                        service.addMediaFile(item, contextType='image',  encfs=True)
+
+                                    elif contentType < 9 or media_re.search(str(item.file.title)):
                                         service.addMediaFile(item, contextType=contextType,  encfs=True)
+
                                 except:
                                     item.file.displaytitle = str(item.file.title)
 
@@ -1572,7 +1582,6 @@ class contentengine(object):
                           #              player.saveTime()
                           #              xbmc.sleep(5000)
 
-        ##** not in use
         elif mode == 'photo':
 
             title = settings.getParameter('title',0)
@@ -1585,24 +1594,71 @@ class contentengine(object):
 
             if encfs:
 
-                settings.setEncfsParameters()
+                #temporarly force crypto with encfs
+                settings.setCryptoParameters()
+                if settings.cryptoPassword != "":
 
-                encryptedPath = settings.getParameter('epath', '')
-                dencryptedPath = settings.getParameter('dpath', '')
-
-                encfs_source = settings.encfsSource
-                encfs_target = settings.encfsTarget
-                encfs_inode = settings.encfsInode
-
-
-                # don't redownload if present already
-                if (not xbmcvfs.exists(str(encfs_source) + str(encryptedPath) +str(title))):
                     url = service.getDownloadURL(docid)
-                    service.downloadGeneralFile(url, str(encfs_source) + str(encryptedPath) +str(title))
+                    req = urllib2.Request(url,  None,service.getHeadersList())
 
-                xbmc.executebuiltin("XBMC.ShowPicture(\""+str(encfs_target) + str(dencryptedPath)+"\")")
-                #item = xbmcgui.ListItem(path=str(encfs_target) + str(dencryptedPath))
-                #xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
+
+                    try:
+                        response = urllib2.urlopen(req)
+
+                    except urllib2.URLError, e:
+                        if e.code == 403 or e.code == 401:
+                            service.refreshToken()
+                            req = urllib2.Request(url, None, service.getHeadersList())
+                            try:
+                                response = urllib2.urlopen(req)
+                            except urllib2.URLError, e:
+                                print "HEREX \n"
+                                return
+                    #length = response.info().getheader('Content-Length')
+
+                    self.plugin_handle.send_response(200)
+                    #self.plugin_handle.send_header('Content-Length',int(length)-100)
+
+                    self.plugin_handle.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+                    self.plugin_handle.send_header('Date',response.info().getheader('Date'))
+                    self.plugin_handle.send_header('Content-type','image/jpeg')
+                    self.plugin_handle.end_headers()
+
+                    from resources.lib import  encryption
+                    decrypt = encryption.encryption(settings.cryptoSalt,settings.cryptoPassword)
+
+
+                    CHUNK = 16 * 1024
+                    decrypt.decryptStreamChunkOld(response,writer.wfile,chunksize=CHUNK)
+
+
+                    #response_data = response.read()
+                    response.close()
+
+
+
+
+                else:
+
+
+                    settings.setEncfsParameters()
+
+                    encryptedPath = settings.getParameter('epath', '')
+                    dencryptedPath = settings.getParameter('dpath', '')
+
+                    encfs_source = settings.encfsSource
+                    encfs_target = settings.encfsTarget
+                    encfs_inode = settings.encfsInode
+
+
+                    # don't redownload if present already
+                    if (not xbmcvfs.exists(str(encfs_source) + str(encryptedPath) +str(title))):
+                        url = service.getDownloadURL(docid)
+                        service.downloadGeneralFile(url, str(encfs_source) + str(encryptedPath) +str(title))
+
+                    xbmc.executebuiltin("XBMC.ShowPicture(\""+str(encfs_target) + str(dencryptedPath)+"\")")
+                    #item = xbmcgui.ListItem(path=str(encfs_target) + str(dencryptedPath))
+                    #xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
 
             else:
                 path = settings.getSetting('photo_folder')
