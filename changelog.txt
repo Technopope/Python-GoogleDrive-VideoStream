@@ -1,3 +1,6 @@
+v0.1.6 (2017-12-17)
+- fix accessing settings when no user defined
+- fix default username and password (None -> '')
 v0.1.5 (2017-12-17)
 - added support for crypto photos
 - fix for enroll account (recent break)

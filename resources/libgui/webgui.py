@@ -224,171 +224,171 @@ class webGUI(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write("Wrong username/password")
                     return
-                self.send_response(200)
-                self.end_headers()
+            self.send_response(200)
+            self.end_headers()
 
-                self.wfile.write('<html><form autocomplete="off" action="/save_settings" method="post">')
+            self.wfile.write('<html><form autocomplete="off" action="/save_settings" method="post">')
 
-                self.wfile.write('<h1>Plugin Configuration:</h1>')
-                self.wfile.write('<b>Secure Login</b><br />Username <input name="username" type="text" value="'+str(self.server.dbm.getSetting('username'))+'" /><br />')
-                self.wfile.write('Password <input name="passwrd" type="text" value="'+str(self.server.dbm.getSetting('password'))+'" /><br />')
+            self.wfile.write('<h1>Plugin Configuration:</h1>')
+            self.wfile.write('<b>Secure Login</b><br />Username <input name="username" type="text" value="'+str(self.server.dbm.getSetting('username',default=''))+'" /><br />')
+            self.wfile.write('Password <input name="passwrd" type="text" value="'+str(self.server.dbm.getSetting('password',default=''))+'" /><br />')
 
-                self.wfile.write('<br /><br /><b><i>The following settings affect creating secure URLs:</i></b><br />Hide parameters <select name="hide">')
-                if self.server.dbm.getSetting('hide') == 'true':
-                    self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
-                else:
-                    self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
-                self.wfile.write('<br />Generate keyvalue parameters <select name="keyvalue">')
-                if self.server.dbm.getSetting('keyvalue') == 'true':
-                    self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
-                else:
-                    self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
+            self.wfile.write('<br /><br /><b><i>The following settings affect creating secure URLs:</i></b><br />Hide parameters <select name="hide">')
+            if self.server.dbm.getSetting('hide') == 'true':
+                self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
+            else:
+                self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
+            self.wfile.write('<br />Generate keyvalue parameters <select name="keyvalue">')
+            if self.server.dbm.getSetting('keyvalue') == 'true':
+                self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
+            else:
+                self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
 
-                self.wfile.write('<br />Salt file <input name="saltfile" type="text" value="'+str(self.server.dbm.getSetting('saltfile'))+'"><sub>[select server path to file]</sub>')
+            self.wfile.write('<br />Salt file <input name="saltfile" type="text" value="'+str(self.server.dbm.getSetting('saltfile',default='saltfile'))+'"><sub>[select server path to file]</sub>')
 
-                self.wfile.write('<br /><br /><b><i>The following settings affect path included in STRM files created:</i></b><br /> Protocol <select name="protocol">')
-                if self.server.dbm.getSetting('protocol') == 'https://':
-                    self.wfile.write('<option value="https://" selected >https://</option><option value="http://">http://</option><br /></select>')
-                else:
-                    self.wfile.write('<option value="https://">https://</option><option value="http://" selected>http://</opton><br /></select>')
-                self.wfile.write('<br />Hostname <input name="hostname" type="text" value="'+str(self.server.dbm.getSetting('hostname', default='localhost'))+'" /><br />')
-                self.wfile.write('<br />Port <input name="port" type="text" value="'+str(self.server.dbm.getSetting('port',default='9988'))+'" /><br />')
+            self.wfile.write('<br /><br /><b><i>The following settings affect path included in STRM files created:</i></b><br /> Protocol <select name="protocol">')
+            if self.server.dbm.getSetting('protocol') == 'https://':
+                self.wfile.write('<option value="https://" selected >https://</option><option value="http://">http://</option><br /></select>')
+            else:
+                self.wfile.write('<option value="https://">https://</option><option value="http://" selected>http://</opton><br /></select>')
+            self.wfile.write('<br />Hostname <input name="hostname" type="text" value="'+str(self.server.dbm.getSetting('hostname', default='localhost'))+'" /><br />')
+            self.wfile.write('<br />Port <input name="port" type="text" value="'+str(self.server.dbm.getSetting('port',default='9988'))+'" /><br />')
 
-                self.wfile.write('<br /><input type="submit" value="Save" /><h1>Media Configuration:</h1>')
+            self.wfile.write('<br /><input type="submit" value="Save" /><h1>Media Configuration:</h1>')
 
-                self.setings = {}
-                file = open('./resources/settings.xml', "r")
-                print "LOAD SETTINGS\n\n\n"
-                for line in file:
+            self.setings = {}
+            file = open('./resources/settings.xml', "r")
+            print "LOAD SETTINGS\n\n\n"
+            for line in file:
 
-                    id = ''
-                    type = ''
-                    values = ''
-                    default = ''
-                    label = ''
-                    range = ''
-                    #special override -- display all files within video view
-                    if id == 'context_video':
-                        default = 2
-                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\" label\=\"(\d+)\" \/\>', str(line))
+                id = ''
+                type = ''
+                values = ''
+                default = ''
+                label = ''
+                range = ''
+                #special override -- display all files within video view
+                if id == 'context_video':
+                    default = 2
+                result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\" label\=\"(\d+)\" \/\>', str(line))
+                if result:
+                    id = str(result.group(1))
+                    type = str(result.group(2))
+                    values = str(result.group(3))
+                    default = str(result.group(4))
+                    label = str(result.group(5))
+                if result is None:
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\" option\=\"([^\"]*)\" range\=\"([^\"]*)\"[^/]+\/\>\n', str(line))
                     if result:
                         id = str(result.group(1))
                         type = str(result.group(2))
-                        values = str(result.group(3))
                         default = str(result.group(4))
-                        label = str(result.group(5))
-                    if result is None:
-                        result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\" option\=\"([^\"]*)\" range\=\"([^\"]*)\"[^/]+\/\>\n', str(line))
-                        if result:
-                            id = str(result.group(1))
-                            type = str(result.group(2))
-                            default = str(result.group(4))
-                            label = str(result.group(3))
-                            range = str(result.group(6))
-                    if result is None:
-                        result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\"([^/]+)\/\>\n', str(line))
-                        if result:
-                            id = str(result.group(1))
-                            type = str(result.group(2))
-                            default = str(result.group(4))
-                            label = str(result.group(3))
-
-                    if result is None:
-                        result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\".*?label\=\"(\d+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\"[^\/]* \/\>\n', str(line))
-                        if result:
-                            id = str(result.group(1))
-                            type = str(result.group(2))
-                            default = str(result.group(5))
-                            label = str(result.group(3))
-                            values = str(result.group(4))
-
-                    #<setting label="30205" type="lsep"/>
-                    if result is None:
-                        result = re.search(r'\<setting.*label\=\"(\d+)\" type\=\"lsep\"\/\>\n', str(line))
-                        if result:
-                            label = str(result.group(1))
-                            self.wfile.write(str('<br /><b>' + self.server.addon.getLocalizedString(label)) + '</b><br /> ')
-                    #    <category label="30196">
-                    if result is None:
-                        result = re.search(r'\<category label\=\"(\d+)\"\>\n', str(line))
-                        if result:
-                            label = str(result.group(1))
-                            self.wfile.write(str('<input type="submit" value="Save" /><h2>' + self.server.addon.getLocalizedString(label)) + '</h2>')
-
-
-            #<setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
-
-            #<setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
-
-
-
+                        label = str(result.group(3))
+                        range = str(result.group(6))
+                if result is None:
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\"[^/]+label\=\"(\d+)\" default\=\"([^\"]*)\"([^/]+)\/\>\n', str(line))
                     if result:
+                        id = str(result.group(1))
+                        type = str(result.group(2))
+                        default = str(result.group(4))
+                        label = str(result.group(3))
+
+                if result is None:
+                    result = re.search(r'\<setting id\=\"([^\"]+)\" type\=\"([^\"]+)\".*?label\=\"(\d+)\" values\=\"([^\"]*)\" default\=\"([^\"]*)\"[^\/]* \/\>\n', str(line))
+                    if result:
+                        id = str(result.group(1))
+                        type = str(result.group(2))
+                        default = str(result.group(5))
+                        label = str(result.group(3))
+                        values = str(result.group(4))
+
+                #<setting label="30205" type="lsep"/>
+                if result is None:
+                    result = re.search(r'\<setting.*label\=\"(\d+)\" type\=\"lsep\"\/\>\n', str(line))
+                    if result:
+                        label = str(result.group(1))
+                        self.wfile.write(str('<br /><b>' + self.server.addon.getLocalizedString(label)) + '</b><br /> ')
+                #    <category label="30196">
+                if result is None:
+                    result = re.search(r'\<category label\=\"(\d+)\"\>\n', str(line))
+                    if result:
+                        label = str(result.group(1))
+                        self.wfile.write(str('<input type="submit" value="Save" /><h2>' + self.server.addon.getLocalizedString(label)) + '</h2>')
 
 
-                        if id != '':
-                            currentValue = self.server.dbm.getSetting(id)
-                            if currentValue is None:
-                                currentValue = default
-                            if type == 'text' or type == 'number':
-                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /><br />')
-                            if type == 'file' or type == 'folder':
-                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /> <sub>[select server path to '+str(type)+']</sub><br />')
-                            elif type == 'labelenum':
-                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
+        #<setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
 
-                                for r in re.finditer('(\d+)(?:\||$)' ,
-                                                 values, re.DOTALL):
-                                    if r.group(1) == int(currentValue):
-                                        self.wfile.write('<option value="'+str(r.group(1))+'" selected/>'+str(r.group(1)) + '</option>')
-                                    else:
-                                        self.wfile.write('<option value="'+str(r.group(1))+'"/>'+str(r.group(1)) + '</option>')
+        #<setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
 
-                                self.wfile.write('</select><br />')
-                            elif type == 'enum':
-                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
 
-                                count = 0
-                                for r in re.finditer('([^\|]+)(?:\||$)' ,
-                                                 values, re.DOTALL):
 
-                                    if count == int(currentValue):
-                                        self.wfile.write('<option value="'+str(count)+'" selected/>'+str(r.group(1)) + '</option>')
-                                    else:
-                                        self.wfile.write('<option value="'+str(count)+'"/>'+str(r.group(1)) + '</option>')
-                                    count += 1
+                if result:
 
-                                self.wfile.write('</select><br />')
-                            elif type == 'slider':
-                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
 
-                                for r in re.finditer('(\d+)\,(\d+)\,(\d+)' ,
-                                                 range, re.DOTALL):
+                    if id != '':
+                        currentValue = self.server.dbm.getSetting(id)
+                        if currentValue is None:
+                            currentValue = default
+                        if type == 'text' or type == 'number':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /><br />')
+                        if type == 'file' or type == 'folder':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /> <sub>[select server path to '+str(type)+']</sub><br />')
+                        elif type == 'labelenum':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
 
-                                    min = int(r.group(1))
-                                    increment = int(r.group(2))
-                                    max = int(r.group(3))
-                                    i = min
-                                    while i < max:
-
-                                        if i == int(currentValue):
-                                            self.wfile.write('<option value="'+str(i)+'" selected/>'+str(i) + '</option>')
-                                        else:
-                                            self.wfile.write('<option value="'+str(i)+'"/>'+str(i) + '</option>')
-                                        i = i + increment
-                                self.wfile.write('</select><br />')
-
-                            elif type == 'bool':
-                                self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
-                                if currentValue == 'true':
-                                    #self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" value="true" checked /><br />')
-                                    self.wfile.write('<option value="true" selected/>true</option>')
-                                    self.wfile.write('<option value="false"/>false</option>')
+                            for r in re.finditer('(\d+)(?:\||$)' ,
+                                             values, re.DOTALL):
+                                if r.group(1) == int(currentValue):
+                                    self.wfile.write('<option value="'+str(r.group(1))+'" selected/>'+str(r.group(1)) + '</option>')
                                 else:
-                                    self.wfile.write('<option value="false" selected/>false</option>')
-                                    self.wfile.write('<option value="true"/>true</option>')
+                                    self.wfile.write('<option value="'+str(r.group(1))+'"/>'+str(r.group(1)) + '</option>')
 
-                                self.wfile.write('</select><br />')
-                self.wfile.write('<input type="submit" value="Save" /></form></html>')
+                            self.wfile.write('</select><br />')
+                        elif type == 'enum':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
+
+                            count = 0
+                            for r in re.finditer('([^\|]+)(?:\||$)' ,
+                                             values, re.DOTALL):
+
+                                if count == int(currentValue):
+                                    self.wfile.write('<option value="'+str(count)+'" selected/>'+str(r.group(1)) + '</option>')
+                                else:
+                                    self.wfile.write('<option value="'+str(count)+'"/>'+str(r.group(1)) + '</option>')
+                                count += 1
+
+                            self.wfile.write('</select><br />')
+                        elif type == 'slider':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
+
+                            for r in re.finditer('(\d+)\,(\d+)\,(\d+)' ,
+                                             range, re.DOTALL):
+
+                                min = int(r.group(1))
+                                increment = int(r.group(2))
+                                max = int(r.group(3))
+                                i = min
+                                while i < max:
+
+                                    if i == int(currentValue):
+                                        self.wfile.write('<option value="'+str(i)+'" selected/>'+str(i) + '</option>')
+                                    else:
+                                        self.wfile.write('<option value="'+str(i)+'"/>'+str(i) + '</option>')
+                                    i = i + increment
+                            self.wfile.write('</select><br />')
+
+                        elif type == 'bool':
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
+                            if currentValue == 'true':
+                                #self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+')<input name="'+str(id)+'" type="checkbox" value="true" checked /><br />')
+                                self.wfile.write('<option value="true" selected/>true</option>')
+                                self.wfile.write('<option value="false"/>false</option>')
+                            else:
+                                self.wfile.write('<option value="false" selected/>false</option>')
+                                self.wfile.write('<option value="true"/>true</option>')
+
+                            self.wfile.write('</select><br />')
+            self.wfile.write('<input type="submit" value="Save" /></form></html>')
 
         # redirect url to output
         elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
