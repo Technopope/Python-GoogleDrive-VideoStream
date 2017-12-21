@@ -1787,15 +1787,15 @@ class contentengine(object):
                         .slideshow-container {
                           max-width: 1000px;
                           position: relative;
-                          margin: auto;
+                          mmargin: auto;
                         }
 
                         /* Next & previous buttons */
                         .prev, .next {
                           cursor: pointer;
                           position: absolute;
-                          /*top: 50%;*/
-                          top: 200;
+                          top: 50%;
+                          /*top: 200;*/
                           width: auto;
                           padding: 16px;
                           margin-top: -22px;
@@ -1817,6 +1817,16 @@ class contentengine(object):
                           background-color: rgba(0,0,0,0.8);
                         }
 
+                        /* Next & previous buttons */
+                        .buttons {
+                          cursor: pointer;
+                          position: relative;
+                          font-weight: bold;
+                          color: red;
+                          font-size: 18px;
+                          transition: 0.6s ease;
+                          border-radius: 0 6px 6px 0;
+                        }
                         /* Caption text */
                         .text {
                           color: #f2f2f2;
@@ -1834,16 +1844,16 @@ class contentengine(object):
                           font-size: 12px;
                           padding: 8px 12px;
                           position: absolute;
-                          top: 0;
+                          top: 50;
                         }
 
                         .fav {
-                          color: yellow;
+                          color: red;
                           font-size: 48x;
                           text-decoration: none;
                           position: absolute;
                           padding: 8px 12px;
-                          top: 10;
+                          top: 30;
                         }
 
                         /* The dots/bullets/indicators */
@@ -1884,13 +1894,22 @@ class contentengine(object):
                         @media only screen and (max-width: 300px) {
                           .prev, .next,.text {font-size: 11px}
                         }
+                        img {
+
+                            max-height: 100vh;
+                            height: auto;
+                        }
+
                         </style>
                         </head>
                         <body>
 
                         <div class="slideshow-container">
+                        <div style="text-align:center">
+                          <a class="buttons" onclick="plusSlides(-1)">&#10094;</a>&nbsp;&nbsp;&nbsp;&nbsp;
+
                         """
-                        xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output + str(startHTML)
+                        #max-width: 100%;
 
                         mediaItems = service.getMediaList(folderID,contentType=8)
 
@@ -1916,6 +1935,15 @@ class contentengine(object):
                                     except:
                                         item.file.displaytitle = item.file.title
 
+                            xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output + str(startHTML)
+
+                            count = 0
+                            while count <= total:
+                                count += 1
+                                xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output  + '<span class="dot" onclick="currentSlide('+str(count)+')"></span>'
+
+                            xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output + '&nbsp;&nbsp;&nbsp;&nbsp;<a class="buttons" onclick="plusSlides(1)">&#10095;</a></div>'
+
                             count = 0
                             #create the files and folders for decrypting file/folder names
                             for item in sorted (sortedMediaItems):
@@ -1929,7 +1957,8 @@ class contentengine(object):
                                         if  photos_re.search(str(item.file.title)):
                                             count += 1
                                             #change contextType = image
-                                            xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output  + '    <div class="mySlides fade"><div class="numbertext">'+str(count)+' / '+str(total)+' </div><div class="fav"><a href="" class="fav">&hearts;</a></div><img src="'+str(service.addMediaFile(item, contextType='image',  encfs=True))+'" width="'+str(settings.photoResolution)+'"></div>'
+                                            url = service.addMediaFile(item, contextType='image',  encfs=True, isMock=True)
+                                            xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output  + '    <div class="mySlides fade"><div class="numbertext">'+str(count)+' / '+str(total)+' </div><div class="fav"><a href="" class="fav">&hearts;</a></div><a href="'+str(url)+'"><img src="'+str(url)+'" widdth="'+str(settings.photoResolution)+'"></a></div>'
 
                                     except:
                                         item.file.displaytitle = str(item.file.title)
