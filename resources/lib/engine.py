@@ -1938,7 +1938,7 @@ class contentengine(object):
                             xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output + str(startHTML)
 
                             count = 0
-                            while count <= total:
+                            while count < total:
                                 count += 1
                                 xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output  + '<span class="dot" onclick="currentSlide('+str(count)+')"></span>'
 
@@ -2007,6 +2007,8 @@ class contentengine(object):
                           slides[slideIndex-1].style.display = "block";
                           dots[slideIndex-1].className += " active";
                         }
+
+
                         </script>
 
                         </body>
