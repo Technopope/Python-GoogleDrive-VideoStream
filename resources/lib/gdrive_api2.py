@@ -406,6 +406,13 @@ class gdrive(cloudservice):
         # search for title
         elif title != False or folderName == 'SAVED SEARCH':
             encodedTitle = re.sub(' ', '+', title)
+            encodedTitle = re.sub('\'', '\\\'', encodedTitle)
+            encodedTitle = re.sub('&', '\\\&', encodedTitle)
+            #encodedTitle = re.sub('?', '\\\?', encodedTitle)
+            #encodedTitle = re.sub('#', '\\\#', encodedTitle)
+            #encodedTitle = re.sub('(', '\\\(', encodedTitle)
+            #encodedTitle = re.sub(')', '\\\)', encodedTitle)
+            #encodedTitle = re.sub('$', '\\\$', encodedTitle)
             url = url + "q=title+contains+'" + str(encodedTitle) + "'" + "+and+not+title+contains+'SAVED+SEARCH'"
 
         # show all starred items
@@ -527,7 +534,7 @@ class gdrive(cloudservice):
             # if action fails, validate login
             try:
               response = urllib2.urlopen(req)
-              xbmc.sleep(5000)
+              xbmc.sleep(1000)
             except urllib2.URLError, e:
 
               if e.code == 403 or e.code == 401:

@@ -37,6 +37,8 @@ except:
 #try:
 server = webgui.WebGUIServer(('',  port), webgui.webGUI)
 server.setDBM(dbmfile)
+server.setPort(port)
+
 print "Google Drive Media Server ready....\n"
 
 while server.ready:
