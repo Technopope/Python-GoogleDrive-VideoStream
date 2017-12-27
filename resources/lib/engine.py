@@ -321,20 +321,15 @@ class contentengine(object):
         # enroll a new account
         elif mode == 'enroll':
 
-
             if KODI:
-                from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-                from resources.lib import enroll_proxy
+                import socket
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                IP = s.getsockname()[0]
+                s.close()
 
-                import threading
-
-                server = enroll_proxy.MyHTTPServer(('',  9978), enroll_proxy.enrollBrowser)
-                server.handle_request()
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210), '')
-
-                while server.ready:
-                    server.handle_request()
-                server.socket.close()
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':'+str(settings.getSettingInt('stream_port', 8011))+'/enroll' + ' ' + addon.getLocalizedString(30218), '')
+                mode = 'main'
 
 
 
@@ -599,7 +594,7 @@ class contentengine(object):
         if not KODI:
             protocol = settings.getSetting('protocol', 'http://')
             hostname = settings.getSetting('hostname', 'localhost')
-            port = settings.getSetting('port', '9988')
+            port = int(settings.getSettingInt('port', 8011))
             self.PLUGIN_URL = str(protocol) + str(hostname) + ':' + str(port)  + '/' +  'default.py'
 
 
@@ -647,6 +642,7 @@ class contentengine(object):
         if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
             self.accountActions(addon, mode, instanceName, numberOfAccounts)
+            settings = settings.__init__(addon)
             mode = 'main'
             instanceName = ''
         #create strm files
@@ -1356,7 +1352,7 @@ class contentengine(object):
                             mediaList = ['.jpg', '.png']
                         media_re = re.compile("|".join(mediaList), re.I)
                         photoList = ['.jpg', '.png']
-                        photos_re = re.compile("|".join(mediaList), re.I)
+                        photos_re = re.compile("|".join(photoList), re.I)
 
                         #sort encrypted items by title:
                         sortedMediaItems = {}
@@ -2283,7 +2279,7 @@ class contentengine(object):
                         if useStreamer:
 
                             url = 'http://localhost:' + str(service.settings.streamPort) + '/crypto_playurl'
-                            req = urllib2.Request(url, 'url=' + mediaURL.url)
+                            req = urllib2.Request(url, 'instance='+str(service.instanceName)+'&url=' + mediaURL.url)
                             try:
                                 response = urllib2.urlopen(req)
                                 response.close()
@@ -2905,7 +2901,7 @@ class contentengine(object):
 
 
                                 url = 'http://localhost:' + str(service.settings.streamPort) + '/playurl'
-                                req = urllib2.Request(url, 'url=' + mediaURL.url)
+                                req = urllib2.Request(url, 'instance='+str(service.instanceName)+'&url=' + mediaURL.url)
 
                                 try:
                                     response = urllib2.urlopen(req)

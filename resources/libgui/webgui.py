@@ -1188,16 +1188,18 @@ class webGUI(BaseHTTPRequestHandler):
 
             self.wfile.write('<input type="submit" value="Save" /></form></html>')
 
-    def cookieLogin(headers):
+    def cookieLogin(self,headers):
 
+        if headers is None:
+            return False
         for r in re.finditer('Cookie\:[^\n]+login\=(\S+)' ,
-                     headers, re.DOTALL):
+                     str(headers), re.DOTALL):
           loginSession = r.group(1)
           try:
               if self.server.logins[loginSession] == 1:
-                  isLoggedIn = True
+                  return True
           except:
-              isLoggedIn = False
+              return False
 
     def get_ip_address(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

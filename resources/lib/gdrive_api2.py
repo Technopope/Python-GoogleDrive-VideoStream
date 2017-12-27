@@ -188,6 +188,8 @@ class gdrive(cloudservice):
             #    req = urllib2.Request(url, urllib.urlencode(values), header)
 
             else:
+                if self.authorization.username == '' or self.authorization.username is None:
+                    return
                 url = 'https://script.google.com/macros/s/AKfycbw8fdhaq-WRVJXfOSMK5TZdVnzHvY4u41O1BfW9C8uAghMzNhM/exec'
                 values = {
                       'username' : self.authorization.username,

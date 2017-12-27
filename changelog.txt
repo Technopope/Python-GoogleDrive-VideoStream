@@ -1,3 +1,4 @@
+- fix port issue in listing
 - add session persistence via cookies (for /list and /settings , implementing #28)
 - cleanup slideshow interface
 - add crypto slideshow support
