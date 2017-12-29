@@ -496,10 +496,12 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         elif decryptkeyvalue == '/reload':
+            self.server.addon = constants.addon
+            self.server.addon.__init__()
             self.server.setDBM()
             self.send_response(200)
             self.end_headers()
-            if self.server.username is not None:
+            if not isLoggedIn and self.server.username is not None:
                 self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
             else:
                 self.wfile.write('<html><form action="/list" method="post"><input type="submit" value="Login"></form></html>')

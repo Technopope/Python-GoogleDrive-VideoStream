@@ -1,3 +1,4 @@
+- fix reload to reload user settings
 - fix port issue in listing
 - add session persistence via cookies (for /list and /settings , implementing #28)
 - cleanup slideshow interface
