@@ -197,6 +197,7 @@ class webGUI(BaseHTTPRequestHandler):
             self.end_headers()
             print post_data
 
+            isPassthrough = False
             for r in re.finditer('\&?([^\=]+)\=([^\&]+)' ,
                      post_data, re.DOTALL):
                 key = r.group(1)
@@ -209,6 +210,11 @@ class webGUI(BaseHTTPRequestHandler):
                 value = value.replace("%3A",':')
                 value = value.replace('passwrd','password')
 
+                if str(key) == 'passthrough' and str(value) == 'true':
+                    isPassthrough = True
+
+                if str(key) == 'never_stream' and isPassthrough:
+                    value = 'false'
 
 
                 print "saving key, value " + str(key) +str(value)+ "\n"
@@ -1055,6 +1061,12 @@ class webGUI(BaseHTTPRequestHandler):
             self.wfile.write('<br />Salt file <input name="saltfile" type="text" value="'+str(self.server.dbm.getSetting('saltfile',default='saltfile'))+'"><sub>[select server path to file]</sub>')
 
             self.wfile.write('<br /><input type="submit" value="Save" /><h1>Media Configuration:</h1>')
+            self.wfile.write('<br />Passthrough <select name="passthrough">')
+            if self.server.dbm.getSetting('passthrough') == 'true':
+                self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
+            else:
+                self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
+
 
             self.setings = {}
             file = open('./resources/settings.xml', "r")

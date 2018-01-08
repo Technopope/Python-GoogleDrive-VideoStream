@@ -1,3 +1,5 @@
+- add passthrough to settings pane
+- if passthrough = true, set never_stream = false
 v0.1.7 (2017-12-28)
 - fix reload to reload user settings
 - fix port issue in listing
