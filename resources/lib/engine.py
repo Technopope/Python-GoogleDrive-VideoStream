@@ -110,6 +110,7 @@ class contentengine(object):
 
                 cm.append(( self.addon.getLocalizedString(30159), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete&instance='+instanceName+')' ))
                 cm.append(( self.addon.getLocalizedString(30219), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=makedefault&instance='+instanceName+')' ))
+                cm.append(( self.addon.getLocalizedString(30220), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=enroll_rw&instance='+instanceName+')' ))
 
                 listitem.addContextMenuItems(cm, True)
 
@@ -337,6 +338,17 @@ class contentengine(object):
                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':'+str(settings.getSettingInt('stream_port', 8011))+'/enroll' + ' ' + addon.getLocalizedString(30218), '')
                 mode = 'main'
 
+        elif mode == 'enroll_rw':
+
+            if KODI:
+                import socket
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                IP = s.getsockname()[0]
+                s.close()
+
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':'+str(settings.getSettingInt('stream_port', 8011))+'/write' + ' ' + addon.getLocalizedString(30218), '')
+                mode = 'main'
 
 
     ##
@@ -645,7 +657,7 @@ class contentengine(object):
         # cloudservice - utilities
         ###
 
-        if mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll':
+        if mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll' or mode == 'enroll_rw':
 
             self.accountActions(addon, mode, instanceName, numberOfAccounts)
             settings = settings.__init__(addon)
