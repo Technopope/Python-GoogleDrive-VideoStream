@@ -109,6 +109,7 @@ class contentengine(object):
                 cm=[]
 
                 cm.append(( self.addon.getLocalizedString(30159), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete&instance='+instanceName+')' ))
+                cm.append(( self.addon.getLocalizedString(30219), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=makedefault&instance='+instanceName+')' ))
 
                 listitem.addContextMenuItems(cm, True)
 
@@ -290,6 +291,11 @@ class contentengine(object):
         if mode == 'dummy':
             xbmc.executebuiltin("XBMC.Container.Refresh")
 
+        elif mode == 'makedefault':
+            addon.setSetting('default', instanceName)
+            #addon.setSetting('account_default', instanceName)
+
+
         # delete the configuration for the specified account
         elif mode == 'delete':
 
@@ -341,7 +347,7 @@ class contentengine(object):
     def getInstanceName(self,addon, mode, instanceName, invokedUsername, numberOfAccounts, contextType):
 
         # show list of services
-        if mode == 'delete' or mode == 'dummy':
+        if mode == 'delete' or mode == 'makedefault' or mode == 'dummy':
                     count = 1
 
         elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
@@ -639,7 +645,7 @@ class contentengine(object):
         # cloudservice - utilities
         ###
 
-        if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
+        if mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll':
 
             self.accountActions(addon, mode, instanceName, numberOfAccounts)
             settings = settings.__init__(addon)
