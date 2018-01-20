@@ -214,7 +214,7 @@ class webGUI(BaseHTTPRequestHandler):
                     isPassthrough = True
 
                 if str(key) == 'never_stream' and isPassthrough:
-                    value = 'false'
+                    value = 'true'
 
 
                 print "saving key, value " + str(key) +str(value)+ "\n"
@@ -1148,7 +1148,7 @@ class webGUI(BaseHTTPRequestHandler):
                         if type == 'file' or type == 'folder':
                             self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <input name="'+str(id)+'" type="text" value="'+str(currentValue)+'" /> <sub>[select server path to '+str(type)+']</sub><br />')
                         elif type == 'labelenum':
-                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'">')
 
                             for r in re.finditer('(\d+)(?:\||$)' ,
                                              values, re.DOTALL):
@@ -1159,7 +1159,7 @@ class webGUI(BaseHTTPRequestHandler):
 
                             self.wfile.write('</select><br />')
                         elif type == 'enum':
-                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'">')
 
                             count = 0
                             for r in re.finditer('([^\|]+)(?:\||$)' ,
@@ -1173,7 +1173,7 @@ class webGUI(BaseHTTPRequestHandler):
 
                             self.wfile.write('</select><br />')
                         elif type == 'slider':
-                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'"/>')
+                            self.wfile.write(str(self.server.addon.getLocalizedString(label)) + ' ('+str(id)+') <select name="'+str(id)+'">')
 
                             for r in re.finditer('(\d+)\,(\d+)\,(\d+)' ,
                                              range, re.DOTALL):
