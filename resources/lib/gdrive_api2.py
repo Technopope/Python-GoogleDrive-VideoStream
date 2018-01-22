@@ -519,7 +519,7 @@ class gdrive(cloudservice):
         url = self.API_URL +'changes'
 
 #            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
-        url = url + "?includeDeleted=true&includeSubscribed=false&maxResults=300"
+        url = url + "?includeTeamDriveItems=true&supportsTeamDrives=true&includeDeleted=true&includeSubscribed=false&maxResults=300"
         if (changeToken != ''):
             url = url + '&startChangeId=' + str(changeToken)
         if (nextPageToken != ''):
