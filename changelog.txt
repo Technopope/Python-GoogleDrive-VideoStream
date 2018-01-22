@@ -1,3 +1,4 @@
+- add slideshow to + options
 - fix passthrough, force never_stream = true
 - add passthrough to settings pane
 - if passthrough = true, set never_stream = false

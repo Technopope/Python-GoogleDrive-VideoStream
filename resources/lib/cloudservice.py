@@ -1209,6 +1209,8 @@ class cloudservice(object):
                             cm.append((  self.addon.getLocalizedString(30192), 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
                         cm.append((  self.addon.getLocalizedString(30193), 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
 
+                        cm.append((  self.addon.getLocalizedString(30126), 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=slideshow&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
+
                         #if within encfs and pictures, disable right-click default photo options; add download-folder
                         if KODI and encfs and contextType == 'image':
                             values = {'instance': self.instanceName, 'epath': epath, 'foldername': folder.title, 'folder': folder.id}
