@@ -43,7 +43,7 @@ class scheduler:
         return
 
     # type - 0 exhaustive, 1 changes only
-    def recordScheduleTask(self, instanceName, frequency, folder, type):
+    def recordScheduleTask(self, instanceName, frequency, folder, type, runtime, status):
         #key = instanceName_type_frequency_folder
         return
 
