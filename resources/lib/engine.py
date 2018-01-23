@@ -368,6 +368,7 @@ class contentengine(object):
                     self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
                 else:
                     self.addMenu('/settings?','['+str(addon.getLocalizedString(30217))+']')
+                    self.addMenu(self.PLUGIN_URL+'?mode=scheduler&content_type='+str(contextType),'['+str(addon.getLocalizedString(30221))+']')
                     self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
 #                    self.addMenu(self.PLUGIN_URL+'?mode=enroll','['+str(addon.getLocalizedString(30207))+']')
 
@@ -582,6 +583,7 @@ class contentengine(object):
         from resources.lib import mediaurl
         from resources.lib import gPlayer
         from resources.lib import settings
+        from resources.lib import scheduler
 
         from resources.lib import cache
 #        if constants.CONST.tmdb:
@@ -657,7 +659,13 @@ class contentengine(object):
         # cloudservice - utilities
         ###
 
-        if mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll' or mode == 'enroll_rw':
+        if mode == 'scheduler':
+            tasks = scheduler.scheduler('./test.db')
+            count = tasks.countScheduledTask()
+            print "count = " + str(count)  + "\n"
+            self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'['+str(addon.getLocalizedString(30222))+']')
+
+        elif mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll' or mode == 'scheduler' or mode == 'enroll_rw':
 
             self.accountActions(addon, mode, instanceName, numberOfAccounts)
             settings = settings.__init__(addon)

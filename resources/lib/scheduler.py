@@ -28,7 +28,7 @@ class scheduler:
         self.dbmfile = dbmfile
         #setup encryption password
 
-        self.dbm = anydbm.open(dbmfile,'w')
+        self.dbm = anydbm.open(dbmfile,'c')
 
 
     # instanceName
@@ -43,16 +43,25 @@ class scheduler:
         return
 
     # type - 0 exhaustive, 1 changes only
-    def recordScheduleTask(self, instanceName, frequency, folder, type, runtime, status):
+    def recordScheduleTask(self, job,instanceName, frequency, folder, type, runtime, status):
         #key = instanceName_type_frequency_folder
         return
 
-    def getScheduledTask(self):
-        return
+    def getScheduledTask(self, job):
 
-    def getNextScheduledTask(self):
-        return
+        try:
+            return (self.dbm[job + '_instance'], self.dbm[job + '_frequency'], self.dbm[job + '_folder'], self.dbm[job + '_type'], self.dbm[job + '_runtime'], self.dbm[job + '_stauts'])
+        except:
+            return None
 
+    def countScheduledTask(self):
+        count = 0
+        while (1):
+            try:
+                self.dbm[count]
+                count += 1
+            except:
+                return count
 
     def saveChangeNumber(self, instanceName, changeNumber):
         self.dbm[instanceName + '_changenumber'] = changeNumber
