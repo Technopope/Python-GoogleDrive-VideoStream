@@ -18,7 +18,7 @@
 '''
 import anydbm
 
-class changes_dbm:
+class scheduler:
     # Settings
 
     ##
@@ -28,35 +28,36 @@ class changes_dbm:
         self.dbmfile = dbmfile
         #setup encryption password
 
-        self.dbm = anydbm.open(dbmfile,'r')
-        self.isReadOnly = True
+        self.dbm = anydbm.open(dbmfile,'w')
 
 
-    def reset(self):
-        self.dbm.close()
-        self.dbm = anydbm.open(self.dbmfile,'r')
-        self.isReadOnly = True
+    # instanceName
+    # frequency
+    # lastRun
+    # folder
+    # type
 
-
-    def getSetting(self, key, default=None):
-        if not self.isReadOnly:
-            self.dbm.close()
-            self.dbm = anydbm.open(self.dbmfile,'r')
-            self.isReadOnly = True
-
-        if key is '':
-            return None
-        try:
-            return self.dbm[key]
-        except:
-            return default
-
-    def setSetting(self, key, value):
-        if self.isReadOnly:
-            self.dbm.close()
-            self.dbm = anydbm.open(self.dbmfile,'w')
-            self.isReadOnly = False
-
-        self.dbm[key] = value
+    # type - 0 exhaustive, 1 changes only
+    def setScheduleTask(self, instanceName, frequency, folder, type):
+        #key = instanceName_type_frequency_folder
         return
+
+    # type - 0 exhaustive, 1 changes only
+    def recordScheduleTask(self, instanceName, frequency, folder, type):
+        #key = instanceName_type_frequency_folder
+        return
+
+    def getScheduledTask(self):
+        return
+
+    def getNextScheduledTask(self):
+        return
+
+
+    def saveChangeNumber(self, instanceName, changeNumber):
+        self.dbm[instanceName + '_changenumber'] = changeNumber
+
+    def getChangeNumber(self, instanceName):
+
+        return self.dbm[instanceName + '_changenumber']
 
