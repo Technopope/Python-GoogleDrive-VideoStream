@@ -21,6 +21,9 @@ import anydbm
 class scheduler:
     # Settings
 
+    TYPE_STOPPED = 0
+    TYPE_RUNNING = 1
+
     ##
     ##
     def __init__(self, dbmfile):
@@ -39,6 +42,20 @@ class scheduler:
 
     # type - 0 exhaustive, 1 changes only
     def setScheduleTask(self, instanceName, frequency, folder, type):
+        count = self.countScheduledTask() + 1
+
+        job=0
+        while (job < count):
+            if self.dbm[str(job) + '_instance'] == str(instanceName) and self.dbm[str(job) + '_frequency'] == str(frequency) and self.dbm[str(job) + '_folder'] == str(folder) and self.dbm[str(job) + '_type'] == str(type):
+                break
+            job += 1
+        self.dbm[str(job) + '_instance'] = str(instanceName)
+        self.dbm[str(job) + '_frequency'] = str(frequency)
+        self.dbm[str(job) + '_folder'] = str(folder)
+        self.dbm[str(job) + '_type'] = str(type)
+        self.dbm[str(job) + '_runtime'] = str(0)
+        self.dbm[str(job) + '_stauts'] = str(self.TYPE_STOPPED)
+        print "updating job " + str(job) + "\n"
         #key = instanceName_type_frequency_folder
         return
 
@@ -50,7 +67,7 @@ class scheduler:
     def getScheduledTask(self, job):
 
         try:
-            return (self.dbm[job + '_instance'], self.dbm[job + '_frequency'], self.dbm[job + '_folder'], self.dbm[job + '_type'], self.dbm[job + '_runtime'], self.dbm[job + '_stauts'])
+            return [self.dbm[str(job) + '_instance'], self.dbm[str(job) + '_frequency'], self.dbm[str(job) + '_folder'], self.dbm[str(job) + '_type'], self.dbm[str(job) + '_runtime'], self.dbm[str(job) + '_stauts']]
         except:
             return None
 
@@ -58,10 +75,10 @@ class scheduler:
         count = 0
         while (1):
             try:
-                self.dbm[count]
+                self.dbm[str(count) + '_instance']
                 count += 1
             except:
-                return count
+                return count-1
 
     def saveChangeNumber(self, instanceName, changeNumber):
         self.dbm[instanceName + '_changenumber'] = changeNumber

@@ -661,9 +661,26 @@ class contentengine(object):
 
         if mode == 'scheduler':
             tasks = scheduler.scheduler('./test.db')
-            count = tasks.countScheduledTask()
-            print "count = " + str(count)  + "\n"
+            #tasks.setScheduleTask('gdrive2', 60, '/', 0)
             self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'['+str(addon.getLocalizedString(30222))+']')
+
+            i = 0
+            count = tasks.countScheduledTask()
+            while (i <= count):
+                task = tasks.getScheduledTask(i)
+                self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'job #' + str(i) + ' ' +str(task[0]) +' '+ str(task[2]) +' '+ str(task[3]))
+                i += 1
+
+        elif mode == 'new_task':
+
+            instance = settings.getParameter('i','gdrive1')
+            frequency = settings.getParameter('frequency',60)
+            folder = settings.getParameter('f','/')
+            type = settings.getParameter('t',0)
+
+            tasks = scheduler.scheduler('./test.db')
+            tasks.setScheduleTask(instance, frequency, folder, type)
+
 
         elif mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll' or mode == 'scheduler' or mode == 'enroll_rw':
 
