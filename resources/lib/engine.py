@@ -673,13 +673,36 @@ class contentengine(object):
 
         elif mode == 'new_task':
 
-            instance = settings.getParameter('i','gdrive1')
-            frequency = settings.getParameter('frequency',60)
-            folder = settings.getParameter('f','/')
-            type = settings.getParameter('t',0)
+            instance = settings.getParameter('i',None)
+            frequency = settings.getParameter('frequency',None)
+            folder = settings.getParameter('f',None)
+            type = settings.getParameter('t',None)
 
-            tasks = scheduler.scheduler('./test.db')
-            tasks.setScheduleTask(instance, frequency, folder, type)
+            if (instance is None or frequency is None or folder is None or type is None):
+                if not KODI:
+
+                dialog = xbmcgui.Dialog()
+                try:
+                    instance = dialog.select(addon.getLocalizedString(30223), list=[])
+                except:
+                    instance = 'test'
+                try:
+                    folder = dialog.input(addon.getLocalizedString(30224), '/', type=INPUT_ALPHANUM)
+                except:
+                    folder = '/'
+                try:
+                    frequency = dialog.select(addon.getLocalizedString(30225), 60, list=[])
+                except:
+                    frequency = 60
+                try:
+                    type = dialog.select(addon.getLocalizedString(30226), 60, list=[])
+                except:
+                    type = 60
+            #elif (instance is None or frequency is None or folder is None or type is None):
+
+            else:
+                tasks = scheduler.scheduler('./test.db')
+                tasks.setScheduleTask(instance, frequency, folder, type)
 
 
         elif mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll' or mode == 'scheduler' or mode == 'enroll_rw':
