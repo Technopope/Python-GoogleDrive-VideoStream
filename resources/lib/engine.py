@@ -680,7 +680,7 @@ class contentengine(object):
 
             if (instance is None or frequency is None or folder is None or type is None):
                 if not KODI:
-
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&instance='+str(service.instanceName)+'&content_type='+contextType)
                 dialog = xbmcgui.Dialog()
                 try:
                     instance = dialog.select(addon.getLocalizedString(30223), list=[])
@@ -698,6 +698,9 @@ class contentengine(object):
                     type = dialog.select(addon.getLocalizedString(30226), 60, list=[])
                 except:
                     type = 60
+                if not KODI:
+                    xbmcgui.Dialog().endForm()
+
             #elif (instance is None or frequency is None or folder is None or type is None):
 
             else:

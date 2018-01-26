@@ -45,6 +45,17 @@ class Dialog(object):
             hidden = hidden + '<input type="hidden" name="'+str(key)+'" value="'+str(value)+'" />'
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<form post="'+str(url)+'" method="GET"><input type="text" name="'+str(variable)+'"/>'+hidden+'<input type="submit" value="'+str(name)+'"/></form><br/>'
         return
+    def startForm(self, url, parameters):
+        hidden = ''
+        for r in re.finditer('([^\=]+)\=([^\&]+)(?:\&|$)' ,
+                 parameters, re.DOTALL):
+            key = r.group(1)
+            value = r.group(2)
+            hidden = hidden + '<input type="hidden" name="'+str(key)+'" value="'+str(value)+'" /><form post="'+str(url)+'" method="GET">'
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<form post="'+str(url)+'" method="GET"><input type="text" name="'+str(variable)+'"/>'+hidden
+
+    def endForm(self):
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output +'<input type="submit" value="'+str(name)+'"/></form><br/>'
 
 class WindowXMLDialog(object):
 
