@@ -717,22 +717,36 @@ class contentengine(object):
         #create strm files
         elif mode == 'buildstrm':
 
-            silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
-            if silent == '':
-                silent = 0
+            if KODI:
+                silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
+                if silent == '':
+                    silent = 0
 
-            try:
-                path = settings.getSetting('strm_path')
-            except:
-                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                addon.setSetting('strm_path', path)
+                try:
+                    path = settings.getSetting('strm_path')
+                except:
+                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                    addon.setSetting('strm_path', path)
 
-            if path == '' or path is None:
-                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                addon.setSetting('strm_path', path)
+                if path == '' or path is None:
+                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                    addon.setSetting('strm_path', path)
 
-            if path != '' and path is not None:
-                returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+                if path != '' and path is not None:
+                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+
+            # path not defined, prompt
+            elif not KODI:
+                try:
+                    path = settings.getSetting('strm_path')
+                except:
+                    path = None
+
+                if path is None or path == '':
+
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrm&strm_path='+str()+'&instance='+str(service.instanceName)+'&content_type='+contextType)
+                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                    xbmcgui.Dialog().endForm()
 
 
             if path != '' and path is not None and (not KODI or returnPrompt):
