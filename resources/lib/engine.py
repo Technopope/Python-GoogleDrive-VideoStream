@@ -744,7 +744,7 @@ class contentengine(object):
 
                 if path is None or path == '':
 
-                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrm&strm_path='+str()+'&instance='+str(service.instanceName)+'&content_type='+contextType)
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrm&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType)
                     path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
                     xbmcgui.Dialog().endForm()
 
