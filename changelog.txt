@@ -1,3 +1,4 @@
+- fix for blanking out setting parameters
 - add slideshow to + options
 - fix passthrough, force never_stream = true
 - add passthrough to settings pane

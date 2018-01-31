@@ -198,7 +198,7 @@ class webGUI(BaseHTTPRequestHandler):
             print post_data
 
             isPassthrough = False
-            for r in re.finditer('\&?([^\=]+)\=([^\&]+)' ,
+            for r in re.finditer('\&?([^\=]+)\=([^\&]*)' ,
                      post_data, re.DOTALL):
                 key = r.group(1)
                 value = r.group(2)
