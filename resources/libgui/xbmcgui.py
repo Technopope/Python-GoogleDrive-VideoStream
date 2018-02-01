@@ -60,6 +60,7 @@ class Dialog(object):
     def endForm(self):
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output +'<input type="submit" value="submit"/></form><br/>'
 
+
 class WindowXMLDialog(object):
 
     def ok(self, heading, line1, line2='', line3=''):
