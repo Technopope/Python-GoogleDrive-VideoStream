@@ -46,15 +46,19 @@ class xbmcaddon:
         else:
             self.dbm = anydbm.open(self.dbmfile,'c')
         self.language = {}
-        file = open('./resources/language/english/strings.xml', "r")
-        for line in file:
-            result = re.search(r'\<string id\=\"([^\"]+)\"\>([^\<]+)\<', str(line))
-            key = ''
-            value = ''
-            if result:
-                key = str(result.group(1))
-                value = str(result.group(2))
-                self.language[key] = value;
+        try:
+            file = open('./resources/language/english/strings.xml', "r")
+            for line in file:
+                result = re.search(r'\<string id\=\"([^\"]+)\"\>([^\<]+)\<', str(line))
+                key = ''
+                value = ''
+                if result:
+                    key = str(result.group(1))
+                    value = str(result.group(2))
+                    self.language[key] = value;
+        except:
+            pass
+
 
 
 
