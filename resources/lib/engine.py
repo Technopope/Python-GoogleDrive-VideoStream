@@ -614,7 +614,7 @@ class contentengine(object):
         if not KODI:
             protocol = settings.getSetting('protocol', 'http://')
             hostname = settings.getSetting('hostname', 'localhost')
-            port = int(settings.getSettingInt('port', 8011))
+            port = int(settings.getSettingInt('port', 9988))
             self.PLUGIN_URL = str(protocol) + str(hostname) + ':' + str(port)  + '/' +  'default.py'
 
 
