@@ -757,6 +757,8 @@ class contentengine(object):
                         pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
                     except:
                         pDialog = None
+                else:
+                    pDialog = None
 
                 url = settings.getParameter('streamurl')
                 url = re.sub('---', '&', url)
