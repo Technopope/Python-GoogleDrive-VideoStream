@@ -207,7 +207,7 @@ class webGUI(BaseHTTPRequestHandler):
                 value = value.replace("%5c",'\\')
                 value = value.replace("%24",'$')
                 value = value.replace("%3A",':')
-                value = value.replace('passwrd','password')
+                key = key.replace('passwrd','password')
 
                 if str(key) == 'passthrough' and str(value) == 'true':
                     isPassthrough = True
@@ -236,6 +236,8 @@ class webGUI(BaseHTTPRequestHandler):
                 for r in re.finditer('password\=([^\&]+)' ,
                          post_data, re.DOTALL):
                     password = r.group(1)
+                print "username " + username + " password " + self.server.username + "\n"
+
                 if not (self.server.username == username and self.server.password == password):
                     self.send_response(200)
                     self.end_headers()
