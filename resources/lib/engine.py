@@ -751,7 +751,7 @@ class contentengine(object):
 
             if path != '' and path is not None and (not KODI or returnPrompt):
 
-                if silent != 2:
+                if KODI and silent != 2:
                     try:
                         pDialog = xbmcgui.DialogProgressBG()
                         pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
