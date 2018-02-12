@@ -903,13 +903,13 @@ class contentengine(object):
                                 break
                             count = count + 1
 
-                if silent != 2:
+                if KODI and silent != 2:
                     try:
                         pDialog.update(100)
                         pDialog.close()
                     except:
                         pDialog = None
-                if silent == 0:
+                if KODI and silent == 0:
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
             xbmcplugin.endOfDirectory(self.plugin_handle)
             return
