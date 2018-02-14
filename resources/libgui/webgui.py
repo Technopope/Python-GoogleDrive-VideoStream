@@ -142,7 +142,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         # passed a kill signal?
         if decryptkeyvalue == '/kill':
-            if not isLoggedIn and self.server.username is not None:
+            if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
                 post_data = self.rfile.read(content_length) # <--- Gets the data itself
                 #print post_data
@@ -216,6 +216,7 @@ class webGUI(BaseHTTPRequestHandler):
                     value = 'true'
 
 
+
                 print "saving key, value " + str(key) +str(value)+ "\n"
                 self.server.dbm.setSetting(key,value)
 
@@ -223,7 +224,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         elif re.search(r'/settings', str(decryptkeyvalue)):
 
-            if not isLoggedIn and self.server.username is not None:
+            if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
                 post_data = self.rfile.read(content_length) # <--- Gets the data itself
                 #print post_data
@@ -337,7 +338,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
 
-            if not isLoggedIn and self.server.username is not None:
+            if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
                 post_data = self.rfile.read(content_length) # <--- Gets the data itself
                 #print post_data
@@ -435,7 +436,7 @@ class webGUI(BaseHTTPRequestHandler):
         if decryptkeyvalue == '/kill':
             self.send_response(200)
             self.end_headers()
-            if self.server.username is not None:
+            if (self.server.username is not None and self.server.username != ''):
                 self.wfile.write('<html><form action="/kill" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Stop Server"></form></html>')
             else:
                 self.wfile.write('<html><form action="/kill" method="post"><input type="submit" value="Stop Server"></form></html>')
@@ -485,7 +486,7 @@ class webGUI(BaseHTTPRequestHandler):
         elif  re.search(r'/settings', str(decryptkeyvalue)):
             self.send_response(200)
             self.end_headers()
-            if not isLoggedIn and self.server.username is not None:
+            if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 self.wfile.write('<html><form action="/settings" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
             else:
                 self.displaySettings()
@@ -502,7 +503,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
-            if not isLoggedIn and self.server.username is not None:
+            if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 self.send_response(200)
                 self.end_headers()
                 self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
@@ -519,7 +520,7 @@ class webGUI(BaseHTTPRequestHandler):
             self.server.setDBM()
             self.send_response(200)
             self.end_headers()
-            if not isLoggedIn and self.server.username is not None:
+            if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
             else:
                 self.wfile.write('<html><form action="/list" method="post"><input type="submit" value="Login"></form></html>')
