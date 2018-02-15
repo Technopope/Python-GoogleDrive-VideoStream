@@ -39,9 +39,9 @@ def decode(data):
 def getParameter(key,default=''):
     try:
         value = plugin_queries[key]
-        if value == 'true':
+        if value == 'true' or value == 'True':
             return True
-        elif value == 'false':
+        elif value == 'false' or value == 'False':
             return False
         else:
             return value
@@ -53,9 +53,9 @@ def getParameterInt(key,default=0):
         value = plugin_queries[key]
         if value == '':
             return default
-        elif value == 'true':
+        elif value == 'true' or value == 'True':
             return True
-        elif value == 'false':
+        elif value == 'false' or value == 'False':
             return False
         elif value is None:
             return default
@@ -67,9 +67,9 @@ def getParameterInt(key,default=0):
 def getSetting(key,default=''):
     try:
         value = addon.getSetting(key)
-        if value == 'true':
+        if value == 'true' or value == 'True':
             return True
-        elif value == 'false':
+        elif value == 'false' or value == 'False':
             return False
         else:
             return value
@@ -81,9 +81,9 @@ def getSettingInt(key,default=0):
         value = addon.getSetting(key)
         if value == '':
             return default
-        elif value == 'true':
+        elif value == 'true' or value == 'True':
             return True
-        elif value == 'false':
+        elif value == 'false' or value == 'False':
             return False
         elif value is None:
             return default
@@ -225,9 +225,9 @@ class settings:
     def getParameter(self, key, default=''):
         try:
             value = plugin_queries[key]
-            if value == 'true':
+            if value == 'true' or value == 'True':
                 return True
-            elif value == 'false':
+            elif value == 'false' or value == 'False':
                 return False
             else:
                 return value
@@ -238,9 +238,9 @@ class settings:
     def getParameterInt(self, key, default=0):
         try:
             value = plugin_queries[key]
-            if value == 'true':
+            if value == 'true' or value == 'True':
                 return True
-            elif value == 'false':
+            elif value == 'false' or value == 'False':
                 return False
             else:
                 return value
@@ -250,9 +250,9 @@ class settings:
     def getSetting(self, key, default=''):
         try:
             value = self.addon.getSetting(key)
-            if value == 'true':
+            if value == 'true' or value == 'True':
                 return True
-            elif value == 'false':
+            elif value == 'false' or value == 'False':
                 return False
             elif value is None:
                 return default

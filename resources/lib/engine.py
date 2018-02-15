@@ -717,6 +717,15 @@ class contentengine(object):
         #create strm files
         elif mode == 'buildstrm':
 
+            folderID = settings.getParameter('folder')
+            filename = settings.getParameter('filename')
+            title = settings.getParameter('title')
+            invokedUsername = settings.getParameter('username')
+            encfs = settings.getParameter('encfs', False)
+
+            encryptedPath = settings.getParameter('epath', '')
+            dencryptedPath = settings.getParameter('dpath', '')
+
             if KODI:
                 silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
                 if silent == '':
@@ -738,15 +747,17 @@ class contentengine(object):
             # path not defined, prompt
             elif not KODI:
                 try:
-                    path = settings.getSetting('strm_path')
+                    path = settings.getParameter('strm_path', settings.getSetting('strm_path',''))
+                    path = path.replace('%2F','/')
                 except:
                     path = None
 
                 if path is None or path == '':
 
-                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrm&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType)
-                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrm&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'strm_path','',False,False,'')
                     xbmcgui.Dialog().endForm()
+
 
 
             if path != '' and path is not None and (not KODI or returnPrompt):
@@ -789,14 +800,7 @@ class contentengine(object):
 
                 else:
 
-                    folderID = settings.getParameter('folder')
-                    filename = settings.getParameter('filename')
-                    title = settings.getParameter('title')
-                    invokedUsername = settings.getParameter('username')
-                    encfs = settings.getParameter('encfs', False)
 
-                    encryptedPath = settings.getParameter('epath', '')
-                    dencryptedPath = settings.getParameter('dpath', '')
 
                     if folderID != '':
 
