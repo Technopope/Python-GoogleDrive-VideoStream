@@ -46,7 +46,7 @@ class Dialog(object):
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<form post="'+str(url)+'" method="GET"><input type="text" name="'+str(variable)+'"/>'+hidden+'<input type="submit" value="'+str(name)+'"/></form><br/>'
         return
     def browse(self, variable0, variable1, name, variable2,variable3,variable4, variable5):
-        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<input type="text" name="'+str(name)+'"/><br/>'
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(variable1) + '<input type="text" name="'+str(name)+'"/><br/>'
         return
     def startForm(self, url, parameters):
         hidden = ''
@@ -54,8 +54,8 @@ class Dialog(object):
                  parameters, re.DOTALL):
             key = r.group(1)
             value = r.group(2)
-            hidden = hidden + '<input type="hidden" name="'+str(key)+'" value="'+str(value)+'" /><form post="'+str(url)+'" method="GET">'
-        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<form post="'+str(url)+'" method="GET"><input type="text" name="'+str(value)+'"/>'+hidden
+            hidden = hidden + '<input type="hidden" name="'+str(key)+'" value="'+str(value)+'" />'
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<form post="'+str(url)+'" method="GET">'+hidden
 
     def endForm(self):
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output +'<input type="submit" value="submit"/></form><br/>'
