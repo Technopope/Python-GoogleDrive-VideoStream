@@ -114,7 +114,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False):
 
         count = 0
         if catalog:
@@ -134,226 +134,245 @@ class cloudservice(object):
             xbmcvfs.mkdir(path)
 
 
-
-        mediaItems = self.getMediaList(folderID,contentType=contentType)
-
-        if mediaItems and not encfs:
-            for item in mediaItems:
-
-                url = 0
-                if item.file is None:
-                    if catalog:
-                        count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath)
-                    else:
-                        count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
-                else:
-                    #'content_type': 'video',
-                    values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
-                    if item.file.type == 1:
-                        url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
-                    else:
-                        url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
-
-                    #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
+        changeToken = self.addon.getSetting(self.instanceName+'_changetoken')
 
 
-                if url != 0:
-                    title = item.file.title
+        nextPageToken = ''
+        largestChangeId = ''
+        isContinue = True
+        while isContinue:
 
-                    if pDialog is not None:
-                        pDialog.update(message=title)
+            (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
+            print "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken) + "\n"
 
-                    if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
-                        if not catalog:
-                            filename = str(path) + '/' + str(title)+'.strm'
-                            strmFile = xbmcvfs.File(filename, "w")
+            if changeTracking:
+                if nextPageToken == '' or nextPageToken is None:
+                    isContinue = False
+                    self.addon.setSetting(self.instanceName + '_changetoken', str(largestChangeId))
 
-                            strmFile.write(url+'\n')
-                            strmFile.close()
-                            count += 1
+            else:
+                mediaItems = self.getMediaList(folderID,contentType=contentType)
+                isContinue = False
+                self.addon.setSetting(self.instanceName + '_changetoken', str(largestChangeId))
+
+
+            if mediaItems and not encfs:
+                for item in mediaItems:
+
+                    url = 0
+                    if not changeTracking and item.file is None:
+                        if catalog:
+                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath)
                         else:
-                            episode = ''
-                            # nekwebdev contribution
-                            pathLib = ''
+                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
+                    else:
+                        #'content_type': 'video',
+                        values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
+                        if item.file.type == 1:
+                            url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                        else:
+                            url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
 
-                            filename = str(title)
-                            tv = False
-                            tv = item.file.cleantv.match(title)
-                            if not tv:
-                                tv = item.file.regtv1.match(title)
-                            if not tv:
-                                tv = item.file.regtv2.match(title)
-                            if not tv:
-                                tv = item.file.regtv3.match(title)
+                        #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
 
-                            if tv:
-                                show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
-                                show = show.rstrip("\.")
-                                if not show:
-                                    show = tv.group(1).replace("\S{2,}\-\S{2,}", " ")
-                                    show = show.rstrip("\-")
-                                show = show.strip('.').lower()
-                                season = tv.group(2)
-                                if len(season) < 2:
-                                    season = '0' + str(season)
-                                episode = tv.group(3)
-                                pathLib = tvPath + '/' + show
-                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                pathLib = pathLib +  '/season ' + str(season)
-                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                filename = 'S' + str(season) + 'E' + str(episode)
+
+                    if url != 0:
+                        title = item.file.title
+
+                        if pDialog is not None:
+                            pDialog.update(message=title)
+
+                        if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
+                            if not catalog:
+                                filename = str(path) + '/' + str(title)+'.strm'
+                                strmFile = xbmcvfs.File(filename, "w")
+
+                                strmFile.write(url+'\n')
+                                strmFile.close()
+                                count += 1
                             else:
-                                movie = item.file.cleanmovie.match(title)
-                                if not movie:
-                                    movie = item.file.regmovie.match(title)
-                                if movie:
-                                    title = movie.group(1)
-                                    title = title.strip('.').lower()
-                                    year = movie.group(2)
+                                episode = ''
+                                # nekwebdev contribution
+                                pathLib = ''
 
-                                    filename = str(title) + '(' + str(year) + ')'
-                                    pathLib = moviePath
+                                filename = str(title)
+                                tv = False
+                                tv = item.file.cleantv.match(title)
+                                if not tv:
+                                    tv = item.file.regtv1.match(title)
+                                if not tv:
+                                    tv = item.file.regtv2.match(title)
+                                if not tv:
+                                    tv = item.file.regtv3.match(title)
+
+                                if tv:
+                                    show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
+                                    show = show.rstrip("\.")
+                                    if not show:
+                                        show = tv.group(1).replace("\S{2,}\-\S{2,}", " ")
+                                        show = show.rstrip("\-")
+                                    show = show.strip('.').lower()
+                                    season = tv.group(2)
+                                    if len(season) < 2:
+                                        season = '0' + str(season)
+                                    episode = tv.group(3)
+                                    pathLib = tvPath + '/' + show
+                                    if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                        xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                    pathLib = pathLib +  '/season ' + str(season)
+                                    if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                        xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                    filename = 'S' + str(season) + 'E' + str(episode)
                                 else:
-                                    pathLib = videoPath
+                                    movie = item.file.cleanmovie.match(title)
+                                    if not movie:
+                                        movie = item.file.regmovie.match(title)
+                                    if movie:
+                                        title = movie.group(1)
+                                        title = title.strip('.').lower()
+                                        year = movie.group(2)
 
-                            if pathLib != '':
-                                filename = str(pathLib) + '/' + str(filename)+'.strm'
-                                if item.file.deleted and xbmcvfs.exists(filename):
-                                    xbmcvfs.delete(filename)
-                                elif not item.file.deleted and not xbmcvfs.exists(filename):
-                                    strmFile = xbmcvfs.File(filename, "w")
-                                    strmFile.write(url+'\n')
-                                    strmFile.close()
-                                    count += 1
+                                        filename = str(title) + '(' + str(year) + ')'
+                                        pathLib = moviePath
+                                    else:
+                                        pathLib = videoPath
 
-                        if spreadsheetFile is not None:
-                            spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
+                                if pathLib != '':
+                                    filename = str(pathLib) + '/' + str(filename)+'.strm'
+                                    if item.file.deleted and xbmcvfs.exists(filename):
+                                        xbmcvfs.delete(filename)
+                                    elif not item.file.deleted and not xbmcvfs.exists(filename):
+                                        strmFile = xbmcvfs.File(filename, "w")
+                                        strmFile.write(url+'\n')
+                                        strmFile.close()
+                                        count += 1
 
-        elif mediaItems and encfs:
+                            if spreadsheetFile is not None:
+                                spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
-            self.settings.setEncfsParameters()
+            elif mediaItems and encfs:
 
-            encryptedPath = self.settings.getParameter('epath', '')
-            dencryptedPath = self.settings.getParameter('dpath', '')
+                self.settings.setEncfsParameters()
 
-            encfs_source = self.settings.encfsSource
-            encfs_target = self.settings.encfsTarget
-            encfs_inode = self.settings.encfsInode
+                encryptedPath = self.settings.getParameter('epath', '')
+                dencryptedPath = self.settings.getParameter('dpath', '')
 
-            dirListINodes = {}
-            fileListINodes = {}
-            for item in mediaItems:
+                encfs_source = self.settings.encfsSource
+                encfs_target = self.settings.encfsTarget
+                encfs_inode = self.settings.encfsInode
 
-                if item.file is None:
-                    xbmcvfs.mkdir(encfs_source + str(encryptedPath))
-                    xbmcvfs.mkdir(encfs_source + str(encryptedPath) + str(item.folder.title) + '/' )
+                dirListINodes = {}
+                fileListINodes = {}
+                for item in mediaItems:
 
-                    if encfs_inode == 0:
-                        dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ino()))] = item.folder
-                    else:
-                        dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ctime()))] = item.folder
-                    #service.addDirectory(item.folder, contextType=contextType,  encfs=True)
-                else:
-                    xbmcvfs.mkdir(encfs_source +  str(encryptedPath))
-                    xbmcvfs.mkdir(encfs_source +  str(encryptedPath) + str(item.file.title))
-                    if encfs_inode == 0:
-                        fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath)+ str(item.file.title)).st_ino()))] = item
-                    else:
-                        fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath) + str(item.file.title)).st_ctime()))] = item
-                    #service.addMediaFile(item, contextType=contextType)
-                if encfs_inode > 0:
-                        xbmc.sleep(1000)
+                    if item.file is None:
+                        xbmcvfs.mkdir(encfs_source + str(encryptedPath))
+                        xbmcvfs.mkdir(encfs_source + str(encryptedPath) + str(item.folder.title) + '/' )
 
-
-            if contentType == 9:
-                mediaList = ['.mp4', '.flv', '.mov', '.webm', '.avi', '.ogg', '.mkv', '.iso', '.rmvb']
-            elif contentType == 10:
-                mediaList = ['.mp3', '.flac']
-            else:# contentType == 11:
-                mediaList = ['.jpg', '.png']
-            media_re = re.compile("|".join(mediaList), re.I)
-
-            dirs, files = xbmcvfs.listdir(encfs_target + str(dencryptedPath) )
-            url = 0
-            for dir in dirs:
-                index = ''
-                if encfs_inode == 0:
-                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ino())
-                else:
-                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ctime())
-                if index in dirListINodes.keys():
-                    xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
-#                    dirTitle = dir + ' [' +dirListINodes[index].title+ ']'
-                    encryptedDir = dirListINodes[index].title
-                    dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
-
-                    #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                    self.buildSTRM(path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile)
-
-                elif index in fileListINodes.keys():
-                    xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
-                    fileListINodes[index].file.decryptedTitle = dir
-                    if contentType < 9 or media_re.search(str(dir)):
-                        #service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(dir), epath=str(encryptedPath) )
-                        #'content_type': 'video',
-                        values = { 'username': self.authorization.username, 'encfs':'True', 'dpath': str(dencryptedPath) + str(dir), 'epath': str(encryptedPath), 'title': item.file.title, 'filename': item.file.id}
-                        if item.file.type == 1:
-                            url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                        if encfs_inode == 0:
+                            dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ino()))] = item.folder
                         else:
-                            url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
-
-                        #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
-
-
-                    if url != 0:
-                        title = str(dir)
-
-                        if pDialog is not None:
-                            pDialog.update(message=title)
-
-                        if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
-                            filename = str(path) + '/' + str(title)+'.strm'
-                            strmFile = xbmcvfs.File(filename, "w")
-
-                            strmFile.write(url+'\n')
-                            strmFile.close()
-
-            url=0
-            # file is already downloaded
-            for file in files:
-                index = ''
-                if encfs_inode == 0:
-                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ino())
-                else:
-                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ctime())
-                if index in fileListINodes.keys():
-                    fileListINodes[index].file.decryptedTitle = file
-                    if contentType < 9 or media_re.search(str(file)):
-                        #service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(file), epath=str(encryptedPath) )
-                        #'content_type': 'video',
-                        values = { 'username': self.authorization.username, 'encfs':'True', 'dpath': str(dencryptedPath) + str(dir), 'epath': str(encryptedPath), 'title': item.file.title, 'filename': item.file.id}
-                        if item.file.type == 1:
-                            url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                            dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ctime()))] = item.folder
+                        #service.addDirectory(item.folder, contextType=contextType,  encfs=True)
+                    else:
+                        xbmcvfs.mkdir(encfs_source +  str(encryptedPath))
+                        xbmcvfs.mkdir(encfs_source +  str(encryptedPath) + str(item.file.title))
+                        if encfs_inode == 0:
+                            fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath)+ str(item.file.title)).st_ino()))] = item
                         else:
-                            url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+                            fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath) + str(item.file.title)).st_ctime()))] = item
+                        #service.addMediaFile(item, contextType=contextType)
+                    if encfs_inode > 0:
+                            xbmc.sleep(1000)
 
-                        #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
+
+                if contentType == 9:
+                    mediaList = ['.mp4', '.flv', '.mov', '.webm', '.avi', '.ogg', '.mkv', '.iso', '.rmvb']
+                elif contentType == 10:
+                    mediaList = ['.mp3', '.flac']
+                else:# contentType == 11:
+                    mediaList = ['.jpg', '.png']
+                media_re = re.compile("|".join(mediaList), re.I)
+
+                dirs, files = xbmcvfs.listdir(encfs_target + str(dencryptedPath) )
+                url = 0
+                for dir in dirs:
+                    index = ''
+                    if encfs_inode == 0:
+                        index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ino())
+                    else:
+                        index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ctime())
+                    if index in dirListINodes.keys():
+                        xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
+    #                    dirTitle = dir + ' [' +dirListINodes[index].title+ ']'
+                        encryptedDir = dirListINodes[index].title
+                        dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
+
+                        #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
+                        self.buildSTRM(path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking)
+
+                    elif index in fileListINodes.keys():
+                        xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
+                        fileListINodes[index].file.decryptedTitle = dir
+                        if contentType < 9 or media_re.search(str(dir)):
+                            #service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(dir), epath=str(encryptedPath) )
+                            #'content_type': 'video',
+                            values = { 'username': self.authorization.username, 'encfs':'True', 'dpath': str(dencryptedPath) + str(dir), 'epath': str(encryptedPath), 'title': item.file.title, 'filename': item.file.id}
+                            if item.file.type == 1:
+                                url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                            else:
+                                url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+
+                            #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
 
 
-                    if url != 0:
-                        title = str(dir)
+                        if url != 0:
+                            title = str(dir)
 
-                        if pDialog is not None:
-                            pDialog.update(message=title)
+                            if pDialog is not None:
+                                pDialog.update(message=title)
 
-                        if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
-                            filename = str(path) + '/' + str(title)+'.strm'
-                            strmFile = xbmcvfs.File(filename, "w")
+                            if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
+                                filename = str(path) + '/' + str(title)+'.strm'
+                                strmFile = xbmcvfs.File(filename, "w")
 
-                            strmFile.write(url+'\n')
-                            strmFile.close()
+                                strmFile.write(url+'\n')
+                                strmFile.close()
+
+                url=0
+                # file is already downloaded
+                for file in files:
+                    index = ''
+                    if encfs_inode == 0:
+                        index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ino())
+                    else:
+                        index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ctime())
+                    if index in fileListINodes.keys():
+                        fileListINodes[index].file.decryptedTitle = file
+                        if contentType < 9 or media_re.search(str(file)):
+                            #service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(file), epath=str(encryptedPath) )
+                            #'content_type': 'video',
+                            values = { 'username': self.authorization.username, 'encfs':'True', 'dpath': str(dencryptedPath) + str(dir), 'epath': str(encryptedPath), 'title': item.file.title, 'filename': item.file.id}
+                            if item.file.type == 1:
+                                url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                            else:
+                                url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+
+                            #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
+
+
+                        if url != 0:
+                            title = str(dir)
+
+                            if pDialog is not None:
+                                pDialog.update(message=title)
+
+                            if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
+                                filename = str(path) + '/' + str(title)+'.strm'
+                                strmFile = xbmcvfs.File(filename, "w")
+
+                                strmFile.write(url+'\n')
+                                strmFile.close()
         return count
     ##
     # build STRM files to a given path for a given folder ID

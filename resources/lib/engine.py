@@ -881,34 +881,42 @@ class contentengine(object):
 
                     else:
 
-                        count = 1
-                        while True:
-                            instanceName = constants.PLUGIN_NAME+str(count)
-                            username = settings.getSetting(instanceName+'_username')
+                        changeTracking = False
+                        if mode == 'buildstrm2':
+                            changeTracking = True
 
-                            if username != '' and username is not None and username == invokedUsername:
-                                #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
-                                #else:
-                                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+                        print "instance name " + instanceName + "\n"
 
-                                if mode == 'buildstrm':
-                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
-                                else:
-                                    service.buildSTRM2(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
+                        if instanceName != '':
+                            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking)
 
-                            if count == numberOfAccounts:
-                                #fallback on first defined account
-                                try:
-                                    service
-                                except NameError:
-                                    #fallback on first defined account
+                        else:
+                            count = 1
+                            while True:
+                                instanceName = constants.PLUGIN_NAME+str(count)
+                                username = settings.getSetting(instanceName+'_username')
+                                print "username = " + invokedUsername + "\n\n"
+                                if username != '' and username is not None and username == invokedUsername:
                                     #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                    #        service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings)
+                                    #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
                                     #else:
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
-                                break
-                            count = count + 1
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+
+                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking)
+                                    break
+                                if count == numberOfAccounts:
+                                    #fallback on first defined account
+                                    try:
+                                        service
+                                    except NameError:
+                                        #fallback on first defined account
+                                        #if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                        #        service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings)
+                                        #else:
+                                        service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                    break
+                                count = count + 1
 
                 if KODI and silent != 2:
                     try:
@@ -1420,7 +1428,7 @@ class contentengine(object):
                     self.addMenu(self.PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
                 else:
                     xbmcgui.Dialog().inputText('title', 'search', self.PLUGIN_URL+'?', 'mode=search&instance='+str(service.instanceName)+'&content_type='+contextType)
-                self.addMenu(self.PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<'+addon.getLocalizedString(30211)+'>')
+                self.addMenu(self.PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<test automated STRM>')
                 if constants.CONST.testing_features:
                     self.addMenu(self.PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'['+addon.getLocalizedString(30212)+']')
 

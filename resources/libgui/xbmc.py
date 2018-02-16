@@ -33,6 +33,11 @@ class log(object):
     def __init__(self,message,type=None):
         return
 
+class sleep(object):
+    ##
+    def __init__(self,time):
+        return
+
 class executebuiltin(object):
     ##
     def __init__(self,message):
