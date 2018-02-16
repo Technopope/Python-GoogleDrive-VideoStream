@@ -393,6 +393,7 @@ class cloudservice(object):
         xbmcvfs.mkdir(videoPath)
         xbmcvfs.mkdir(moviePath)
 
+
         changeToken = self.addon.getSetting(self.instanceName+'_changetoken')
 
 
