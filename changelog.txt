@@ -1,3 +1,4 @@
+- combine buildstrm and buildstrm2 into one method
 - fix for when user removes username/password
 - setting interface password fix
 - fix for blanking out setting parameters

@@ -715,7 +715,7 @@ class contentengine(object):
             mode = 'main'
             instanceName = ''
         #create strm files
-        elif mode == 'buildstrm':
+        elif mode == 'buildstrm' or mode == 'buildstrm2':
 
             folderID = settings.getParameter('folder')
             filename = settings.getParameter('filename')
@@ -754,7 +754,7 @@ class contentengine(object):
 
                 if path is None or path == '':
 
-                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrm&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                     path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'strm_path','',False,False,'')
                     xbmcgui.Dialog().endForm()
 
@@ -892,7 +892,10 @@ class contentengine(object):
                                 #else:
                                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
-                                service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
+                                if mode == 'buildstrm':
+                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
+                                else:
+                                    service.buildSTRM2(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
 
                             if count == numberOfAccounts:
                                 #fallback on first defined account
@@ -920,32 +923,62 @@ class contentengine(object):
         #create strm files
         elif mode == 'buildstrm2':
 
-            silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
-            if silent == '':
-                silent = 0
 
-            try:
-                path = settings.getSetting('strm_path')
-            except:
-                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                addon.setSetting('strm_path', path)
+            folderID = settings.getParameter('folder')
+            filename = settings.getParameter('filename')
+            title = settings.getParameter('title')
+            invokedUsername = settings.getParameter('username')
+            encfs = settings.getParameter('encfs', False)
 
-            if path == '' or path is None:
-                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                addon.setSetting('strm_path', path)
+            encryptedPath = settings.getParameter('epath', '')
+            dencryptedPath = settings.getParameter('dpath', '')
 
-            if path != '' and path is not None:
-                returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+            if KODI:
+
+                silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
+                if silent == '':
+                    silent = 0
+
+                try:
+                    path = settings.getSetting('strm_path')
+                except:
+                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                    addon.setSetting('strm_path', path)
+
+                if path == '' or path is None:
+                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                    addon.setSetting('strm_path', path)
+
+                if path != '' and path is not None:
+                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+
+
+            elif not KODI:
+                try:
+                    path = settings.getParameter('strm_path', settings.getSetting('strm_path',''))
+                    path = path.replace('%2F','/')
+                except:
+                    path = None
+
+                if path is None or path == '':
+
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrm2&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'strm_path','',False,False,'')
+                    xbmcgui.Dialog().endForm()
+
 
 
             if path != '' and path is not None and (not KODI or returnPrompt):
 
-                if silent != 2:
+                if KODI and silent != 2:
                     try:
                         pDialog = xbmcgui.DialogProgressBG()
                         pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
                     except:
                         pDialog = None
+                else:
+                        pDialog = None
+
 
                 url = settings.getParameter('streamurl')
                 url = re.sub('---', '&', url)
@@ -961,14 +994,7 @@ class contentengine(object):
                         strmFile.close()
                 else:
 
-                    folderID = settings.getParameter('folder')
-                    filename = settings.getParameter('filename')
-                    title = settings.getParameter('title')
-                    invokedUsername = settings.getParameter('username')
-                    encfs = settings.getParameter('encfs', False)
 
-                    encryptedPath = settings.getParameter('epath', '')
-                    dencryptedPath = settings.getParameter('dpath', '')
 
                     if folderID != '':
 
@@ -1059,13 +1085,13 @@ class contentengine(object):
                                 break
                             count = count + 1
 
-                if silent != 2:
+                if KODI and silent != 2:
                     try:
                         pDialog.update(100)
                         pDialog.close()
                     except:
                         pDialog = None
-                if silent == 0:
+                if KODI and silent == 0:
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
             xbmcplugin.endOfDirectory(self.plugin_handle)
             return
