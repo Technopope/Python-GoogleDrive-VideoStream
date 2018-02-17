@@ -165,7 +165,7 @@ class cloudservice(object):
                             count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath)
                         else:
                             count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
-                    else:
+                    elif item.file is not None:
                         #'content_type': 'video',
                         values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
                         if item.file.type == 1:
@@ -374,109 +374,6 @@ class cloudservice(object):
                                 strmFile.write(url+'\n')
                                 strmFile.close()
         return count
-    ##
-    # build STRM files to a given path for a given folder ID
-    #   parameters: path, folder id, content type, dialog object (optional)
-    ##
-   # def buildSTRM2(self, path, contentType=1, pDialog=None, spreadsheetFile=None):
-    def buildSTRM2(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None):
-
-        xbmcvfs.mkdir(path)
-
-        musicPath = path + '/music'
-        moviePath = path + '/movies'
-        tvPath = path + '/tv'
-        videoPath = path + '/video-other'
-
-        xbmcvfs.mkdir(musicPath)
-        xbmcvfs.mkdir(tvPath)
-        xbmcvfs.mkdir(videoPath)
-        xbmcvfs.mkdir(moviePath)
-
-
-        changeToken = self.addon.getSetting(self.instanceName+'_changetoken')
-
-
-        count = 0
-        nextPageToken = ''
-        largestChangeId = ''
-        while True:
-            (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
-
-            if mediaItems:
-                for item in mediaItems:
-                    url = ''
-                    if item.file is not None:
-                        count = count + 1
-
-                        if pDialog is not None:
-                            pDialog.update(message='STRMs created '+str(count))
-
-                        #'content_type': 'video',
-                        values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
-                        if item.file.type == 1:
-                            url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
-                            filename = musicPath + '/' + str(item.file.title)+'.strm'
-
-                            if item.file.deleted and xbmcvfs.exists(filename):
-                                xbmcvfs.delete(filename)
-                            elif not item.file.deleted  and not xbmcvfs.exists(filename):
-                                strmFile = xbmcvfs.File(filename, "w")
-
-                                strmFile.write(url+'\n')
-                                strmFile.close()
-
-                        else:
-                            url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
-
-
-                            title = item.file.title
-
-                            episode = ''
-                            # nekwebdev contribution
-                            pathLib = ''
-
-
-                            tv = item.file.regtv1.match(title)
-                            if not tv:
-                                tv = item.file.regtv2.match(title)
-                            if not tv:
-                                tv = item.file.regtv3.match(title)
-
-                            if tv:
-                                show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
-                                show = show.rstrip("\.")
-                                season = tv.group(2)
-                                episode = tv.group(3)
-                                pathLib = tvPath + '/' + show
-                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                pathLib = pathLib + '/Season ' + season
-                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                            else:
-                                movie = item.file.regmovie.match(title)
-                                if movie:
-                                    pathLib = moviePath
-                                else:
-                                    pathLib = videoPath
-
-                            if pathLib != '':
-                                filename = str(pathLib) + '/' + str(title)+'.strm'
-                                if item.file.deleted and xbmcvfs.exists(filename):
-                                    xbmcvfs.delete(filename)
-                                elif not item.file.deleted and not xbmcvfs.exists(filename):
-                                    strmFile = xbmcvfs.File(filename, "w")
-                                    strmFile.write(url+'\n')
-                                    strmFile.close()
-
-                            if spreadsheetFile is not None:
-                                spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
-            self.addon.setSetting(self.instanceName + '_changetoken', str(largestChangeId))
-
-            if nextPageToken == '' or nextPageToken is None:
-                break
-
 
 
     ##
