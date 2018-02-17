@@ -145,6 +145,9 @@ class cloudservice(object):
             (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
             print "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken) + "\n"
 
+            if largestChangeId == changeToken:
+                isContinue = False
+                break
             if changeTracking:
                 if nextPageToken == '' or nextPageToken is None:
                     isContinue = False
