@@ -57,6 +57,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.hide = False
         self.keyvalue = False
         self.saltfile = None
+        self.saltpassword = None
         self.cryptoSalt = None
         self.cryptoPassword = None
         self.logins = {}
@@ -93,15 +94,17 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
 
         try:
-			from resources.lib import encryption
+            from resources.lib import encryption
 
-			try:
-				self.saltfile = self.dbm.getSetting('saltfile', default='saltfile')
-			except:
-				self.saltfile = 'saltfile'
-				print "No saltfile set, using file \'" + self.saltfile + "\' instead."
+            try:
+                self.saltfile = self.dbm.getSetting('saltfile', default='saltfile')
+                self.saltpassword = self.dbm.getSetting('saltpassword', default='saltpassword')
+            except:
+                self.saltfile = 'saltfile'
+                self.saltpassword = 'saltpassword'
+                print "No saltfile set, using file \'" + self.saltfile + "\' instead."
 
-			self.encrypt = encryption.encryption(self.saltfile,self.password)
+            self.encrypt = encryption.encryption(self.saltfile,self.saltpassword)
         except:
             self.encrypt = None
 
@@ -1071,7 +1074,8 @@ class webGUI(BaseHTTPRequestHandler):
             else:
                 self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
 
-            self.wfile.write('<br />Salt file <input name="saltfile" type="text" value="'+str(self.server.dbm.getSetting('saltfile',default='saltfile'))+'"><sub>[select server path to file]</sub>')
+            self.wfile.write('<br />Salt file <input name="saltfile" type="text" value="'+str(self.server.dbm.getSetting('saltfile',default='saltfile'))+'"><sub>[eneter a path such as /var/saltfile]</sub>')
+            self.wfile.write('<br />Salt password <input name="saltpassword" type="text" value="'+str(self.server.dbm.getSetting('saltpassword',default='saltpassword'))+'">')
 
             self.wfile.write('<br /><input type="submit" value="Save" /><h1>Media Configuration:</h1>')
             self.wfile.write('<br />Passthrough <select name="passthrough">')
