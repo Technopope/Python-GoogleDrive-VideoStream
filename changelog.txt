@@ -1,3 +1,4 @@
+- add saltpassword instead of using username
 - combine buildstrm and buildstrm2 into one method
 - fix for when user removes username/password
 - setting interface password fix
