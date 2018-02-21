@@ -35,6 +35,15 @@ python default.py
 
 The default dbmfile is ./gdrive.db and the default port to run on is 9988.  You can override these by running:
 
-python default.py <port> <dbmfile>
+python default.py <dbmfile> <port>
 
-You can use the setting.xml from either gdrive or gdrive-testing plugin for KODI.  You can import this using setup.py
+To use SSL using a SSL certificate (.pem file) you provide, change the port parameter (if required) and provide a third argument of the .pem file
+
+python default.py <dbmfile> <port> <ssl certfile>
+
+example:
+
+python default.py ./gdrive.db 443 ./mycert.pem
+
+
+You can use the setting.xml from either gdrive or gdrive-testing plugin for KODI.  You can import this using setup.py.  This is not required as you can setup the instance using the settings pane within the web interface.
