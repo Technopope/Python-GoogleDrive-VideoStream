@@ -1,3 +1,5 @@
+v0.1.8 (2018-02-21)
+- implement: Support to SSL certificates (HTTPS) #39
 - add saltpassword instead of using username
 - combine buildstrm and buildstrm2 into one method
 - fix for when user removes username/password

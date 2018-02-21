@@ -25,17 +25,27 @@ import urllib, urllib2
 from SocketServer import ThreadingMixIn
 import threading
 
+# default.py [settings-dbm] [PORT] [SSL-certificate]
 try:
-    port = str(sys.argv[1])
+    port = str(sys.argv[2])
 except:
     port = 9988
 try:
-    dbmfile = str(sys.argv[2])
+    dbmfile = str(sys.argv[1])
 except:
     dbmfile = './gdrive.db'
 
+try:
+    sslcert = str(sys.argv[3])
+except:
+    sslcert = None
+
 #try:
 server = webgui.WebGUIServer(('',  port), webgui.webGUI)
+if sslcert is not None:
+    import ssl
+    server.socket = ssl.wrap_socket (server.socket, certfile=sslcert, server_side=True)
+
 server.setDBM(dbmfile)
 server.setPort(port)
 
