@@ -1344,10 +1344,14 @@ class gdrive(cloudservice):
     def getPlaybackCall(self, package=None, title='', isExact=True, contentType=None):
 
         try:
-            pquality = int(self.addon.getSetting('preferred_quality'))
-            pformat = int(self.addon.getSetting('preferred_format'))
-            acodec = int(self.addon.getSetting('avoid_codec'))
-            aformat = int(self.addon.getSetting('avoid_format'))
+            pquality = self.settings.getParameter('preferred_quality', self.settings.getSetting('preferred_quality'))
+            pformat = self.settings.getParameter('preferred_format', self.settings.getSetting('preferred_format'))
+            acodec = self.settings.getParameter('avoid_codec', self.settings.getSetting('avoid_codec'))
+            aformat = self.settings.getParameter('avoid_format', self.settings.getSetting('avoid_format'))
+            #pquality = int(self.addon.getSetting('preferred_quality'))
+            #pformat = int(self.addon.getSetting('preferred_format'))
+            #acodec = int(self.addon.getSetting('avoid_codec'))
+            #aformat = int(self.addon.getSetting('avoid_format'))
         except :
             pquality=-1
             pformat=-1
@@ -1487,6 +1491,7 @@ class gdrive(cloudservice):
 
             response_data = response.read()
             response.close()
+            print "preferred quality = " + str(pquality) + "\n"
 
 
             for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
@@ -1747,7 +1752,6 @@ class gdrive(cloudservice):
 
         response_data = response.read()
         response.close()
-
 
         for r in re.finditer('([^\s]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
             cookieType,cookieValue = r.groups()
