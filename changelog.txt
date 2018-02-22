@@ -1,3 +1,4 @@
+- make correction for checking if STRM file exists already
 - workaround issue - buildstrm folders not working #40
 v0.1.8 (2018-02-21)
 - implement: Support to SSL certificates (HTTPS) #39
