@@ -537,6 +537,7 @@ class gdrive(cloudservice):
             try:
               response = urllib2.urlopen(req)
               xbmc.sleep(1000)
+
             except urllib2.URLError, e:
 
               if e.code == 403 or e.code == 401:
@@ -551,9 +552,10 @@ class gdrive(cloudservice):
                   return
               else:
                 xbmc.log('getChangeList '+str(e))
-                return
+                return ([],nextPageToken,changeToken)
             except socket.timeout, e:
                 return ([],nextPageToken,changeToken)
+
             response_data = response.read()
             response.close()
 

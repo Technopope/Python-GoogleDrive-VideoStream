@@ -134,14 +134,15 @@ class cloudservice(object):
             xbmcvfs.mkdir(path)
 
 
-        changeToken = self.addon.getSetting(self.instanceName+'_changetoken')
+        changeToken = self.addon.getSetting(self.instanceName+'_changetoken',0)
 
 
-        nextPageToken = ''
+        nextPageToken = 0
         largestChangeId = ''
         isContinue = True
         while isContinue:
-
+            if self is not None:
+                print 'self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)' + str(contentType) + ' ' + str(nextPageToken) + ' ' + "\n"
             (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
             print "changeToken " + str(changeToken) + "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken) + "\n"
 

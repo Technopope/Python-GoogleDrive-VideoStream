@@ -72,11 +72,11 @@ class xbmcaddon:
     ##
     # return the setting from DBM
     ##
-    def getSetting(self,key):
+    def getSetting(self,key, default=None):
         try:
            return self.dbm[key]
         except:
-           return None
+           return default
 
 
 
