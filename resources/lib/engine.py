@@ -612,10 +612,10 @@ class contentengine(object):
         settings = settings.settings(addon)
 
         if not KODI:
-            protocol = settings.getSetting('protocol', 'http://')
-            hostname = settings.getSetting('hostname', 'localhost')
-            port = int(settings.getSettingInt('port', 9988))
-            self.PLUGIN_URL = str(protocol) + str(hostname) + ':' + str(port)  + '/' +  'default.py'
+            #protocol = settings.getSetting('protocol', 'http://')
+            #hostname = settings.getSetting('hostname', 'localhost')
+            #port = int(settings.getSettingInt('port', 9988))
+            self.PLUGIN_URL = 'default.py'#str(protocol) + str(hostname) + ':' + str(port)  + '/' +  'default.py'
 
 
         # retrieve settings
