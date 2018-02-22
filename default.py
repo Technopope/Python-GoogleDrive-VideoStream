@@ -24,10 +24,11 @@ from resources.libgui import webgui
 import urllib, urllib2
 from SocketServer import ThreadingMixIn
 import threading
+import sys
 
 # default.py [settings-dbm] [PORT] [SSL-certificate]
 try:
-    port = str(sys.argv[2])
+    port = int(sys.argv[2])
 except:
     port = 9988
 try:
