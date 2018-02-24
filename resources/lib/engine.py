@@ -757,8 +757,10 @@ class contentengine(object):
 
                     xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                     path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'strm_path','',False,False,'')
-                    xbmcgui.Dialog().yesno('catalog STRMs according to movie/tv/other?','catalog')
+                    xbmcgui.Dialog().yesno('catalog STRMs into folders according to movie/tv/other?','catalog')
                     xbmcgui.Dialog().yesno('append resolution to STRM filename?','resolution')
+                    xbmcgui.Dialog().yesno('remove media extension from filename?','remove_ext')
+
                     xbmcgui.Dialog().endForm()
 
 

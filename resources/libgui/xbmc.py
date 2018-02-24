@@ -38,6 +38,10 @@ class sleep(object):
     def __init__(self,time):
         return
 
+
+def translatePath(path):
+    return path
+
 class executebuiltin(object):
     ##
     def __init__(self,message):

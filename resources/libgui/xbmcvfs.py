@@ -33,6 +33,7 @@ def mkdir(path):
     except:
         return
 
+
 def exists(path):
     if path is not None and path != '':
         print "PATH " + str(path) + "\n"

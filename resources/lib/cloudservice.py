@@ -185,76 +185,82 @@ class cloudservice(object):
                         if pDialog is not None:
                             pDialog.update(message=title)
 
-                        strmFileName = str(title)
+                        strmFileName = str(path) + '/' + str(title)
                         if resolution:
                             strmFileName += '.' + str(item.file.resolution[0]) + 'p.strm'
                         else:
                             strmFileName += '.strm'
 
-                        if not xbmcvfs.exists(str(path) + '/' + strmFileName):
-                            if not catalog:
-                                filename = str(path) + '/' + strmFileName
-                                strmFile = xbmcvfs.File(filename, "w")
+                        #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
+                        if not xbmcvfs.exists(strmFileName) and not catalog:
+                            strmFile = xbmcvfs.File(strmFileName, "w")
 
-                                strmFile.write(url+'\n')
-                                strmFile.close()
-                                count += 1
+                            strmFile.write(url+'\n')
+                            strmFile.close()
+                            count += 1
+                        else:
+                            episode = ''
+                            # nekwebdev contribution
+                            pathLib = ''
+
+                            filename = str(title)
+                            tv = False
+                            tv = item.file.cleantv.match(title)
+                            if not tv:
+                                tv = item.file.regtv1.match(title)
+                            if not tv:
+                                tv = item.file.regtv2.match(title)
+                            if not tv:
+                                tv = item.file.regtv3.match(title)
+
+                            if tv:
+                                show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
+                                show = show.rstrip("\.")
+                                if not show:
+                                    show = tv.group(1).replace("\S{2,}\-\S{2,}", " ")
+                                    show = show.rstrip("\-")
+                                show = show.strip('.').lower()
+                                season = tv.group(2)
+                                if len(season) < 2:
+                                    season = '0' + str(season)
+                                episode = tv.group(3)
+                                pathLib = tvPath + '/' + show
+                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                pathLib = pathLib +  '/season ' + str(season)
+                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                filename = 'S' + str(season) + 'E' + str(episode)
                             else:
-                                episode = ''
-                                # nekwebdev contribution
-                                pathLib = ''
+                                movie = item.file.cleanmovie.match(title)
+                                if not movie:
+                                    movie = item.file.regmovie.match(title)
+                                if movie:
+                                    title = movie.group(1)
+                                    title = re.sub(r'\.',r' ', title)
+                                    title = title.strip('.').lower()
+                                    year = movie.group(2)
 
-                                filename = str(title)
-                                tv = False
-                                tv = item.file.cleantv.match(title)
-                                if not tv:
-                                    tv = item.file.regtv1.match(title)
-                                if not tv:
-                                    tv = item.file.regtv2.match(title)
-                                if not tv:
-                                    tv = item.file.regtv3.match(title)
-
-                                if tv:
-                                    show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
-                                    show = show.rstrip("\.")
-                                    if not show:
-                                        show = tv.group(1).replace("\S{2,}\-\S{2,}", " ")
-                                        show = show.rstrip("\-")
-                                    show = show.strip('.').lower()
-                                    season = tv.group(2)
-                                    if len(season) < 2:
-                                        season = '0' + str(season)
-                                    episode = tv.group(3)
-                                    pathLib = tvPath + '/' + show
-                                    if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                        xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                    pathLib = pathLib +  '/season ' + str(season)
-                                    if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                        xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                    filename = 'S' + str(season) + 'E' + str(episode)
+                                    filename = str(title) + '(' + str(year) + ')'
+                                    pathLib = moviePath +'/'+str(filename)
+                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
                                 else:
-                                    movie = item.file.cleanmovie.match(title)
-                                    if not movie:
-                                        movie = item.file.regmovie.match(title)
-                                    if movie:
-                                        title = movie.group(1)
-                                        title = title.strip('.').lower()
-                                        year = movie.group(2)
+                                    pathLib = videoPath
 
-                                        filename = str(title) + '(' + str(year) + ')'
-                                        pathLib = moviePath
-                                    else:
-                                        pathLib = videoPath
+                            if pathLib != '':
+                                strmFileName = str(pathLib) + '/' +str(filename)
+                                if resolution:
+                                    strmFileName += '.' + str(item.file.resolution[0]) + 'p.strm'
+                                else:
+                                    strmFileName += '.strm'
 
-                                if pathLib != '':
-                                    filename = str(pathLib) + '/' + strmFileName
-                                    if item.file.deleted and xbmcvfs.exists(filename):
-                                        xbmcvfs.delete(filename)
-                                    elif not item.file.deleted and not xbmcvfs.exists(filename):
-                                        strmFile = xbmcvfs.File(filename, "w")
-                                        strmFile.write(url+'\n')
-                                        strmFile.close()
-                                        count += 1
+                                if item.file.deleted and xbmcvfs.exists(strmFileName):
+                                    xbmcvfs.delete(filename)
+                                elif not item.file.deleted and not xbmcvfs.exists(strmFileName):
+                                    strmFile = xbmcvfs.File(strmFileName, "w")
+                                    strmFile.write(url+'\n')
+                                    strmFile.close()
+                                    count += 1
 
                             if spreadsheetFile is not None:
                                 spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
