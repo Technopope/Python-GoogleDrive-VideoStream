@@ -114,7 +114,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False):
 
         count = 0
         if catalog:
@@ -141,10 +141,9 @@ class cloudservice(object):
         largestChangeId = ''
         isContinue = True
         while isContinue:
-            if self is not None:
-                print 'self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)' + str(contentType) + ' ' + str(nextPageToken) + ' ' + "\n"
-            (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
-            print "changeToken " + str(changeToken) + "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken) + "\n"
+            if fetchChangeID:
+                (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
+                print "changeToken " + str(changeToken) + "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken) + "\n"
 
             if changeTracking and largestChangeId == changeToken:
                 isContinue = False
