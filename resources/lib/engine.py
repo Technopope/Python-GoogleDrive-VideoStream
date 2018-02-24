@@ -718,12 +718,12 @@ class contentengine(object):
         elif mode == 'buildstrm':# or mode == 'buildstrm2':
 
             catalog = settings.getParameter('catalog', False)
+            resolution = settings.getParameter('resolution', False)
             folderID = settings.getParameter('folder')
             filename = settings.getParameter('filename')
             title = settings.getParameter('title')
             invokedUsername = settings.getParameter('username')
             encfs = settings.getParameter('encfs', False)
-            print "catalog " + str(catalog) + "\n"
             encryptedPath = settings.getParameter('epath', '')
             dencryptedPath = settings.getParameter('dpath', '')
 
@@ -757,7 +757,8 @@ class contentengine(object):
 
                     xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                     path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'strm_path','',False,False,'')
-                    xbmcgui.Dialog().yesno('catalog with movie/tv?','catalog')
+                    xbmcgui.Dialog().yesno('catalog STRMs according to movie/tv/other?','catalog')
+                    xbmcgui.Dialog().yesno('append resolution to STRM filename?','resolution')
                     xbmcgui.Dialog().endForm()
 
 
@@ -850,15 +851,15 @@ class contentengine(object):
                         if constants.CONST.spreadsheet and service.cloudResume == '2':
                             spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                             if catalog:
-                                count += service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True)
+                                count += service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True, resolution=resolution)
                             else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True)
+                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True,resolution=resolution)
                             spreadsheetFile.close()
                         else:
                             if catalog:
-                                count += service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True)
+                                count += service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True, resolution=resolution)
                             else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True)
+                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True,resolution=resolution)
 
                         #count
 
@@ -898,7 +899,7 @@ class contentengine(object):
 
                         if instanceName != '':
                             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
-                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True)
+                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution)
 
                         else:
                             count = 1
@@ -912,7 +913,7 @@ class contentengine(object):
                                     #else:
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
-                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True)
+                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution)
                                     break
                                 if count == numberOfAccounts:
                                     #fallback on first defined account
