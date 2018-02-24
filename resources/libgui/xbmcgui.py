@@ -34,7 +34,8 @@ class Dialog(object):
     def select(self, heading, line1, line2='', line3=''):
         #print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         return
-    def yesno(self, heading, line1):
+    def yesno(self, variable1, name):
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(variable1) + '<select name="'+str(name)+'"><option value="true" selected >true</option><option value="false">false</option></select><br/>'
         return
     def inputText(self, variable, name, url, parameters):
         hidden = ''
