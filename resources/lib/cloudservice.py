@@ -114,7 +114,12 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None):
+
+        if host is not None:
+            PLUGIN_URL = self.PLUGIN_URL
+        else:
+            PLUGIN_URL = str(host) + '/default.py'
 
         count = 0
         if catalog:
@@ -172,9 +177,9 @@ class cloudservice(object):
                         #'content_type': 'video',
                         values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
                         if item.file.type == 1:
-                            url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                            url = PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
                         else:
-                            url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+                            url = PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
 
                         #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
 
@@ -334,9 +339,9 @@ class cloudservice(object):
                             #'content_type': 'video',
                             values = { 'username': self.authorization.username, 'encfs':'True', 'dpath': str(dencryptedPath) + str(dir), 'epath': str(encryptedPath), 'title': item.file.title, 'filename': item.file.id}
                             if item.file.type == 1:
-                                url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                                url = PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
                             else:
-                                url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+                                url = PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
 
                             #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
 
@@ -369,9 +374,9 @@ class cloudservice(object):
                             #'content_type': 'video',
                             values = { 'username': self.authorization.username, 'encfs':'True', 'dpath': str(dencryptedPath) + str(dir), 'epath': str(encryptedPath), 'title': item.file.title, 'filename': item.file.id}
                             if item.file.type == 1:
-                                url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                                url = PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
                             else:
-                                url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+                                url = PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
 
                             #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
 
