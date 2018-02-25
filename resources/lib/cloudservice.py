@@ -191,7 +191,7 @@ class cloudservice(object):
                             pDialog.update(message=title)
 
                         strmFileName = str(path) + '/' + str(title)
-                        if resolution:
+                        if resolution and item.file is not None and item.file.resolution is not None:
                             strmFileName += '.' + str(item.file.resolution[0]) + 'p.strm'
                         else:
                             strmFileName += '.strm'
@@ -254,7 +254,7 @@ class cloudservice(object):
 
                             if pathLib != '':
                                 strmFileName = str(pathLib) + '/' +str(filename)
-                                if resolution:
+                                if resolution and item.file is not None and item.file.resolution is not None:
                                     strmFileName += '.' + str(item.file.resolution[0]) + 'p.strm'
                                 else:
                                     strmFileName += '.strm'
