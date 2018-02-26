@@ -114,7 +114,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False):
 
         if host is not None:
             PLUGIN_URL = self.PLUGIN_URL
@@ -197,7 +197,7 @@ class cloudservice(object):
                             strmFileName += '.strm'
 
                         #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
-                        if not xbmcvfs.exists(strmFileName) and not catalog:
+                        if (not xbmcvfs.exists(strmFileName) or force) and not catalog:
                             strmFile = xbmcvfs.File(strmFileName, "w")
 
                             strmFile.write(url+'\n')
@@ -261,7 +261,7 @@ class cloudservice(object):
 
                                 if item.file.deleted and xbmcvfs.exists(strmFileName):
                                     xbmcvfs.delete(filename)
-                                elif not item.file.deleted and not xbmcvfs.exists(strmFileName):
+                                elif not item.file.deleted and (not xbmcvfs.exists(strmFileName) or force):
                                     strmFile = xbmcvfs.File(strmFileName, "w")
                                     strmFile.write(url+'\n')
                                     strmFile.close()
@@ -352,7 +352,7 @@ class cloudservice(object):
                             if pDialog is not None:
                                 pDialog.update(message=title)
 
-                            if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
+                            if (not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm') or force):
                                 filename = str(path) + '/' + str(title)+'.strm'
                                 strmFile = xbmcvfs.File(filename, "w")
 
@@ -387,7 +387,7 @@ class cloudservice(object):
                             if pDialog is not None:
                                 pDialog.update(message=title)
 
-                            if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
+                            if (not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm') or force):
                                 filename = str(path) + '/' + str(title)+'.strm'
                                 strmFile = xbmcvfs.File(filename, "w")
 
