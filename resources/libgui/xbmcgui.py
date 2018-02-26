@@ -64,6 +64,31 @@ class Dialog(object):
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output +'<input type="submit" value="submit"/></form><br/>'
 
 
+    def booleanSelector(self, label1, variable, default=True):
+        if default:
+            trueValue = ' selected '
+            falseValue = ''
+        else:
+            trueValue = ''
+            falseValue = ' selected '
+
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(label1) + '<select name="'+str(variable)+'"><option value="true"'+str(trueValue)+'>true</option><option value="false"'+str(falseValue)+'>false</option></select><br/>'
+        return
+
+    def textField(self, label1, variable, default='', isOptional=False,format=''):
+        optionalText = ''
+        if isOptional:
+            optionalText = '<i> (optional)</i>'
+        else:
+            optionalText = '<i><b> (* required)</b></i>'
+
+        if format != '':
+            format = '<sub>[format: ' + str(format) + ']</sub>'
+
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(label1) + str(optionalText) +' <input type="text" name="'+str(variable)+'" value="'+str(default)+'"/> '+str(format)+'<br/>'
+        return
+
+
 class WindowXMLDialog(object):
 
     def ok(self, heading, line1, line2='', line3=''):

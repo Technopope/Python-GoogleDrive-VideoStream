@@ -717,6 +717,9 @@ class contentengine(object):
         #create strm files
         elif mode == 'buildstrm':# or mode == 'buildstrm2':
 
+            host = settings.getParameter('host')
+            if host == '':
+                host = None
             catalog = settings.getParameter('catalog', False)
             resolution = settings.getParameter('resolution', False)
             folderID = settings.getParameter('folder')
@@ -756,10 +759,12 @@ class contentengine(object):
                 if path is None or path == '':
 
                     xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
-                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'strm_path','',False,False,'')
-                    xbmcgui.Dialog().yesno('catalog STRMs into folders according to movie/tv/other?','catalog')
-                    xbmcgui.Dialog().yesno('append resolution to STRM filename?','resolution')
-                    xbmcgui.Dialog().yesno('remove media extension from filename?','remove_ext')
+                    xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', path)
+                    xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog')
+                    xbmcgui.Dialog().booleanSelector('append resolution to STRM filename?','resolution')
+                    xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
+                    xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
+                    xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port')
 
                     xbmcgui.Dialog().endForm()
 
