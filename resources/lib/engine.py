@@ -1440,7 +1440,7 @@ class contentengine(object):
                     teamdrives = service.getTeamDrives();
                     for drive in teamdrives:
                         #self.addMenu(self.PLUGIN_URL+'?mode=index&folder='+str(drive.id)+'&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']')
-                        service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']'), contextType=contextType, encfs=False )
+                        service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True), contextType=contextType, encfs=False )
 
                         #folder.folder(folderID,'') ***
 
