@@ -120,7 +120,6 @@ class cloudservice(object):
             PLUGIN_URL = self.PLUGIN_URL
         else:
             PLUGIN_URL = str(host) + '/default.py'
-        PLUGIN_URL = self.PLUGIN_URL
 
         count = 0
         if catalog:

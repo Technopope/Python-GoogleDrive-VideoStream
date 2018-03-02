@@ -860,15 +860,15 @@ class contentengine(object):
                         if constants.CONST.spreadsheet and service.cloudResume == '2':
                             spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                             if catalog:
-                                count += service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force)
+                                count += service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force, host=host)
                             else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force)
+                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force, host=host)
                             spreadsheetFile.close()
                         else:
                             if catalog:
-                                count += service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force)
+                                count += service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force, host=host)
                             else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force)
+                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force, host=host)
 
                         #count
 
@@ -908,7 +908,7 @@ class contentengine(object):
 
                         if instanceName != '':
                             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
-                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, force=force)
+                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, force=force, host=host)
 
                         else:
                             count = 1
@@ -922,7 +922,7 @@ class contentengine(object):
                                     #else:
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
-                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution)
+                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, host=host)
                                     break
                                 if count == numberOfAccounts:
                                     #fallback on first defined account
