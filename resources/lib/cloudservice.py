@@ -116,7 +116,7 @@ class cloudservice(object):
     ##
     def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False):
 
-        if host is not None:
+        if host is None:
             PLUGIN_URL = self.PLUGIN_URL
         else:
             PLUGIN_URL = str(host) + '/default.py'
