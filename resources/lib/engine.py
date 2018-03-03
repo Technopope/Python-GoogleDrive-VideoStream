@@ -533,7 +533,7 @@ class contentengine(object):
 
 
 
-    def run(self,writer=None, query=None,DBM=None, addon=None):
+    def run(self,writer=None, query=None,DBM=None, addon=None, host=None):
         #return
 #class run():
         # cloudservice - required python modules
@@ -717,9 +717,9 @@ class contentengine(object):
         #create strm files
         elif mode == 'buildstrm':# or mode == 'buildstrm2':
 
-            host = settings.getParameter('host')
-            if host == '':
-                host = None
+            hostTemp = settings.getParameter('host', '')
+            if hostTemp != '':
+                host = hostTemp
             force = settings.getParameter('force', False)
 
             catalog = settings.getParameter('catalog', False)
@@ -766,7 +766,7 @@ class contentengine(object):
                     xbmcgui.Dialog().booleanSelector('append resolution to STRM filename?','resolution')
                     xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
                     xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
-                    xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port')
+                    xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port', default=host)
 
                     xbmcgui.Dialog().endForm()
 

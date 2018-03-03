@@ -326,7 +326,7 @@ class webGUI(BaseHTTPRequestHandler):
                     self.server.addon.setSetting(instanceName + '_auth_refresh_token', str(refreshToken))
 
                     mediaEngine = engine.contentengine()
-                    mediaEngine.run(self,  DBM=self.server.dbm, addon=self.server.addon)
+                    mediaEngine.run(self,  DBM=self.server.dbm, addon=self.server.addon, host=host)
 
 
                 for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
@@ -360,7 +360,7 @@ class webGUI(BaseHTTPRequestHandler):
                     self.send_header('Set-Cookie', 'login='+str(loginSession))
                     self.server.logins[loginSession] = 1
                     mediaEngine = engine.contentengine()
-                    mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
+                    mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host)
                 else:
                     self.send_response(200)
                     self.end_headers()
@@ -368,7 +368,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             else:
                 mediaEngine = engine.contentengine()
-                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
+                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host)
 
 
 
@@ -418,6 +418,11 @@ class webGUI(BaseHTTPRequestHandler):
         # debug - print headers in log
         headers = str(self.headers)
         print(headers)
+
+        host = re.search(r'Host: (\S+)', str(headers))
+        if host is not None:
+            host = str(host.group(1))
+            print "HOST = " + str(host) + "\n"
 
 
         isLoggedIn = self.cookieLogin(self.headers)
@@ -512,7 +517,7 @@ class webGUI(BaseHTTPRequestHandler):
                 self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
             else:
                 mediaEngine = engine.contentengine()
-                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon)
+                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host)
 
             #self.server.ready = False
             return
@@ -1045,7 +1050,7 @@ class webGUI(BaseHTTPRequestHandler):
                 query = str(results.group(1))
 
             mediaEngine = engine.contentengine()
-            mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon)
+            mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
             return
 
         # redirect url to output
