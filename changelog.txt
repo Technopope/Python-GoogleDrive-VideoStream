@@ -1,3 +1,4 @@
+- add STRM logging method (optional)
 - add context items to team drive entries (treat them like folders)
 - STRM building - add force parameter (to force overwrite)
 - STRM building - add 'resolution' parameter to append resolution to STRM filename

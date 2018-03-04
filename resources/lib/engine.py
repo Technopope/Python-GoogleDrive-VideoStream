@@ -722,6 +722,14 @@ class contentengine(object):
                 host = hostTemp
             force = settings.getParameter('force', False)
 
+            logfile = settings.getParameter('logfile', None)
+
+            LOGGING = None
+            if logfile is not None and logfile != '':
+                LOGGING = open(logfile, 'w')
+                print >>LOGGING, "folder id\tfolder title\tfile id\tfile title\tshow title (tv)\tseason (tv)\tepisode (tv)\ttitle (movie)\tyear (movie)\tvideo resolution\tfile checksum\t\n"
+
+
             catalog = settings.getParameter('catalog', False)
             resolution = settings.getParameter('resolution', False)
             folderID = settings.getParameter('folder')
@@ -767,6 +775,7 @@ class contentengine(object):
                     xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
                     xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
                     xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port', default=host)
+                    xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
 
                     xbmcgui.Dialog().endForm()
 
@@ -860,15 +869,15 @@ class contentengine(object):
                         if constants.CONST.spreadsheet and service.cloudResume == '2':
                             spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                             if catalog:
-                                count += service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force, host=host)
+                                count += service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force, host=host, LOGGING=LOGGING)
                             else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force, host=host)
+                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force, host=host,LOGGING=LOGGING)
                             spreadsheetFile.close()
                         else:
                             if catalog:
-                                count += service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force, host=host)
+                                count += service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force, host=host,LOGGING=LOGGING)
                             else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force, host=host)
+                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force, host=host,LOGGING=LOGGING)
 
                         #count
 
@@ -908,7 +917,7 @@ class contentengine(object):
 
                         if instanceName != '':
                             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
-                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, force=force, host=host)
+                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, force=force, host=host,LOGGING=LOGGING)
 
                         else:
                             count = 1
@@ -922,7 +931,7 @@ class contentengine(object):
                                     #else:
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
-                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, host=host)
+                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, host=host,LOGGING=LOGGING)
                                     break
                                 if count == numberOfAccounts:
                                     #fallback on first defined account
@@ -946,6 +955,11 @@ class contentengine(object):
                 if KODI and silent == 0:
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
             xbmcplugin.endOfDirectory(self.plugin_handle)
+
+
+            if logfile is not None and logfile != '':
+                LOGGING.close()
+
             return
         #create strm files
         elif mode == 'buildstrm2':

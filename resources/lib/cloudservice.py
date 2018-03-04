@@ -115,7 +115,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None):
 
         if host is None:
             PLUGIN_URL = self.PLUGIN_URL
@@ -170,9 +170,9 @@ class cloudservice(object):
                     url = 0
                     if not changeTracking and item.file is None:
                         if catalog:
-                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution)
+                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING)
                         else:
-                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution)
+                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING)
                     elif item.file is not None:
 
                         #'content_type': 'video',
@@ -187,6 +187,11 @@ class cloudservice(object):
 
                     if url != 0:
                         title = item.file.title
+                        year = ''
+                        season = ''
+                        episode = ''
+                        resolution = ''
+                        show = None
 
                         if pDialog is not None:
                             pDialog.update(message=title)
@@ -194,6 +199,7 @@ class cloudservice(object):
                         strmFileName = str(path) + '/' + str(title)
                         if resolution and item.file is not None and item.file.resolution is not None:
                             strmFileName += '.' + str(item.file.resolution[0]) + 'p.strm'
+                            resolution = str(item.file.resolution[0])
                         else:
                             strmFileName += '.strm'
 
@@ -271,6 +277,10 @@ class cloudservice(object):
                             if spreadsheetFile is not None:
                                 spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
+                            if LOGGING is not None:
+                                print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(resolution)+'\t'+str(item.file.checksum) + '\t' + "\n"
+
+
             elif mediaItems and encfs:
 
                 self.settings.setEncfsParameters()
@@ -330,7 +340,7 @@ class cloudservice(object):
                         dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
 
                         #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                        self.buildSTRM(path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution)
+                        self.buildSTRM(path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING)
 
                     elif index in fileListINodes.keys():
                         xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)

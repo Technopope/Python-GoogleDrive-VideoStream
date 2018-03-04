@@ -140,6 +140,12 @@ class webGUI(BaseHTTPRequestHandler):
         headers = str(self.headers)
         print(headers)
 
+
+        host = re.search(r'Host: (\S+)', str(headers))
+        if host is not None:
+            host = str(host.group(1))
+
+
         isLoggedIn = self.cookieLogin(self.headers)
 
 
@@ -422,7 +428,6 @@ class webGUI(BaseHTTPRequestHandler):
         host = re.search(r'Host: (\S+)', str(headers))
         if host is not None:
             host = str(host.group(1))
-            print "HOST = " + str(host) + "\n"
 
 
         isLoggedIn = self.cookieLogin(self.headers)
