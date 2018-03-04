@@ -673,33 +673,59 @@ class contentengine(object):
 
         elif mode == 'new_task':
 
-            instance = settings.getParameter('i',None)
+            username = settings.getParameter('username',None)
             frequency = settings.getParameter('frequency',None)
-            folder = settings.getParameter('f',None)
-            type = settings.getParameter('t',None)
+            folder = settings.getParameter('folder',None)
+            type = settings.getParameter('type',None)
 
-            if (instance is None or frequency is None or folder is None or type is None):
+            if (username is None):
                 if not KODI:
-                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&instance='+str(service.instanceName)+'&content_type='+contextType)
-                dialog = xbmcgui.Dialog()
-                try:
-                    instance = dialog.select(addon.getLocalizedString(30223), list=[])
-                except:
-                    instance = 'test'
-                try:
-                    folder = dialog.input(addon.getLocalizedString(30224), '/', type=INPUT_ALPHANUM)
-                except:
-                    folder = '/'
-                try:
-                    frequency = dialog.select(addon.getLocalizedString(30225), 60, list=[])
-                except:
-                    frequency = 60
-                try:
-                    type = dialog.select(addon.getLocalizedString(30226), 60, list=[])
-                except:
-                    type = 60
-                if not KODI:
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&content_type='+contextType)
+                    instances = []
+                    count = 1
+                    while True:
+                        instanceName = constants.PLUGIN_NAME+str(count)
+                        username = settings.getSetting(instanceName+'_username', None)
+                        if username is None:
+                            break
+                        if username != '':
+                            instances.append(username)
+                        count = count + 1
+
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30223), 'username', list=instances)
+
+                    #xbmcgui.Dialog().textField(addon.getLocalizedString(30224), 'folder')
+                    #xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
+                    #xbmcgui.Dialog().textField(addon.getLocalizedString(30226), 'type')
+
                     xbmcgui.Dialog().endForm()
+            elif (frequency is None or folder is None or type is None):
+                if not KODI:
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&username='+str(username)+'&content_type='+contextType)
+
+                    xbmcgui.Dialog().textField(addon.getLocalizedString(30224), 'folder')
+                    xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
+                    #xbmcgui.Dialog().textField(addon.getLocalizedString(30226), 'type')
+
+                    xbmcgui.Dialog().endForm()
+                else:
+                    dialog = xbmcgui.Dialog()
+                    try:
+                        instance = dialog.select(addon.getLocalizedString(30223), list=[])
+                    except:
+                        instance = 'test'
+                    try:
+                        folder = dialog.input(addon.getLocalizedString(30224), '/', type=INPUT_ALPHANUM)
+                    except:
+                        folder = '/'
+                    try:
+                        frequency = dialog.select(addon.getLocalizedString(30225), 60, list=[])
+                    except:
+                        frequency = 60
+                    #try:
+                    #    type = dialog.select(addon.getLocalizedString(30226), 60, list=[])
+                    #except:
+                    #    type = 60
 
             #elif (instance is None or frequency is None or folder is None or type is None):
 

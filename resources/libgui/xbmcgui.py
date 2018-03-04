@@ -31,7 +31,7 @@ class Dialog(object):
         print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<br/>' + line1
         return
-    def select(self, heading, line1, line2='', line3=''):
+    def select(self, heading, list, line2='', line3=''):
         #print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         return
     def yesno(self, variable1, name):
@@ -86,6 +86,23 @@ class Dialog(object):
             format = '<sub>[format: ' + str(format) + ']</sub>'
 
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(label1) + str(optionalText) +' <input type="text" name="'+str(variable)+'" value="'+str(default)+'"/> '+str(format)+'<br/>'
+        return
+
+    def selectField(self, label1, variable, list, default='', isOptional=False,format=''):
+        optionalText = ''
+        if isOptional:
+            optionalText = '<i> (optional)</i>'
+        else:
+            optionalText = '<i><b> (* required)</b></i>'
+
+        if format != '':
+            format = '<sub>[format: ' + str(format) + ']</sub>'
+
+        options = ''
+        for item in list:
+            options += '<option value="' + str(item) + '">'+ str(item)+ '</option>'
+
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(label1) + str(optionalText) +' <select name="'+str(variable)+'"> '+str(options)+str(format)+'</select><br/>'
         return
 
 

@@ -190,7 +190,7 @@ class cloudservice(object):
                         year = ''
                         season = ''
                         episode = ''
-                        resolution = ''
+                        videoResolution = ''
                         show = None
 
                         if pDialog is not None:
@@ -199,7 +199,7 @@ class cloudservice(object):
                         strmFileName = str(path) + '/' + str(title)
                         if resolution and item.file is not None and item.file.resolution is not None:
                             strmFileName += '.' + str(item.file.resolution[0]) + 'p.strm'
-                            resolution = str(item.file.resolution[0])
+                            videoResolution = str(item.file.resolution[0])
                         else:
                             strmFileName += '.strm'
 
@@ -263,6 +263,7 @@ class cloudservice(object):
                                 strmFileName = str(pathLib) + '/' +str(filename)
                                 if resolution and item.file is not None and item.file.resolution is not None:
                                     strmFileName += '.' + str(item.file.resolution[0]) + 'p.strm'
+                                    videoResolution = str(item.file.resolution[0])
                                 else:
                                     strmFileName += '.strm'
 
@@ -278,7 +279,7 @@ class cloudservice(object):
                                 spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
                             if LOGGING is not None:
-                                print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(resolution)+'\t'+str(item.file.checksum) + '\t' + "\n"
+                                print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(videoResolution)+'\t'+str(item.file.checksum) + '\t' + "\n"
 
 
             elif mediaItems and encfs:
