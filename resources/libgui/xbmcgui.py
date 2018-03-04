@@ -100,7 +100,7 @@ class Dialog(object):
 
         options = ''
         for item in list:
-            options += '<option value="' + str(item) + '">'+ str(item)+ '</option>'
+            options += '<option value="' + str(item[0]) + '">'+ str(item[1])+ '</option>'
 
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(label1) + str(optionalText) +' <select name="'+str(variable)+'"> '+str(options)+str(format)+'</select><br/>'
         return

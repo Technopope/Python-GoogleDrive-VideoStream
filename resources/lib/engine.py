@@ -660,7 +660,8 @@ class contentengine(object):
         ###
 
         if mode == 'scheduler':
-            tasks = scheduler.scheduler('./test.db')
+            #tasks = scheduler.scheduler('./test.db')
+            tasks = scheduler.scheduler(settings=addon)
             #tasks.setScheduleTask('gdrive2', 60, '/', 0)
             self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'['+str(addon.getLocalizedString(30222))+']')
 
@@ -673,12 +674,12 @@ class contentengine(object):
 
         elif mode == 'new_task':
 
-            username = settings.getParameter('username',None)
+            instance = settings.getParameter('instance',None)
             frequency = settings.getParameter('frequency',None)
             folder = settings.getParameter('folder',None)
             type = settings.getParameter('type',None)
 
-            if (username is None):
+            if (instance is None):
                 if not KODI:
                     xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&content_type='+contextType)
                     instances = []
@@ -689,10 +690,10 @@ class contentengine(object):
                         if username is None:
                             break
                         if username != '':
-                            instances.append(username)
+                            instances.append([instanceName,username])
                         count = count + 1
 
-                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30223), 'username', list=instances)
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30223), 'instance', list=instances)
 
                     #xbmcgui.Dialog().textField(addon.getLocalizedString(30224), 'folder')
                     #xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
@@ -701,11 +702,20 @@ class contentengine(object):
                     xbmcgui.Dialog().endForm()
             elif (frequency is None or folder is None or type is None):
                 if not KODI:
-                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&username='+str(username)+'&content_type='+contextType)
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&instance='+str(instance)+'&content_type='+contextType)
 
-                    xbmcgui.Dialog().textField(addon.getLocalizedString(30224), 'folder')
+                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instance, user_agent, settings,DBM=DBM)
+                    drives = service.getTeamDrives()
+
+                    list = []
+                    list.append(['root','root'])
+                    for drive in drives:
+                        list.append([drive.id,drive.title])
+                    print list
+
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30224), 'folder',list)
                     xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
-                    #xbmcgui.Dialog().textField(addon.getLocalizedString(30226), 'type')
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[1,'changes only'],[0,'force full always']])
 
                     xbmcgui.Dialog().endForm()
                 else:
@@ -730,7 +740,8 @@ class contentengine(object):
             #elif (instance is None or frequency is None or folder is None or type is None):
 
             else:
-                tasks = scheduler.scheduler('./test.db')
+                #tasks = scheduler.scheduler('./test.db')
+                tasks = scheduler.scheduler(settings=addon)
                 tasks.setScheduleTask(instance, frequency, folder, type)
 
 
