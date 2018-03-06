@@ -391,18 +391,15 @@ class contentengine(object):
                 count = 1
                 while True:
                     instanceName = self.PLUGIN_NAME+str(count)
-                    try:
-                        username = settings.getSetting(instanceName+'_username')
-                        if username is not None and username != '':
-                            self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
+                    username = settings.getSetting(instanceName+'_username', None)
+                    if username is not None and username != '':
+                        self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
-                    except:
-                        username = None
-
-                    if count == numberOfAccounts:
+                    if username is None:
                         break
                     count = count + 1
                 return None
+
 
         #        spreadshetModule = getSetting('library', False)
         #        libraryAccount = getSetting('library_account')
@@ -866,22 +863,18 @@ class contentengine(object):
                         loop = True
                         while loop:
                             instanceName = constants.PLUGIN_NAME+str(count)
-                            try:
-                                username = settings.getSetting(instanceName+'_username')
-                                if username == invokedUsername:
+                            username = settings.getSetting(instanceName+'_username', None)
+                            if username == invokedUsername:
 
-                                    #let's log in
-                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                        #service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
-                                    #else:
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+                                #let's log in
+                                #if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                    #service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
+                                #else:
+                                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
-                                    loop = False
-                            except:
-                                #service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent)
-                                break
+                                loop = False
 
-                            if count == numberOfAccounts:
+                            if username is None:
                                 try:
                                     service
                                 except NameError:
@@ -960,7 +953,7 @@ class contentengine(object):
                             count = 1
                             while True:
                                 instanceName = constants.PLUGIN_NAME+str(count)
-                                username = settings.getSetting(instanceName+'_username')
+                                username = settings.getSetting(instanceName+'_username', None)
                                 print "username = " + invokedUsername + "\n\n"
                                 if username != '' and username is not None and username == invokedUsername:
                                     #if ( settings.getSettingInt(instanceName+'_type',0)==0):
@@ -970,7 +963,7 @@ class contentengine(object):
 
                                     service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, host=host,LOGGING=LOGGING)
                                     break
-                                if count == numberOfAccounts:
+                                if username is None:
                                     #fallback on first defined account
                                     try:
                                         service
@@ -1080,19 +1073,15 @@ class contentengine(object):
                         loop = True
                         while loop:
                             instanceName = constants.PLUGIN_NAME+str(count)
-                            try:
-                                username = settings.getSetting(instanceName+'_username')
-                                if username == invokedUsername:
+                            username = settings.getSetting(instanceName+'_username', None)
+                            if username == invokedUsername:
 
                                     #let's log in
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                     loop = False
-                            except:
 
-                                break
-
-                            if count == numberOfAccounts:
+                            if username is None:
                                 try:
                                     service
                                 except NameError:
@@ -1146,14 +1135,15 @@ class contentengine(object):
                         count = 1
                         while True:
                             instanceName = constants.PLUGIN_NAME+str(count)
-                            username = settings.getSetting(instanceName+'_username')
+                            username = settings.getSetting(instanceName+'_username', None)
+
 
                             if username != '' and username is not None and username == invokedUsername:
                                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                 service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True)
 
-                            if count == numberOfAccounts:
+                            if username is None:
                                 #fallback on first defined account
                                 try:
                                     service
