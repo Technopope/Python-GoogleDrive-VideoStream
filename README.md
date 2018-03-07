@@ -47,3 +47,17 @@ python default.py ./gdrive.db 443 ./mycert.pem
 
 
 You can use the setting.xml from either gdrive or gdrive-testing plugin for KODI.  You can import this using setup.py.  This is not required as you can setup the instance using the settings pane within the web interface.
+
+A NOTE ABOUT STRM FILES:
+
+You can import STRM files from a KODI install, but you will need to update the URL in them to resolve to the VideoStream:
+
+A perl script that recursively updates files in a directory which has contents matched to a specified string, updating the match with a replacement can be found here:
+https://github.com/ddurdle/PERL-Misc_Scripts/blob/master/grep/recursive_replace.pl
+
+You can run it such as:
+perl recursive_replace.pl -d directory_with_path -g "plugin://plugin.video.gdrive/" -r "http://localhost:9988/default"
+
+which will navigate through "directory_with_path" looking for files with contents "plugin://plugin.video.gdrive/" and replacing it with "http://localhost:9988/default".  This would change the STRM files to resolve to an install of VideoStream running on localhost port 9988.  You can replace this with whatever applies to your situation.
+
+You can always re-generate the STRM files using VideoStream using the web interface.  When doing such, you have the option to override the protocol (http://), hostname and port.
