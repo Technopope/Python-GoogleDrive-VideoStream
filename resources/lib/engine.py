@@ -815,6 +815,7 @@ class contentengine(object):
 
 
 
+
             if path != '' and path is not None and (not KODI or returnPrompt):
 
                 if KODI and silent != 2:
