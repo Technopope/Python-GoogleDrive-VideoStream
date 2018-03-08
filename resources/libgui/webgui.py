@@ -274,7 +274,7 @@ class webGUI(BaseHTTPRequestHandler):
 
                 count = 1
                 loop = True
-                while loop and count < 10:
+                while loop:
                     instanceName = constants.PLUGIN_NAME +str(count)
                     try:
                         username = self.server.addon.getSetting(instanceName+'_username')
