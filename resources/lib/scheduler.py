@@ -64,9 +64,9 @@ class scheduler:
         self.settings.setSetting(str(job) + '_folder', str(folder))
         self.settings.setSetting(str(job) + '_type', str(type))
         self.settings.setSetting(str(job) + '_runtime', str(0))
-        self.settings.setSetting(str(job) + '_command', str(cmd))
+        self.settings.setSetting(str(job) + '_cmd', str(cmd))
         self.settings.setSetting(str(job) + '_statusDetail', '')
-        self.settings.setSetting(str(job) + '_stauts', str(self.TYPE_STOPPED))
+        self.settings.setSetting(str(job) + '_status', str(self.TYPE_STOPPED))
 
         print "updating job " + str(job) + "\n"
         #key = instanceName_type_frequency_folder

@@ -666,17 +666,25 @@ class contentengine(object):
             count = tasks.countScheduledTask()
             while (i <= count):
                 task = tasks.getScheduledTask(i)
+                j=0
+                while (j < len(task)):
+                    print str(task[j]) + ','
+                    j = j + 1
+                print "\n"
                 self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'job #' + str(i) + ' ' +str(task[0]) +' '+ str(task[2]) +' '+ str(task[3]))
                 i += 1
 
         elif mode == 'new_task':
 
-            instance = settings.getParameter('instance',None)
+            #instance = settings.getParameter('instance',None)
             frequency = settings.getParameter('frequency',None)
             folder = settings.getParameter('folder',None)
             type = settings.getParameter('type',None)
 
-            if (instance is None):
+            if instanceName == '':
+                instanceName= None
+
+            if (instanceName is None):
                 if not KODI:
                     xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&content_type='+contextType)
                     instances = []
@@ -699,10 +707,10 @@ class contentengine(object):
                     xbmcgui.Dialog().endForm()
             elif (frequency is None or folder is None or type is None):
                 if not KODI:
-                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&instance='+str(instance)+'&content_type='+contextType)
 
-                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instance, user_agent, settings,DBM=DBM)
+                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
                     drives = service.getTeamDrives()
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrm&instance='+str(instanceName)+'&username='+str(service.authorization.username)+'&content_type='+contextType)
 
                     list = []
                     list.append(['root','root'])
@@ -718,9 +726,9 @@ class contentengine(object):
                 else:
                     dialog = xbmcgui.Dialog()
                     try:
-                        instance = dialog.select(addon.getLocalizedString(30223), list=[])
+                        instanceName = dialog.select(addon.getLocalizedString(30223), list=[])
                     except:
-                        instance = 'test'
+                        instanceName = 'test'
                     try:
                         folder = dialog.input(addon.getLocalizedString(30224), '/', type=INPUT_ALPHANUM)
                     except:
@@ -736,11 +744,11 @@ class contentengine(object):
 
             #elif (instance is None or frequency is None or folder is None or type is None):
 
-            else:
-                #tasks = scheduler.scheduler('./test.db')
-                tasks = scheduler.scheduler(settings=addon)
-                cmd = ''
-                tasks.setScheduleTask(instance, frequency, folder, type, cmd)
+#            else:
+#                #tasks = scheduler.scheduler('./test.db')
+#                tasks = scheduler.scheduler(settings=addon)
+#                cmd = ''
+#                tasks.setScheduleTask(instance, frequency, folder, type, cmd)
 
 
         elif mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll' or mode == 'scheduler' or mode == 'enroll_rw':
@@ -751,6 +759,7 @@ class contentengine(object):
             instanceName = ''
         #create strm files
         elif mode == 'buildstrm':# or mode == 'buildstrm2':
+
 
             hostTemp = settings.getParameter('host', '')
             if hostTemp != '':
@@ -764,11 +773,17 @@ class contentengine(object):
                 LOGGING = open(logfile, 'w')
                 print >>LOGGING, "folder id\tfolder title\tfile id\tfile title\tshow title (tv)\tseason (tv)\tepisode (tv)\ttitle (movie)\tyear (movie)\tvideo resolution\tfile checksum\t\n"
 
+            #for scheduled jbos
+            #instance = settings.getParameter('instance',None)
+            frequency = settings.getParameter('frequency',None)
+            type = settings.getParameter('type',None)
 
+            #for all STRM creation
             catalog = settings.getParameter('catalog', False)
             resolution = settings.getParameter('resolution', False)
+            removeExt = settings.getParameter('remove_ext', False)
             folderID = settings.getParameter('folder')
-            filename = settings.getParameter('filename')
+            filename = settings.getParameter('filename', None)
             title = settings.getParameter('title')
             invokedUsername = settings.getParameter('username')
             encfs = settings.getParameter('encfs', False)
@@ -803,7 +818,10 @@ class contentengine(object):
 
                 if path is None or path == '':
 
-                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                    if frequency is not None and type is not None:
+                        xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&strm_path='+str(path)+'&instance='+str(instanceName)+'&frequency='+str(frequency)+'&type='+str(type)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                    else:
+                        xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                     xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', path)
                     xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog')
                     xbmcgui.Dialog().booleanSelector('append resolution to STRM filename?','resolution')
@@ -813,7 +831,10 @@ class contentengine(object):
                     xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
 
                     xbmcgui.Dialog().endForm()
-
+                elif frequency is not None and type is not None:
+                    tasks = scheduler.scheduler(settings=addon)
+                    cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
 
 
 
