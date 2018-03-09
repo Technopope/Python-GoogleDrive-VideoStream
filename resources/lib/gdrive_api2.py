@@ -100,7 +100,7 @@ class gdrive(cloudservice):
         self.worksheetID = self.getInstanceSetting('spreadsheet')
 
         if authenticate == True:
-            self.type = int(self.getInstanceSetting('type'))
+            self.type = int(self.getInstanceSetting('type',default=0))
 
         try:
             username = self.getInstanceSetting('username')

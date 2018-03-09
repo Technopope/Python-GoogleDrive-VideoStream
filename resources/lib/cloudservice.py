@@ -78,8 +78,11 @@ class cloudservice(object):
     def __init__(self): pass
 
 
-    def getInstanceSetting(self,setting):
-        return self.addon.getSetting(self.instanceName+'_'+setting)
+    def getInstanceSetting(self,setting, default=None):
+        try:
+            return self.addon.getSetting(self.instanceName+'_'+setting, default=default)
+        except:
+            return default
 
 
     ##

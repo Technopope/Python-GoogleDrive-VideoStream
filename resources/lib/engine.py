@@ -712,7 +712,7 @@ class contentengine(object):
 
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30224), 'folder',list)
                     xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
-                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[1,'changes only'],[0,'force full always']])
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[2,'skip initial and schedule ongoing tracking'],[1,'initial sync and ongoing tracking'],[0,'initial one time sync only']])
 
                     xbmcgui.Dialog().endForm()
                 else:
@@ -739,7 +739,8 @@ class contentengine(object):
             else:
                 #tasks = scheduler.scheduler('./test.db')
                 tasks = scheduler.scheduler(settings=addon)
-                tasks.setScheduleTask(instance, frequency, folder, type)
+                cmd = ''
+                tasks.setScheduleTask(instance, frequency, folder, type, cmd)
 
 
         elif mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll' or mode == 'scheduler' or mode == 'enroll_rw':
@@ -1186,6 +1187,7 @@ class contentengine(object):
         elif instanceName is None:
             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,'', user_agent, settings, authenticate=False,DBM=DBM)
         else:
+            print "instanceName " + instanceName + "\n"
             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
 

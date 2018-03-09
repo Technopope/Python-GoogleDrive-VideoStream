@@ -42,7 +42,7 @@ class scheduler:
     # type
 
     # type - 0 exhaustive, 1 changes only
-    def setScheduleTask(self, instanceName, frequency, folder, type):
+    def setScheduleTask(self, instanceName, frequency, folder, type, cmd):
         count = self.countScheduledTask() + 1
 
         job=0
@@ -64,6 +64,8 @@ class scheduler:
         self.settings.setSetting(str(job) + '_folder', str(folder))
         self.settings.setSetting(str(job) + '_type', str(type))
         self.settings.setSetting(str(job) + '_runtime', str(0))
+        self.settings.setSetting(str(job) + '_command', str(cmd))
+        self.settings.setSetting(str(job) + '_statusDetail', '')
         self.settings.setSetting(str(job) + '_stauts', str(self.TYPE_STOPPED))
 
         print "updating job " + str(job) + "\n"
@@ -71,7 +73,7 @@ class scheduler:
         return
 
     # type - 0 exhaustive, 1 changes only
-    def recordScheduleTask(self, job,instanceName, frequency, folder, type, runtime, status):
+    def recordScheduleTask(self, job,instanceName, frequency, folder, type, runtime, cmd, statusDetail, status):
         #key = instanceName_type_frequency_folder
         return
 
@@ -79,7 +81,7 @@ class scheduler:
 
         try:
             #return [self.dbm[str(job) + '_instance'], self.dbm[str(job) + '_frequency'], self.dbm[str(job) + '_folder'], self.dbm[str(job) + '_type'], self.dbm[str(job) + '_runtime'], self.dbm[str(job) + '_stauts']]
-            return [self.settings.getSetting(str(job) + '_instance'), self.settings.getSetting(str(job) + '_frequency'), self.settings.getSetting(str(job) + '_folder'), self.settings.getSetting(str(job) + '_type'), self.settings.getSetting(str(job) + '_runtime'), self.settings.getSetting(str(job) + '_status')]
+            return [self.settings.getSetting(str(job) + '_instance'), self.settings.getSetting(str(job) + '_frequency'), self.settings.getSetting(str(job) + '_folder'), self.settings.getSetting(str(job) + '_type'), self.settings.getSetting(str(job) + '_runtime'), self.settings.getSetting(str(job) + '_cmd'), self.settings.getSetting(str(job) + '_statusDetail'), self.settings.getSetting(str(job) + '_status')]
         except:
             return None
 
