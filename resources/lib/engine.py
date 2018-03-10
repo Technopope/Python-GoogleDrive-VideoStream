@@ -678,21 +678,34 @@ class contentengine(object):
                         print str(task[j]) + ','
                         j = j + 1
                     print "\n"
+
+                    #    TASK_INSTANCE = 0
+                    #    TASK_FREQUENCY = 1
+                    #    TASK_FOLDER = 2
+                    #    TASK_TYPE = 3
+                    #    TASK_RUNTIME = 4
+                    #    TASK_CMD = 5
+                    #    TASK_STATUSDETAIL = 6
+                    #    TASK_STATUS = 7
                     status = ''
                     # running?, multi-run
-                    if task[7] == 0 and task[4] == 0:
-                        status += 'one time -- last run : '+  str(task[6])
-                    elif task[7] == 0 and task[4] > 0:
-                        status += 'every '+str(task[1])+' mins looking for changes -- last run status: ' + str(task[6])
-                    elif task[7] == 1  and task[4] == 0:
+                    if task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] == '0' and task[tasks.TASK_RUNTIME] != '0':
+                        status += 'one time -- last run : '+  str(task[tasks.TASK_STATUSDETAIL])
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] in ['2','1'] and task[tasks.TASK_RUNTIME]  != '0':
+                        status += 'every '+str(task[tasks.TASK_FREQUENCY])+' mins looking for changes -- last run status: ' +  str(task[tasks.TASK_STATUSDETAIL])
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_RUNNING) and task[tasks.TASK_TYPE] == '0':
                         status += 'one time -- running'
-                    elif task[7] == 1  and task[4] > 0:
-                        status += 'every '+str(task[1])+' mins looking for changes -- running'
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_RUNNING) and task[tasks.TASK_TYPE] in ['2','1']:
+                        status += 'every '+str(task[tasks.TASK_FREQUENCY])+' mins looking for changes -- running'
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] == '0' and task[tasks.TASK_RUNTIME] == '0':
+                        status += 'one time -- never ran'
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] in ['2','1'] and task[tasks.TASK_RUNTIME] == '0':
+                        status += 'every '+str(task[tasks.TASK_FREQUENCY])+' mins looking for changes -- never ran'
                     #elif task[4] == 0 and task[7] == 0  and task[6] == 1:
                     #    status += 'one time -- never ran'
                     else:
                     #    status += 'every '+str(task[1])+' mins looking for changes -- never ran'
-                        status = '??'
+                        status = str(task[tasks.TASK_STATUS]) + ' ' + str(task[tasks.TASK_TYPE]) + ' ' + str(task[tasks.TASK_RUNTIME]) +'??'
                     self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'job #' + str(i) + ' instance=' +str(task[0]) +' folderID='+ str(task[2]) +' '+ str(status), job=i)
                 i += 1
 

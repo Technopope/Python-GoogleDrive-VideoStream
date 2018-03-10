@@ -24,6 +24,15 @@ class scheduler:
     TYPE_STOPPED = 0
     TYPE_RUNNING = 1
 
+    TASK_INSTANCE = 0
+    TASK_FREQUENCY = 1
+    TASK_FOLDER = 2
+    TASK_TYPE = 3
+    TASK_RUNTIME = 4
+    TASK_CMD = 5
+    TASK_STATUSDETAIL = 6
+    TASK_STATUS = 7
+
     ##
     ##
     def __init__(self, settings=None, dbmfile=None):
