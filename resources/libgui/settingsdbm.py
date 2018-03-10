@@ -51,6 +51,19 @@ class settingsdbm:
         except:
             return default
 
+    def getIntSetting(self, key, default=None):
+        if not self.isReadOnly:
+            self.dbm.close()
+            self.dbm = anydbm.open(self.dbmfile,'r')
+            self.isReadOnly = True
+
+        if key is '':
+            return None
+        try:
+            return int(self.dbm[key])
+        except:
+            return default
+
     def setSetting(self, key, value):
         if self.isReadOnly:
             self.dbm.close()
@@ -58,5 +71,6 @@ class settingsdbm:
             self.isReadOnly = False
 
         self.dbm[key] = value
+
         return
 

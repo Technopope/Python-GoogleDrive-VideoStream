@@ -59,7 +59,6 @@ class scheduler:
         #self.dbm[str(job) + '_stauts'] = str(self.TYPE_STOPPED)
 
         self.settings.setSetting(str(job) + '_instance', str(instanceName))
-        print self.settings.getSetting(str(job) + '_instance') + " " + instanceName
         self.settings.setSetting(str(job) + '_frequency', str(frequency))
         self.settings.setSetting(str(job) + '_folder', str(folder))
         self.settings.setSetting(str(job) + '_type', str(type))

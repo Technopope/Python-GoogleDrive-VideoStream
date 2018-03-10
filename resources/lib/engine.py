@@ -94,7 +94,7 @@ class contentengine(object):
     # add a menu to a directory screen
     #   parameters: url to resolve, title to display, optional: icon, fanart, total_items, instance name
     ##
-    def addMenu(self, url, title, img='', fanart='', total_items=0, instanceName=''):
+    def addMenu(self, url, title, img='', fanart='', total_items=0, instanceName=None, job=None):
             #    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
             listitem = xbmcgui.ListItem(title, iconImage=img, thumbnailImage=img)
             if not fanart and KODI:
@@ -105,7 +105,7 @@ class contentengine(object):
             listitem.setProperty('IsPlayable', 'false')
 
 
-            if instanceName != '':
+            if instanceName is not None:
                 cm=[]
 
                 cm.append(( self.addon.getLocalizedString(30159), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete&instance='+instanceName+')' ))
@@ -114,6 +114,12 @@ class contentengine(object):
 
                 listitem.addContextMenuItems(cm, True)
 
+            if job is not None:
+                cm=[]
+
+                cm.append(( self.addon.getLocalizedString(30159), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete_task&job='+str(job)+')' ))
+
+                listitem.addContextMenuItems(cm, True)
 
 
             xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
@@ -666,15 +672,38 @@ class contentengine(object):
             count = tasks.countScheduledTask()
             while (i <= count):
                 task = tasks.getScheduledTask(i)
-                j=0
-                while (j < len(task)):
-                    print str(task[j]) + ','
-                    j = j + 1
-                print "\n"
-                self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'job #' + str(i) + ' ' +str(task[0]) +' '+ str(task[2]) +' '+ str(task[3]))
+                if task[0] != '':
+                    j=0
+                    while (j < len(task)):
+                        print str(task[j]) + ','
+                        j = j + 1
+                    print "\n"
+                    status = ''
+                    # running?, multi-run
+                    if task[7] == 0 and task[4] == 0:
+                        status += 'one time -- last run : '+  str(task[6])
+                    elif task[7] == 0 and task[4] > 0:
+                        status += 'every '+str(task[1])+' mins looking for changes -- last run status: ' + str(task[6])
+                    elif task[7] == 1  and task[4] == 0:
+                        status += 'one time -- running'
+                    elif task[7] == 1  and task[4] > 0:
+                        status += 'every '+str(task[1])+' mins looking for changes -- running'
+                    #elif task[4] == 0 and task[7] == 0  and task[6] == 1:
+                    #    status += 'one time -- never ran'
+                    else:
+                    #    status += 'every '+str(task[1])+' mins looking for changes -- never ran'
+                        status = '??'
+                    self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'job #' + str(i) + ' instance=' +str(task[0]) +' folderID='+ str(task[2]) +' '+ str(status), job=i)
                 i += 1
 
+        elif mode == 'delete_task':
+            job = settings.getParameter('job',None)
+
+            if job is not None:
+                addon.setSetting(job + '_instance', '')
+
         elif mode == 'new_task':
+
 
             #instance = settings.getParameter('instance',None)
             frequency = settings.getParameter('frequency',None)

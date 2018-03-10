@@ -25,6 +25,10 @@ import urllib, urllib2
 from SocketServer import ThreadingMixIn
 import threading
 import sys
+import os
+import time
+from resources.libgui import settingsdbm
+
 
 # default.py [settings-dbm] [PORT] [SSL-certificate]
 try:
@@ -52,9 +56,31 @@ server.setPort(port)
 
 print "Google Drive Media Server ready....\n"
 
-while server.ready:
-    server.handle_request()
-server.socket.close()
+pid = os.fork()
+if pid == 0:
+    dbm = settingsdbm.settingsdbm(dbmfile)
+    i=0
+    while 1:
+        runtime = dbm.getSetting(str(i)+'_runtime', None)
+        frequency = dbm.getSetting(str(i)+'_frequency', None)
+        status = dbm.getIntSetting(str(i)+'_status', None)
+        if runtime is None:
+            break
+        elif status == 1:
+            print "job #" + str(i)+ " is detected as incomplete\n"
+            dbm.setSetting(str(i)+'_status', 1)
+        i += 1
+    print "scanning...\n"
+
+    while 1:
+        time.sleep(60)
+        print "scanning...\n"
+
+else:
+    while server.ready:
+        server.handle_request()
+    server.socket.close()
+
 #except: pass
 
 
