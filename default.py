@@ -27,6 +27,8 @@ import threading
 import sys
 import os
 import time
+from datetime import datetime
+import re
 from resources.libgui import settingsdbm
 
 
@@ -63,9 +65,9 @@ if pid == 0:
     i=0
     while 1:
         runtime = dbm.getIntSetting(str(i)+'_runtime', None)
-        frequency = dbm.getIntSetting(str(i)+'_frequency', None)
         status = dbm.getIntSetting(str(i)+'_status', None)
         if runtime is None:
+            i += 1
             break
         elif status == '1':
             print "job #" + str(i)+ " is detected as incomplete\n"
@@ -78,14 +80,35 @@ if pid == 0:
         currentTime = int(time.time())
         while 1:
             runtime = dbm.getIntSetting(str(i)+'_runtime', None)
-            frequency = dbm.getIntSetting(str(i)+'_frequency', None)
-            status = dbm.getIntSetting(str(i)+'_status', None)
-            if status is not None:
-                print "status = " + str(status) + "\n"
-            if runtime is None:
+            instance = dbm.getSetting(str(i)+'_instance', None)
+            if runtime is None and instance is None:
+                i += 1
                 break
-            elif status == 0 and frequency is not None and runtime < (currentTime - frequency) :
-                print "time to run job #" + str(i) + "\n"
+            if instance is not None and instance != '':
+                frequency = dbm.getIntSetting(str(i)+'_frequency', None)
+                status = dbm.getIntSetting(str(i)+'_status', None)
+                print 'job ' + str(i)+"instance = " + str(instance) +'frequency' + str(frequency)+ "\n"
+                if status is None:
+                    print "status = " + str(status) + 'job' + str(i)+"\n"
+                elif status == 0 and frequency is not None and runtime < (currentTime - (frequency*60)) :
+                    cmd = dbm.getSetting(str(i)+'_cmd', None)
+                    print "time to run job #" + str(i) + ' runtime ' + str(runtime) + ' test ' + str(currentTime - (frequency*60))+  'cmd' + str(cmd) +  "\n"
+                    if cmd is not None:
+                        currentTime = int(time.time())
+                        dbm.setSetting(str(i)+'_runtime', str(currentTime))
+                        dbm.setSetting(str(i)+'_status', str(1))
+                        if cmd.startswith('http'):
+                            contents = urllib2.urlopen(cmd).read()
+                        else:
+                            contents = urllib2.urlopen('http://'+str(cmd)).read()
+                        contents = re.sub('<[^<]+?>', '', contents)
+                        currentTime = int(time.time())
+                        dbm.setSetting(str(i)+'_runtime', str(currentTime))
+                        dbm.setSetting(str(i)+'_status', str(0))
+                        dbm.setSetting(str(i)+'_statusDetail', str(datetime.now()) + ' - ' + str(contents))
+                else:
+                    print "status = " + str(status) + "\n"
+
             i += 1
 
         time.sleep(6)
