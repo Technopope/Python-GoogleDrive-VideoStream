@@ -58,22 +58,37 @@ print "Google Drive Media Server ready....\n"
 
 pid = os.fork()
 if pid == 0:
+
     dbm = settingsdbm.settingsdbm(dbmfile)
     i=0
     while 1:
-        runtime = dbm.getSetting(str(i)+'_runtime', None)
-        frequency = dbm.getSetting(str(i)+'_frequency', None)
+        runtime = dbm.getIntSetting(str(i)+'_runtime', None)
+        frequency = dbm.getIntSetting(str(i)+'_frequency', None)
         status = dbm.getIntSetting(str(i)+'_status', None)
         if runtime is None:
             break
-        elif status == 1:
+        elif status == '1':
             print "job #" + str(i)+ " is detected as incomplete\n"
             dbm.setSetting(str(i)+'_status', 1)
         i += 1
-    print "scanning...\n"
+
 
     while 1:
-        time.sleep(60)
+        i=0
+        currentTime = int(time.time())
+        while 1:
+            runtime = dbm.getIntSetting(str(i)+'_runtime', None)
+            frequency = dbm.getIntSetting(str(i)+'_frequency', None)
+            status = dbm.getIntSetting(str(i)+'_status', None)
+            if status is not None:
+                print "status = " + str(status) + "\n"
+            if runtime is None:
+                break
+            elif status == 0 and frequency is not None and runtime < (currentTime - frequency) :
+                print "time to run job #" + str(i) + "\n"
+            i += 1
+
+        time.sleep(6)
         print "scanning...\n"
 
 else:

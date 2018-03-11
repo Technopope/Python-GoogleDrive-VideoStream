@@ -117,7 +117,7 @@ class contentengine(object):
             if job is not None:
                 cm=[]
 
-                cm.append(( self.addon.getLocalizedString(30159), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete_task&job='+str(job)+')' ))
+                cm.append(( self.addon.getLocalizedString(30227), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete_task&job='+str(job)+')' ))
 
                 listitem.addContextMenuItems(cm, True)
 
