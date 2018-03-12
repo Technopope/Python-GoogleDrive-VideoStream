@@ -89,18 +89,15 @@ class setResolvedUrl(object):
             for r in re.finditer('^([^\|]+)\|' ,
                      item.path, re.DOTALL):
                 url = r.group(1)
-                print "url = " + url + "\n"
 #                plugin_handle.send_header('Set-Cookie', 'url='+url)
 
             for r in re.finditer('Cookie\=DRIVE_STREAM%3D([^\&]+)' ,
                      item.path, re.DOTALL):
                 cookie = r.group(1)
-                print "cookie = " + cookie + "\n"
 #                plugin_handle.send_header('Set-Cookie', cookie)
             for r in re.finditer('Authorization\=([^\s]+)' ,
                      item.path, re.DOTALL):
                 auth = r.group(1)
-                print "auth = " + auth + "\n"
 #                plugin_handle.send_header('Set-Cookie', auth)
 
             playbackBuffer.playback.append({'auth':auth,'url':url,'cookie':cookie})
@@ -136,18 +133,15 @@ class setResolvedUrl(object):
                 for r in re.finditer('^([^\|]+)\|' ,
                          item.path, re.DOTALL):
                     url = r.group(1)
-                    print "url = " + url + "\n"
     #                plugin_handle.send_header('Set-Cookie', 'url='+url)
 
                 for r in re.finditer('Cookie\=DRIVE_STREAM%3D([^\&]+)' ,
                          item.path, re.DOTALL):
                     cookie = r.group(1)
-                    print "cookie = " + cookie + "\n"
     #                plugin_handle.send_header('Set-Cookie', cookie)
                 for r in re.finditer('Authorization\=([^\s]+)' ,
                          item.path, re.DOTALL):
                     auth = r.group(1)
-                    print "auth = " + auth + "\n"
     #                plugin_handle.send_header('Set-Cookie', auth)
     #            plugin_handle.send_header('Location', '/play')
                 #plugin_handle.end_headers()
@@ -162,7 +156,7 @@ class setResolvedUrl(object):
                     response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                     if e.code == 403 or e.code == 401:
-                        print "STILL ERROR\n"
+                        xbmc.log("STILL ERROR")
                         return
                     else:
                         return
@@ -204,7 +198,6 @@ class setResolvedUrl(object):
                 #response_data = response.read()
                 response.close()
 
-            print "ITEM = " + item.path + "\n"
 
         return
 

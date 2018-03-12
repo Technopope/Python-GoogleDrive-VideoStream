@@ -28,11 +28,9 @@ from resources.libgui import xbmcplugin
 class Dialog(object):
 
     def ok(self, heading, line1, line2='', line3=''):
-        print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + '<br/>' + line1
         return
     def select(self, heading, list, line2='', line3=''):
-        #print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         return
     def yesno(self, variable1, name):
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(variable1) + '<select name="'+str(name)+'"><option value="true" selected >true</option><option value="false">false</option></select><br/>'
@@ -117,7 +115,6 @@ class ListItem(object):
     ##
     ##
     def __init__(self, label,label2=None,iconImage=None,thumbnailImage=None,path=None):
-        print label + "\n";
         if thumbnailImage is not None and thumbnailImage != "":
             self.thumbnailImage = thumbnailImage
         else:
@@ -130,11 +127,9 @@ class ListItem(object):
         return
 
     def setProperty(self,key,value):
-        #print "setProperty " + str(key) + ',' + str(value) + "\n"
         return
 
     def setInfo(self,key=None,value=None,type=None,infoLabels=None):
-        #print "setInfo " + str(key) + ',' + str(value) + "\n"
         return
 
     def setPath(self,path):
@@ -143,7 +138,6 @@ class ListItem(object):
 
 
     def addContextMenuItems(self,cm,value):
-        #print "setInfo " +str(value) + "\n"
         i=0
         menuItems = ''
         while i < len(cm):

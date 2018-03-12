@@ -36,7 +36,6 @@ def mkdir(path):
 
 def exists(path):
     if path is not None and path != '':
-        print "PATH " + str(path) + "\n"
         return os.path.exists(path)
     else:
         return False

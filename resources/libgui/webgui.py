@@ -139,6 +139,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         # debug - print headers in log
         headers = str(self.headers)
+        xbmc.log(self.requestline)
         xbmc.log(headers)
 
         host = re.search(r'Host: (\S+)', str(headers))
@@ -384,9 +385,8 @@ class webGUI(BaseHTTPRequestHandler):
 
         # debug - print headers in log
         headers = str(self.headers)
+        xbmc.log(self.requestline)
         xbmc.log(headers)
-
-
 
         # passed a kill signal?
         if self.path == '/kill':
@@ -419,6 +419,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         # debug - print headers in log
         headers = str(self.headers)
+        xbmc.log(self.requestline)
         xbmc.log(headers)
 
         host = re.search(r'Host: (\S+)', str(headers))

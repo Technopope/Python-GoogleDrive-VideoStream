@@ -1005,7 +1005,6 @@ class contentengine(object):
                         if mode == 'buildstrm2':
                             changeTracking = True
 
-                        print "instance name " + instanceName + "\n"
 
                         if instanceName != '':
                             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
@@ -1016,7 +1015,6 @@ class contentengine(object):
                             while True:
                                 instanceName = constants.PLUGIN_NAME+str(count)
                                 username = settings.getSetting(instanceName+'_username', None)
-                                print "username = " + invokedUsername + "\n\n"
                                 if username != '' and username is not None and username == invokedUsername:
                                     #if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                     #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
@@ -1247,7 +1245,6 @@ class contentengine(object):
         elif instanceName is None:
             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,'', user_agent, settings, authenticate=False,DBM=DBM)
         else:
-            print "instanceName " + instanceName + "\n"
             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
 
@@ -1633,7 +1630,6 @@ class contentengine(object):
                                 try:
 
                                     item.file.displaytitle = encrypt.decryptString(str(item.file.title))
-                                    print "file = " + str(item.file.title) + str(item.file.displaytitle ) + str(contentType) + "\n"
                                     item.file.title =  item.file.displaytitle
                                     # is it a encrypted photo?
                                     if  photos_re.search(str(item.file.title)):
@@ -1856,7 +1852,6 @@ class contentengine(object):
                             try:
                                 response = urllib2.urlopen(req)
                             except urllib2.URLError, e:
-                                print "HEREX \n"
                                 return
                     #length = response.info().getheader('Content-Length')
 
