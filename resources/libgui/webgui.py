@@ -122,6 +122,11 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 class webGUI(BaseHTTPRequestHandler):
 
 
+    def log_message(self, format, *args):
+        message =  "%s - %s - [%s] %s\n" % (self.address_string(), self.client_address[0],self.log_date_time_string(),format%args)
+        print >> sys.stderr, message
+        xbmc.log(message)
+
     #Handler for the GET requests
     def do_POST(self):
 
@@ -374,13 +379,6 @@ class webGUI(BaseHTTPRequestHandler):
                 mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host)
 
 
-
-        # redirect url to output
-        elif re.search(r'/play.py', str(decryptkeyvalue)):
-
-            print "TRYING TO SEEK WITH POSR REQUEST\n\n\n"
-
-
     def do_HEAD(self):
 
         # debug - print headers in log
@@ -395,15 +393,11 @@ class webGUI(BaseHTTPRequestHandler):
 
 
 
-        # redirect url to output
-        elif re.search(r'/play.py', str(self.path)):
-
-            print "TRYING TO SEEK WITH HEAD REQUEST\n\n\n"
-
-
     #Handler for the GET requests
     def do_GET(self):
 
+        if self.path == '/favicon.ico':
+            return
 
         decryptkeyvalue = self.path
         if re.search(r'kv\=', str(self.path)):
