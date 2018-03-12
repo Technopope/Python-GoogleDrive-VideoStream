@@ -28,9 +28,30 @@ class Player(object):
         print heading + ":" + line1 + "\n" + line2 + "\n" + line3
         return
 
+class openLog(object):
+    ##
+    def __init__(self,filename):
+
+        if filename is not None:
+            try:
+                logfile.pipe = open(filename, "a")
+            except:
+                logfile.pipe = open(filename, "w")
+
+
+class logfile(object):
+    ##
+    pipe = None
+
+
 class log(object):
     ##
     def __init__(self,message,type=None):
+        if logfile.pipe is not None:
+            logfile.pipe.write(str(message)+ "\n");
+            logfile.pipe.flush()
+        else:
+            print str(message) + "\n"
         return
 
 class sleep(object):
@@ -63,7 +84,10 @@ class xbmc:
     ##
     def __init__(self):
         self.Dialog.ok = None
+        self.x = "XXX"
         return
+
+
 
 
     ##

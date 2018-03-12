@@ -30,6 +30,7 @@ import time
 from datetime import datetime
 import re
 from resources.libgui import settingsdbm
+from resources.lib import scheduler
 
 
 # default.py [settings-dbm] [PORT] [SSL-certificate]
@@ -62,6 +63,8 @@ pid = os.fork()
 if pid == 0:
 
     dbm = settingsdbm.settingsdbm(dbmfile)
+    schedule = scheduler.scheduler(logfile=dbm.getSetting('scheduler_logfile', None))
+
     i=0
     while 1:
         runtime = dbm.getIntSetting(str(i)+'_runtime', None)
@@ -70,7 +73,7 @@ if pid == 0:
             i += 1
             break
         elif status == '1':
-            print "job #" + str(i)+ " is detected as incomplete\n"
+            schedule.log ("job #" + str(i)+ " is detected as incomplete")
             dbm.setSetting(str(i)+'_status', 1)
         i += 1
 
@@ -87,12 +90,14 @@ if pid == 0:
             if instance is not None and instance != '':
                 frequency = dbm.getIntSetting(str(i)+'_frequency', None)
                 status = dbm.getIntSetting(str(i)+'_status', None)
-                print 'job ' + str(i)+"instance = " + str(instance) +'frequency' + str(frequency)+ "\n"
+                schedule.log ('job ' + str(i)+"instance = " + str(instance) +'frequency' + str(frequency))
+
                 if status is None:
-                    print "status = " + str(status) + 'job' + str(i)+"\n"
+                    schedule.log ("status = " + str(status) + 'job' + str(i))
                 elif status == 0 and frequency is not None and runtime < (currentTime - (frequency*60)) :
                     cmd = dbm.getSetting(str(i)+'_cmd', None)
-                    print "time to run job #" + str(i) + ' runtime ' + str(runtime) + ' test ' + str(currentTime - (frequency*60))+  'cmd' + str(cmd) +  "\n"
+                    schedule.log ("time to run job #" + str(i) + ' runtime ' + str(runtime) + ' test ' + str(currentTime - (frequency*60))+  'cmd' + str(cmd))
+
                     if cmd is not None:
                         currentTime = int(time.time())
                         dbm.setSetting(str(i)+'_runtime', str(currentTime))
@@ -107,7 +112,7 @@ if pid == 0:
                         dbm.setSetting(str(i)+'_status', str(0))
                         dbm.setSetting(str(i)+'_statusDetail', str(datetime.now()) + ' - ' + str(contents))
                 else:
-                    print "status = " + str(status) + "\n"
+                    schedule.log ("status = " + str(status))
 
             i += 1
 

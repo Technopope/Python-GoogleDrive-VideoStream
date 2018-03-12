@@ -217,7 +217,7 @@
         <setting id="resumeprompt" type="bool" label="30175" default="true" />
 
         <setting label="30061" type="lsep"/>
-        <setting id="strm" type="bool"  subsetting="true" label="30189" default="false" />
+
 
         <setting id="strm_path" type="folder"  subsetting="true" label="30026" default="" />
 <!--        <setting id="library" type="bool" label="30064" default="false"/>

@@ -34,6 +34,7 @@ import constants
 from resources.lib import engine
 from resources.libgui import xbmcplugin
 from resources.libgui import settingsdbm
+from resources.libgui import xbmc
 
 
 if constants.CONST.DEBUG:
@@ -102,7 +103,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             except:
                 self.saltfile = 'saltfile'
                 self.saltpassword = 'saltpassword'
-                print "No saltfile set, using file \'" + self.saltfile + "\' instead."
+                xbmc.log("No saltfile set, using file \'" + self.saltfile + "\' instead.")
 
             self.encrypt = encryption.encryption(self.saltfile,self.saltpassword)
         except:
@@ -114,6 +115,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             self.cryptoPassword = self.dbm.getSetting('crypto_password')
         except: pass
 
+        xbmc.openLog(self.dbm.getSetting('logfile', None))
+
 
 
 class webGUI(BaseHTTPRequestHandler):
@@ -121,8 +124,6 @@ class webGUI(BaseHTTPRequestHandler):
 
     #Handler for the GET requests
     def do_POST(self):
-
-
 
 
         decryptkeyvalue = self.path
@@ -138,8 +139,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         # debug - print headers in log
         headers = str(self.headers)
-        print(headers)
-
+        xbmc.log(headers)
 
         host = re.search(r'Host: (\S+)', str(headers))
         if host is not None:
@@ -203,8 +203,7 @@ class webGUI(BaseHTTPRequestHandler):
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self.send_response(200)
             self.end_headers()
-            print post_data
-
+            xbmc.log(post_data)
             isPassthrough = False
             for r in re.finditer('\&?([^\=]+)\=([^\&]*)' ,
                      post_data, re.DOTALL):
@@ -226,7 +225,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
 
-                print "saving key, value " + str(key) +str(value)+ "\n"
+                xbmc.log("saving key, value " + str(key) +str(value))
                 self.server.dbm.setSetting(key,value)
 
             self.wfile.write('<html><body>Changes saved.  You must restart the service or click <a href="/reload">reload</a> to make the changes take in effect.</body></html>')
@@ -246,8 +245,7 @@ class webGUI(BaseHTTPRequestHandler):
                 for r in re.finditer('password\=([^\&]+)' ,
                          post_data, re.DOTALL):
                     password = r.group(1)
-                print "username " + username + " password " + self.server.username + "\n"
-
+                xbmc.log("username " + username + " password " + self.server.username)
                 if not (self.server.username == username and self.server.password == password):
                     self.send_response(200)
                     self.end_headers()
@@ -281,7 +279,6 @@ class webGUI(BaseHTTPRequestHandler):
                     except:
                         username = None
 
-                    print "USERNAME " + str(username) + "\n"
                     if username == account or username is None:
                         self.server.addon.setSetting(instanceName + '_type', str(3))
                         self.server.addon.setSetting(instanceName + '_code', str(code))
@@ -350,7 +347,6 @@ class webGUI(BaseHTTPRequestHandler):
             if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
                 post_data = self.rfile.read(content_length) # <--- Gets the data itself
-                #print post_data
 
                 username = ''
                 password = ''
@@ -388,10 +384,9 @@ class webGUI(BaseHTTPRequestHandler):
 
         # debug - print headers in log
         headers = str(self.headers)
-        print(headers)
+        xbmc.log(headers)
 
 
-        print "HEAD HEAD HEAD\n\n"
 
         # passed a kill signal?
         if self.path == '/kill':
@@ -409,6 +404,7 @@ class webGUI(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_GET(self):
 
+
         decryptkeyvalue = self.path
         if re.search(r'kv\=', str(self.path)):
             from resources.lib import encryption
@@ -423,7 +419,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         # debug - print headers in log
         headers = str(self.headers)
-        print(headers)
+        xbmc.log(headers)
 
         host = re.search(r'Host: (\S+)', str(headers))
         if host is not None:
@@ -599,7 +595,7 @@ class webGUI(BaseHTTPRequestHandler):
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
                             if e.code == 403 or e.code == 401:
-                                print "STILL ERROR"+str(e.code)+"\n"
+                                xbmc.log("STILL ERROR"+str(e.code))
                                 return
                             else:
                                 return
@@ -611,7 +607,7 @@ class webGUI(BaseHTTPRequestHandler):
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
                             if e.code == 403 or e.code == 401:
-                                print "STILL ERROR"+str(e.code)+"\n"
+                                xbmc.log("STILL ERROR"+str(e.code))
                                 return
                             else:
                                 return
@@ -738,7 +734,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    print "STILL ERROR"+str(e.code)+"\n"
+                    xbmc.log("STILL ERROR"+str(e.code))
                     return
                 else:
                     return
@@ -758,7 +754,7 @@ class webGUI(BaseHTTPRequestHandler):
                 else:
                     self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))))
 
-            print str(response.info()) + "\n"
+            xbmc.log( str(response.info()))
             self.send_header('Content-Type',response.info().getheader('Content-Type'))
             if isEncrypted:
                 if end == '':
@@ -913,7 +909,7 @@ class webGUI(BaseHTTPRequestHandler):
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    print "STILL ERROR"+str(e.code)+"\n"
+                    xbmc.log("STILL ERROR"+str(e.code))
                     return
                 else:
                     return
@@ -930,7 +926,7 @@ class webGUI(BaseHTTPRequestHandler):
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
                         if e.code == 403 or e.code == 401:
-                            print "STILL ERROR"+str(e.code)+"\n"
+                            xbmc.log("STILL ERROR"+str(e.code))
                             return
                         else:
                             return
@@ -1088,16 +1084,17 @@ class webGUI(BaseHTTPRequestHandler):
             self.wfile.write('<br />Salt password <input name="saltpassword" type="text" value="'+str(self.server.dbm.getSetting('saltpassword',default='saltpassword'))+'">')
 
             self.wfile.write('<br /><input type="submit" value="Save" /><h1>Media Configuration:</h1>')
+            self.wfile.write('Server log <input name="logfile" type="text" value="'+str(self.server.dbm.getSetting('logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/server.log]</sub><br />')
+            self.wfile.write('Scheduler log <input name="scheduler_logfile" type="text" value="'+str(self.server.dbm.getSetting('scheduler_logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/scheduler.log]</sub><br />')
+
             self.wfile.write('<br />Passthrough <select name="passthrough">')
             if self.server.dbm.getSetting('passthrough') == 'true':
                 self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
             else:
                 self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
 
-
             self.setings = {}
             file = open('./resources/settings.xml', "r")
-            print "LOAD SETTINGS\n\n\n"
             for line in file:
 
                 id = ''
@@ -1218,15 +1215,9 @@ class webGUI(BaseHTTPRequestHandler):
                                 self.wfile.write('<option value="true"/>true</option>')
 
                             self.wfile.write('</select><br />')
-            self.wfile.write('<br /><br /><b><i>The following settings affect path included in STRM files created:</i></b><br /> Protocol <select name="protocol">')
-            if self.server.dbm.getSetting('protocol') == 'https://':
-                self.wfile.write('<option value="https://" selected >https://</option><option value="http://">http://</option><br /></select>')
-            else:
-                self.wfile.write('<option value="https://">https://</option><option value="http://" selected>http://</opton><br /></select>')
+            self.wfile.write('<br /><br /><b><i>The following settings affect path included in STRM files created:</i></b><br />')
 
-            self.wfile.write('<br />Hostname <input name="hostname" type="text" value="'+str(self.server.dbm.getSetting('hostname', default=self.get_ip_address()))+'" /><br />')
-            self.wfile.write('<br />Port <input name="port" type="text" disabled value="'+str(self.server.dbm.getSetting('port',default=self.server.port))+'" /><br />')
-
+            self.wfile.write('<br />Hostname <input name="hostname" type="text" value="'+str(self.server.dbm.getSetting('host', default=self.get_ip_address()))+'" /><br />')
             self.wfile.write('<input type="submit" value="Save" /></form></html>')
 
     def cookieLogin(self,headers):

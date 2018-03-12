@@ -593,8 +593,6 @@ class contentengine(object):
 #            from resources.lib import TMDB
 
 
-
-
         if KODI:
             #global variables
             self.PLUGIN_URL = sys.argv[0]
@@ -626,7 +624,6 @@ class contentengine(object):
         #obsolete, replace, revents audio from streaming
         #if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
         #    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
-
 
 
 

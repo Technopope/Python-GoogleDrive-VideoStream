@@ -35,14 +35,27 @@ class scheduler:
 
     ##
     ##
-    def __init__(self, settings=None, dbmfile=None):
+    def __init__(self, settings=None, dbmfile=None, logfile=None):
 
         self.settings= settings
+        if logfile is not None and logfile != '':
+            try:
+                self.logfile = open(logfile, 'a')
+            except:
+                self.logfile = open(logfile, 'w')
+        else:
+            self.logfile = None
+
         #self.dbmfile = dbmfile
         #setup encryption password
 
         #self.dbm = anydbm.open(dbmfile,'c')
 
+    def log(self,message):
+        if self.logfile is not None:
+            self.logfile.write(message + "\n")
+        else:
+            print message + "\n"
 
     # instanceName
     # frequency
@@ -76,7 +89,6 @@ class scheduler:
         self.settings.setSetting(str(job) + '_statusDetail', '')
         self.settings.setSetting(str(job) + '_status', str(self.TYPE_STOPPED))
 
-        print "updating job " + str(job) + "\n"
         #key = instanceName_type_frequency_folder
         return
 
