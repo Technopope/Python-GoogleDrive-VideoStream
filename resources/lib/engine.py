@@ -2785,7 +2785,7 @@ class contentengine(object):
                                 resolvedPlayback = False
 
                             # STRM (force resolve) -- resolve-only
-                            elif settings.username != '' and settings.username is not None or settings.strm:
+                            elif settings.username != '' and settings.username is not None:
                                 startPlayback = False
                                 resolvedPlayback = True
 
