@@ -850,7 +850,7 @@ class contentengine(object):
             # path not defined, prompt
             elif not KODI:
                 try:
-                    path = settings.getParameter('strm_path', settings.getSetting('strm_path',''))
+                    path = settings.getParameter('strm_path', '')
                     path = path.replace('%2F','/')
                 except:
                     path = None
@@ -858,10 +858,10 @@ class contentengine(object):
                 if path is None or path == '':
 
                     if frequency is not None and type is not None:
-                        xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&strm_path='+str(path)+'&instance='+str(instanceName)+'&frequency='+str(frequency)+'&type='+str(type)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                        xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&frequency='+str(frequency)+'&type='+str(type)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                     else:
-                        xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&strm_path='+str(path)+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
-                    xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', path)
+                        xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                    xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', settings.getSetting('strm_path',''))
                     xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog')
                     xbmcgui.Dialog().booleanSelector('append resolution to STRM filename?','resolution')
                     xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')

@@ -265,7 +265,7 @@ class webGUI(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            self.displaySettings()
+            self.displaySettings(host=host)
 
 
         # redirect url to output
@@ -498,7 +498,7 @@ class webGUI(BaseHTTPRequestHandler):
             if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 self.wfile.write('<html><form action="/settings" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
             else:
-                self.displaySettings()
+                self.displaySettings(host=host)
 
             #self.server.ready = False
             return
@@ -1060,16 +1060,21 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
 
-    def displaySettings(self):
+    def displaySettings(self, host=''):
 
 
             self.wfile.write('<html><form autocomplete="off" action="/save_settings" method="post">')
 
-            self.wfile.write('<h1>Plugin Configuration:</h1>')
+            self.wfile.write('<h1>Plugin Configuration:</h1><hr align="left" width="400">')
             self.wfile.write('<b>Secure Login</b><br />Username <input name="username" type="text" value="'+str(self.server.dbm.getSetting('username',default=''))+'" /><br />')
             self.wfile.write('Password <input name="passwrd" type="text" value="'+str(self.server.dbm.getSetting('password',default=''))+'" /><br />')
+            self.wfile.write('<br /><input type="submit" value="Save" />')
 
-            self.wfile.write('<br /><br /><b><i>The following settings affect creating secure URLs:</i></b><br />Hide parameters <select name="hide">')
+            self.wfile.write('<hr align="left" width="400">Server log <input name="logfile" type="text" value="'+str(self.server.dbm.getSetting('logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/server.log]</sub><br />')
+            self.wfile.write('Scheduler log <input name="scheduler_logfile" type="text" value="'+str(self.server.dbm.getSetting('scheduler_logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/scheduler.log]</sub><br />')
+            self.wfile.write('<br /><input type="submit" value="Save" />')
+
+            self.wfile.write('<br /><hr align="left" width="400"><b><i>The following settings affect creating secure URLs:</i></b><br />Hide parameters <select name="hide">')
             if self.server.dbm.getSetting('hide') == 'true':
                 self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
             else:
@@ -1083,10 +1088,8 @@ class webGUI(BaseHTTPRequestHandler):
             self.wfile.write('<br />Salt file <input name="saltfile" type="text" value="'+str(self.server.dbm.getSetting('saltfile',default='saltfile'))+'"><sub>[eneter a path such as /var/saltfile]</sub>')
             self.wfile.write('<br />Salt password <input name="saltpassword" type="text" value="'+str(self.server.dbm.getSetting('saltpassword',default='saltpassword'))+'">')
 
-            self.wfile.write('<br /><input type="submit" value="Save" /><h1>Media Configuration:</h1>')
-            self.wfile.write('Server log <input name="logfile" type="text" value="'+str(self.server.dbm.getSetting('logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/server.log]</sub><br />')
-            self.wfile.write('Scheduler log <input name="scheduler_logfile" type="text" value="'+str(self.server.dbm.getSetting('scheduler_logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/scheduler.log]</sub><br />')
-
+            self.wfile.write('<br /><input type="submit" value="Save" />')
+            self.wfile.write('<h1>Media Configuration:</h1><hr align="left" width="400">')
             self.wfile.write('<br />Passthrough <select name="passthrough">')
             if self.server.dbm.getSetting('passthrough') == 'true':
                 self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
@@ -1215,9 +1218,7 @@ class webGUI(BaseHTTPRequestHandler):
                                 self.wfile.write('<option value="true"/>true</option>')
 
                             self.wfile.write('</select><br />')
-            self.wfile.write('<br /><br /><b><i>The following settings affect path included in STRM files created:</i></b><br />')
-
-            self.wfile.write('<br />Hostname <input name="hostname" type="text" value="'+str(self.server.dbm.getSetting('host', default=self.get_ip_address()))+'" /><br />')
+            self.wfile.write('<br />Hostname <input name="hostname" type="text" value="'+str(self.server.dbm.getSetting('host', default=host))+'" /><br />')
             self.wfile.write('<input type="submit" value="Save" /></form></html>')
 
     def cookieLogin(self,headers):
