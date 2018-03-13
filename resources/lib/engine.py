@@ -608,6 +608,7 @@ class contentengine(object):
 
 
         self.debugger()
+        xbmc.log("TEST\n\n\n")
 
         # cloudservice - create settings module
         settings = settings.settings(addon)

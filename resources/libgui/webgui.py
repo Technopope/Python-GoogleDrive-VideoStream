@@ -115,7 +115,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             self.cryptoPassword = self.dbm.getSetting('crypto_password')
         except: pass
 
-        xbmc.openLog(self.dbm.getSetting('logfile', None))
+        xbmc.openLog(self.dbm.getSetting('logfile', None), debug=self.dbm.getBoolSetting('debug', False))
 
 
 
@@ -1072,6 +1072,12 @@ class webGUI(BaseHTTPRequestHandler):
 
             self.wfile.write('<hr align="left" width="400">Server log <input name="logfile" type="text" value="'+str(self.server.dbm.getSetting('logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/server.log]</sub><br />')
             self.wfile.write('Scheduler log <input name="scheduler_logfile" type="text" value="'+str(self.server.dbm.getSetting('scheduler_logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/scheduler.log]</sub><br />')
+            self.wfile.write('Debug mode <select name="debug">')
+            if self.server.dbm.getSetting('hide') == 'true':
+                self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
+            else:
+                self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
+
             self.wfile.write('<br /><input type="submit" value="Save" />')
 
             self.wfile.write('<br /><hr align="left" width="400"><b><i>The following settings affect creating secure URLs:</i></b><br />Hide parameters <select name="hide">')

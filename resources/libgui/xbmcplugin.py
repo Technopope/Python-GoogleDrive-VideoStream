@@ -20,6 +20,7 @@
 import re
 import urllib, urllib2
 
+from resources.libgui import xbmc
 
 class outputBuffer(object):
     output = ''
@@ -86,6 +87,7 @@ class setResolvedUrl(object):
             url = ''
             cookie = ''
             auth = ''
+            playbackURL = ''
             for r in re.finditer('^([^\|]+)\|' ,
                      item.path, re.DOTALL):
                 url = r.group(1)
@@ -105,11 +107,14 @@ class setResolvedUrl(object):
             #plugin_handle.send_header('Authorization', auth)
             if not encrypted and (plugin_handle.server.addon.getSetting('passthrough')) == 'true':
                 auth = auth.replace("Bearer+",'')
-                plugin_handle.send_header('Location', url + '&access_token='+auth)
+                playbackURL = url + '&access_token='+auth
             elif encrypted:
-                plugin_handle.send_header('Location', '/play?count=' + str(len(playbackBuffer.playback)-1) + '&encrypted=true')
+                playbackURL = '/play?count=' + str(len(playbackBuffer.playback)-1) + '&encrypted=true'
+
             else:
-                plugin_handle.send_header('Location', '/play?count=' + str(len(playbackBuffer.playback)-1))
+                playbackURL = '/play?count=' + str(len(playbackBuffer.playback)-1)
+            plugin_handle.send_header('Location', playbackURL)
+            xbmc.log("resolving to URL = " + playbackURL, xbmc.LOGDEBUG)
             plugin_handle.end_headers()
 
 

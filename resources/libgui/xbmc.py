@@ -29,7 +29,7 @@ class Player(object):
 
 class openLog(object):
     ##
-    def __init__(self,filename):
+    def __init__(self,filename, debug=False):
 
         if filename is not None and filename != "":
             try:
@@ -37,19 +37,30 @@ class openLog(object):
             except:
                 logfile.pipe = open(filename, "w")
 
+        if debug:
+            logfile.debug = True
+
 
 class logfile(object):
     ##
     pipe = None
+    debug = False
 
 
 class log(object):
     ##
     def __init__(self,message,type=None):
-        if logfile.pipe is not None:
-            logfile.pipe.write(str(message)+ "\n");
+        if type == LOGDEBUG and not logfile.debug:
+            return
+
+                    if logfile.pipe is not None:
+            if logfile.debug and type == LOGDEBUG:
+                logfile.pipe.write('debug - ')
+            logfile.pipe.write(str(message)+ "\n")
             logfile.pipe.flush()
         else:
+            if logfile.debug and type == LOGDEBUG:
+                print 'debug - '
             print str(message) + "\n"
         return
 
@@ -75,8 +86,11 @@ class LOGNOTICE(object):
     def __init__(self,message):
         return
 
+LOGDEBUG = 1
+
 class xbmc:
     # CloudService v0.3.0
+
 
 
     ##

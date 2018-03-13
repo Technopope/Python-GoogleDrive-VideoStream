@@ -51,6 +51,23 @@ class settingsdbm:
         except:
             return default
 
+    def getBoolSetting(self, key, default=None):
+        if not self.isReadOnly:
+            self.dbm.close()
+            self.dbm = anydbm.open(self.dbmfile,'r')
+            self.isReadOnly = True
+
+        if key is '':
+            return None
+        try:
+            value = self.dbm[key]
+            if value == 'True' or value == 'true':
+                return True
+            else:
+                return False
+        except:
+            return default
+
     def getIntSetting(self, key, default=None):
         if not self.isReadOnly:
             self.dbm.close()
