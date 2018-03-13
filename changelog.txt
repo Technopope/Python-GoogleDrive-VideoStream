@@ -1,3 +1,4 @@
+- fix for ensuring default host is used in STRM creation
 - add scheduler log and server console logging options; redirect output to logging routine
 - fix for enroll bug when accounts >= 10
 - get rid of DBM for scheduler

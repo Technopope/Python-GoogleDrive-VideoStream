@@ -1124,8 +1124,8 @@ class cloudservice(object):
                         values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
-                        if folder.isRoot:
-                            cm.append(( self.addon.getLocalizedString(30206), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&catalog=true&'+ urllib.urlencode(values)+')', ))
+                        #if folder.isRoot:
+                        #    cm.append(( self.addon.getLocalizedString(30206), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&catalog=true&'+ urllib.urlencode(values)+')', ))
 
                     #encfs
                     elif contextType != 'image':
