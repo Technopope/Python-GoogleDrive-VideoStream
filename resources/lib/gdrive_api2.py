@@ -1346,10 +1346,10 @@ class gdrive(cloudservice):
     def getPlaybackCall(self, package=None, title='', isExact=True, contentType=None):
 
         try:
-            pquality = self.settings.getParameter('preferred_quality', self.settings.getSetting('preferred_quality'))
-            pformat = self.settings.getParameter('preferred_format', self.settings.getSetting('preferred_format'))
-            acodec = self.settings.getParameter('avoid_codec', self.settings.getSetting('avoid_codec'))
-            aformat = self.settings.getParameter('avoid_format', self.settings.getSetting('avoid_format'))
+            pquality = int(self.settings.getParameter('preferred_quality', self.settings.getSetting('preferred_quality')))
+            pformat = int(self.settings.getParameter('preferred_format', self.settings.getSetting('preferred_format')))
+            acodec = int(self.settings.getParameter('avoid_codec', self.settings.getSetting('avoid_codec')))
+            aformat = int(self.settings.getParameter('avoid_format', self.settings.getSetting('avoid_format')))
             #pquality = int(self.addon.getSetting('preferred_quality'))
             #pformat = int(self.addon.getSetting('preferred_format'))
             #acodec = int(self.addon.getSetting('avoid_codec'))
@@ -1493,7 +1493,7 @@ class gdrive(cloudservice):
 
             response_data = response.read()
             response.close()
-            print "preferred quality = " + str(pquality) + "\n"
+            xbmc.log("preferred quality = " + str(pquality), xbmc.LOGDEBUG)
 
 
             for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
@@ -1651,7 +1651,7 @@ class gdrive(cloudservice):
 
                     try:
                         mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
-                        print itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count)
+                        xbmc.log(itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec']+ str(itagDB[itag]['resolution'])+ '_' + str(order+count), xbmc.LOGDEBUG)
                     except KeyError:
                         mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
 

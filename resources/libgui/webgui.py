@@ -1073,7 +1073,7 @@ class webGUI(BaseHTTPRequestHandler):
             self.wfile.write('<hr align="left" width="400">Server log <input name="logfile" type="text" value="'+str(self.server.dbm.getSetting('logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/server.log]</sub><br />')
             self.wfile.write('Scheduler log <input name="scheduler_logfile" type="text" value="'+str(self.server.dbm.getSetting('scheduler_logfile',default=''))+'" /> <sub>[eneter a path such as /tmp/scheduler.log]</sub><br />')
             self.wfile.write('Debug mode <select name="debug">')
-            if self.server.dbm.getSetting('hide') == 'true':
+            if self.server.dbm.getSetting('debug') == 'true':
                 self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
             else:
                 self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')

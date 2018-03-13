@@ -50,18 +50,18 @@ class logfile(object):
 class log(object):
     ##
     def __init__(self,message,type=None):
+        DEBUG = ''
         if type == LOGDEBUG and not logfile.debug:
             return
+        elif logfile.debug and type == LOGDEBUG:
+            DEBUG = 'debug - '
+
 
         if logfile.pipe is not None:
-            if logfile.debug and type == LOGDEBUG:
-                logfile.pipe.write('debug - ')
-            logfile.pipe.write(str(message)+ "\n")
+            logfile.pipe.write(DEBUG + str(message)+ "\n")
             logfile.pipe.flush()
         else:
-            if logfile.debug and type == LOGDEBUG:
-                print 'debug - '
-            print str(message) + "\n"
+            print DEBUG + str(message) + "\n"
         return
 
 class sleep(object):

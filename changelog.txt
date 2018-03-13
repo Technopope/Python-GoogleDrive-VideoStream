@@ -1,3 +1,4 @@
+- fix preferred quality matching for transcoding
 - add debug mode
 v0.1.9 (2018-03-15)
 - STRM cleanup
