@@ -31,7 +31,7 @@ class openLog(object):
     ##
     def __init__(self,filename):
 
-        if filename is not None:
+        if filename is not None and filename != "":
             try:
                 logfile.pipe = open(filename, "a")
             except:

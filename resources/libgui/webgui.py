@@ -127,6 +127,11 @@ class webGUI(BaseHTTPRequestHandler):
         print >> sys.stderr, message
         xbmc.log(message)
 
+    def log_error(self, format, *args):
+        message =  "%s - %s - [%s] %s\n" % (self.address_string(), self.client_address[0],self.log_date_time_string(),format%args)
+        print >> sys.stderr, message
+        xbmc.log(message)
+
     #Handler for the GET requests
     def do_POST(self):
 
