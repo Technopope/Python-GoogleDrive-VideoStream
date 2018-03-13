@@ -61,63 +61,63 @@ print "Google Drive Media Server ready....\n"
 
 pid = os.fork()
 if pid == 0:
+    if 0:
+        dbm = settingsdbm.settingsdbm(dbmfile)
+        schedule = scheduler.scheduler(logfile=dbm.getSetting('scheduler_logfile', None))
 
-    dbm = settingsdbm.settingsdbm(dbmfile)
-    schedule = scheduler.scheduler(logfile=dbm.getSetting('scheduler_logfile', None))
-
-    i=0
-    while 1:
-        runtime = dbm.getIntSetting(str(i)+'_runtime', None)
-        status = dbm.getIntSetting(str(i)+'_status', None)
-        if runtime is None:
-            i += 1
-            break
-        elif status == '1':
-            schedule.log ("job #" + str(i)+ " is detected as incomplete")
-            dbm.setSetting(str(i)+'_status', 1)
-        i += 1
-
-
-    while 1:
         i=0
-        currentTime = int(time.time())
         while 1:
             runtime = dbm.getIntSetting(str(i)+'_runtime', None)
-            instance = dbm.getSetting(str(i)+'_instance', None)
-            if runtime is None and instance is None:
+            status = dbm.getIntSetting(str(i)+'_status', None)
+            if runtime is None:
                 i += 1
                 break
-            if instance is not None and instance != '':
-                frequency = dbm.getIntSetting(str(i)+'_frequency', None)
-                status = dbm.getIntSetting(str(i)+'_status', None)
-                schedule.log ('job ' + str(i)+"instance = " + str(instance) +'frequency' + str(frequency))
-
-                if status is None:
-                    schedule.log ("status = " + str(status) + 'job' + str(i))
-                elif status == 0 and frequency is not None and runtime < (currentTime - (frequency*60)) :
-                    cmd = dbm.getSetting(str(i)+'_cmd', None)
-                    schedule.log ("time to run job #" + str(i) + ' runtime ' + str(runtime) + ' test ' + str(currentTime - (frequency*60))+  'cmd' + str(cmd))
-
-                    if cmd is not None:
-                        currentTime = int(time.time())
-                        dbm.setSetting(str(i)+'_runtime', str(currentTime))
-                        dbm.setSetting(str(i)+'_status', str(1))
-                        if cmd.startswith('http'):
-                            contents = urllib2.urlopen(cmd).read()
-                        else:
-                            contents = urllib2.urlopen('http://'+str(cmd)).read()
-                        contents = re.sub('<[^<]+?>', '', contents)
-                        currentTime = int(time.time())
-                        dbm.setSetting(str(i)+'_runtime', str(currentTime))
-                        dbm.setSetting(str(i)+'_status', str(0))
-                        dbm.setSetting(str(i)+'_statusDetail', str(datetime.now()) + ' - ' + str(contents))
-                else:
-                    schedule.log ("status = " + str(status))
-
+            elif status == '1':
+                schedule.log ("job #" + str(i)+ " is detected as incomplete")
+                dbm.setSetting(str(i)+'_status', 1)
             i += 1
 
-        time.sleep(6)
-        print "scanning...\n"
+
+        while 1:
+            i=0
+            currentTime = int(time.time())
+            while 1:
+                runtime = dbm.getIntSetting(str(i)+'_runtime', None)
+                instance = dbm.getSetting(str(i)+'_instance', None)
+                if runtime is None and instance is None:
+                    i += 1
+                    break
+                if instance is not None and instance != '':
+                    frequency = dbm.getIntSetting(str(i)+'_frequency', None)
+                    status = dbm.getIntSetting(str(i)+'_status', None)
+                    schedule.log ('job ' + str(i)+"instance = " + str(instance) +'frequency' + str(frequency))
+
+                    if status is None:
+                        schedule.log ("status = " + str(status) + 'job' + str(i))
+                    elif status == 0 and frequency is not None and runtime < (currentTime - (frequency*60)) :
+                        cmd = dbm.getSetting(str(i)+'_cmd', None)
+                        schedule.log ("time to run job #" + str(i) + ' runtime ' + str(runtime) + ' test ' + str(currentTime - (frequency*60))+  'cmd' + str(cmd))
+
+                        if cmd is not None:
+                            currentTime = int(time.time())
+                            dbm.setSetting(str(i)+'_runtime', str(currentTime))
+                            dbm.setSetting(str(i)+'_status', str(1))
+                            if cmd.startswith('http'):
+                                contents = urllib2.urlopen(cmd).read()
+                            else:
+                                contents = urllib2.urlopen('http://'+str(cmd)).read()
+                            contents = re.sub('<[^<]+?>', '', contents)
+                            currentTime = int(time.time())
+                            dbm.setSetting(str(i)+'_runtime', str(currentTime))
+                            dbm.setSetting(str(i)+'_status', str(0))
+                            dbm.setSetting(str(i)+'_statusDetail', str(datetime.now()) + ' - ' + str(contents))
+                    else:
+                        schedule.log ("status = " + str(status))
+
+                i += 1
+
+            time.sleep(6)
+            print "scanning...\n"
 
 else:
     while server.ready:
