@@ -53,7 +53,7 @@ class log(object):
         if type == LOGDEBUG and not logfile.debug:
             return
 
-                    if logfile.pipe is not None:
+        if logfile.pipe is not None:
             if logfile.debug and type == LOGDEBUG:
                 logfile.pipe.write('debug - ')
             logfile.pipe.write(str(message)+ "\n")
