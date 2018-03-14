@@ -1375,6 +1375,9 @@ class cloudservice(object):
 #                    values = {'instance': self.instanceName, 'folder': package.folder.id}
 #                    folderurl = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 #                    cm.append(( 'folder', 'XBMC.RunPlugin('+folderurl+')', ))
+                elif (contextType == 'video'):
+                    cm.append(( self.addon.getLocalizedString(30228) + 'SD', 'XBMC.RunPlugin('+url + '&preferred_quality=2'+')', ))
+
 
                 if KODI and contextType != 'image':
                     # download

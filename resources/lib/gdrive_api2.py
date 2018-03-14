@@ -1494,6 +1494,7 @@ class gdrive(cloudservice):
             response_data = response.read()
             response.close()
             xbmc.log("preferred quality = " + str(pquality), xbmc.LOGDEBUG)
+            #xbmc.log("response data = " + str(response_data), xbmc.LOGDEBUG)
 
 
             for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
