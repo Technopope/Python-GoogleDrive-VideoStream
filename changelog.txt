@@ -1,6 +1,9 @@
+v0.1.10 (2018-03-14)
+- implement: select stream quality #17
+- implement: Add support for specifying transcode type in URL #29
 - fix preferred quality matching for transcoding
 - add debug mode
-v0.1.9 (2018-03-15)
+v0.1.9 (2018-03-13)
 - STRM cleanup
 - fix for ensuring default host is used in STRM creation
 - add scheduler log and server console logging options; redirect output to logging routine
