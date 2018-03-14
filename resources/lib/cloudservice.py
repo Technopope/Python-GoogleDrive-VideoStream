@@ -1377,6 +1377,10 @@ class cloudservice(object):
 #                    cm.append(( 'folder', 'XBMC.RunPlugin('+folderurl+')', ))
                 elif (contextType == 'video'):
                     cm.append(( self.addon.getLocalizedString(30228) + 'SD', 'XBMC.RunPlugin('+url + '&preferred_quality=2'+')', ))
+                    if package.file.resolution is not None and int(package.file.resolution[0]) > 480:
+                        cm.append(( self.addon.getLocalizedString(30228) + '720p', 'XBMC.RunPlugin('+url + '&preferred_quality=1'+')', ))
+                    if package.file.resolution is not None and int(package.file.resolution[0]) > 720:
+                        cm.append(( self.addon.getLocalizedString(30228) + '1080p', 'XBMC.RunPlugin('+url + '&preferred_quality=0'+')', ))
 
 
                 if KODI and contextType != 'image':
