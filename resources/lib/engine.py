@@ -749,7 +749,7 @@ class contentengine(object):
 
                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
                     drives = service.getTeamDrives()
-                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrm&instance='+str(instanceName)+'&username='+str(service.authorization.username)+'&content_type='+contextType)
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrmscheduler&instance='+str(instanceName)+'&username='+str(service.authorization.username)+'&content_type='+contextType)
 
                     list = []
                     list.append(['root','root'])
@@ -797,7 +797,7 @@ class contentengine(object):
             mode = 'main'
             instanceName = ''
         #create strm files
-        elif mode == 'buildstrm':# or mode == 'buildstrm2':
+        elif mode == 'buildstrm' or mode == 'buildstrmscheduler':
 
 
             hostTemp = settings.getParameter('host', '')
@@ -808,7 +808,7 @@ class contentengine(object):
             logfile = settings.getParameter('logfile', None)
 
             LOGGING = None
-            if logfile is not None and logfile != '':
+            if mode == 'buildstrm'  and logfile is not None and logfile != '':
                 LOGGING = open(logfile, 'w')
                 print >>LOGGING, "folder id\tfolder title\tfile id\tfile title\tshow title (tv)\tseason (tv)\tepisode (tv)\ttitle (movie)\tyear (movie)\tvideo resolution\tfile checksum\t\n"
 
@@ -870,14 +870,15 @@ class contentengine(object):
                     xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
 
                     xbmcgui.Dialog().endForm()
-                elif frequency is not None and type is not None:
+                elif mode == 'buildstrmscheduler' and frequency is not None and type is not None:
                     tasks = scheduler.scheduler(settings=addon)
                     cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
                     tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled.')
 
 
 
-            if path != '' and path is not None and (not KODI or returnPrompt):
+            if mode == 'buildstrm' and path != '' and path is not None and (not KODI or returnPrompt):
 
                 if KODI and silent != 2:
                     try:
@@ -1047,7 +1048,7 @@ class contentengine(object):
             xbmcplugin.endOfDirectory(self.plugin_handle)
 
 
-            if logfile is not None and logfile != '':
+            if mode == 'buildstrm' and logfile is not None and logfile != '':
                 LOGGING.close()
 
             return
