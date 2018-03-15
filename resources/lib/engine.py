@@ -703,7 +703,9 @@ class contentengine(object):
                     else:
                     #    status += 'every '+str(task[1])+' mins looking for changes -- never ran'
                         status = str(task[tasks.TASK_STATUS]) + ' ' + str(task[tasks.TASK_TYPE]) + ' ' + str(task[tasks.TASK_RUNTIME]) +'??'
-                    self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'job #' + str(i) + ' instance=' +str(task[0]) +' folderID='+ str(task[2]) +' '+ str(status), job=i)
+
+                    results = re.search(r'\&filename=([^\&]+).*\&username=([^\&]+)\&', str(task[tasks.TASK_CMD]))
+                    self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'job #' + str(i) + ' username=' +str(results.group(2)) +' folder='+ str(results.group(1)) +' '+ str(status), job=i)
                 i += 1
 
         elif mode == 'delete_task':
@@ -752,9 +754,9 @@ class contentengine(object):
                     xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrmscheduler&instance='+str(instanceName)+'&username='+str(service.authorization.username)+'&content_type='+contextType)
 
                     list = []
-                    list.append(['root','root'])
+                    list.append(['root|root','root'])
                     for drive in drives:
-                        list.append([drive.id,drive.title])
+                        list.append([str(drive.id) + '|' + str(drive.title),drive.title])
                     print list
 
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30224), 'folder',list)
@@ -828,6 +830,11 @@ class contentengine(object):
             encfs = settings.getParameter('encfs', False)
             encryptedPath = settings.getParameter('epath', '')
             dencryptedPath = settings.getParameter('dpath', '')
+
+            params = re.search(r'^([^\|]+)\|(.*)$', str(folderID))
+            if params:
+                folderID = params.group(1)
+                filename = params.group(2)
 
             if KODI:
                 silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
