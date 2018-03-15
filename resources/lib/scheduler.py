@@ -33,6 +33,10 @@ class scheduler:
     TASK_STATUSDETAIL = 6
     TASK_STATUS = 7
 
+    SYNC_INITIAL_ONLY = 0
+    SYNC_CHANGE_ONLY = 1
+    SYNC_BOTH = 2
+
     ##
     ##
     def __init__(self, settings=None, dbmfile=None, logfile=None):

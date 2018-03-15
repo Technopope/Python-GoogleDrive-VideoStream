@@ -761,7 +761,7 @@ class contentengine(object):
 
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30224), 'folder',list)
                     xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
-                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[2,'skip initial and schedule ongoing tracking'],[1,'initial sync and ongoing tracking'],[0,'initial one time sync only']])
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[2,'initial sync and ongoing tracking'],[1,'skip intial sync but start ongoing tracking'],[0,'initial one time sync only']])
 
                     xbmcgui.Dialog().endForm()
                 else:
