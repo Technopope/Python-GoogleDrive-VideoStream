@@ -2976,15 +2976,21 @@ class contentengine(object):
                         xbmc.sleep(100)
 
 
-                    # need to seek?
-                    if seek > 0:
-                        player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
-                    elif float(package.file.cloudResume) > 0:
-                        player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
-                    elif float(package.file.resume) > 0:
-                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+                    if KODI:
+                        # need to seek?
+                        if seek > 0:
+                            player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
+                        elif float(package.file.cloudResume) > 0:
+                            player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
+                        elif float(package.file.resume) > 0:
+                            player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+                        else:
+                            print "ITEM = " + item.path + "\n"
+                            player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
                     else:
-                        player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
+                            item.setPath(mediaURL.url)
+                            xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
+
 
                     # must occur after playback started (resolve or startPlayback in player)
                     # load captions

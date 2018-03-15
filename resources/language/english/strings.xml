@@ -70,6 +70,7 @@
 	<string id="30225">Frequency of exporting</string>
 	<string id="30226">Type of job</string>
 	<string id="30227">Delete job</string>
+	<string id="30228">Play Google Transcode - </string>
 
 
     <string id="30043">Options</string>
@@ -164,6 +165,7 @@
     <string id="30203">OAUTH2 client secret</string>
     <string id="30204">OAUTH2 URL</string>
     <string id="30205">Visit www.dmdsoftware.net for help setting up OAUTH2</string>
+
 
     <string id="30152">Something went wrong with login setup.</string>
 

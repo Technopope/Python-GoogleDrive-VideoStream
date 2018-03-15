@@ -125,6 +125,7 @@ class cloudservice(object):
         else:
             PLUGIN_URL = str(host) + '/default.py'
 
+        xbmc.log("host = " + str(host) + ", PLUGIN_URL = " + str(PLUGIN_URL) + ", self.PLUGIN_URL = " + str(self.PLUGIN_URL), xbmc.LOGDEBUG)
         count = 0
         if catalog:
             if musicPath is None:
@@ -173,9 +174,9 @@ class cloudservice(object):
                     url = 0
                     if not changeTracking and item.file is None:
                         if catalog:
-                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING)
+                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host)
                         else:
-                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING)
+                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host)
                     elif item.file is not None:
 
                         #'content_type': 'video',
@@ -344,7 +345,7 @@ class cloudservice(object):
                         dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
 
                         #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                        self.buildSTRM(path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING)
+                        self.buildSTRM(path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host)
 
                     elif index in fileListINodes.keys():
                         xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
@@ -1374,6 +1375,9 @@ class cloudservice(object):
 #                    values = {'instance': self.instanceName, 'folder': package.folder.id}
 #                    folderurl = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 #                    cm.append(( 'folder', 'XBMC.RunPlugin('+folderurl+')', ))
+                elif (contextType == 'video'):
+                    cm.append(( self.addon.getLocalizedString(30228) + 'SD', 'XBMC.RunPlugin('+url + '&preferred_quality=2'+')', ))
+
 
                 if KODI and contextType != 'image':
                     # download

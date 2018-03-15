@@ -1,3 +1,5 @@
+- fix gplayer .play missing error
+- fix for default.py in STRM folder creation
 v0.1.10 (2018-03-14)
 - implement: select stream quality #17
 - implement: Add support for specifying transcode type in URL #29

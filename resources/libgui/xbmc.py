@@ -22,9 +22,11 @@
 # The purpose of this class is to override  xbmcgui and supply equivalent subroutines when ran without KODI
 #
 
+
 class Player(object):
 
-    def ok(self, heading, line1, line2='', line3=''):
+    def play(self, url, item):
+        setResolvedUrl(url,item)
         return
 
 class openLog(object):
@@ -152,3 +154,6 @@ class xbmc:
               return False
         except:
             return False
+
+
+
