@@ -1383,6 +1383,7 @@ class cloudservice(object):
                         cm.append(( self.addon.getLocalizedString(30228) + '1080p', 'XBMC.RunPlugin('+url + '&preferred_quality=0'+')', ))
 
 
+
                 if KODI and contextType != 'image':
                     # download
                     cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
