@@ -103,7 +103,7 @@ if pid == 0:
                         dbm.setSetting(str(i)+'_runtime', str(currentTime))
                         dbm.setSetting(str(i)+'_status', str(1))
                         cmd = re.sub('buildstrmscheduler', 'buildstrm', cmd)
-
+                        cmd = re.sub(' ', '%20', cmd)
                         if cmd.startswith('http'):
                             try:
                                 contents = urllib2.urlopen(cmd).read()
@@ -115,12 +115,14 @@ if pid == 0:
                             except:
                                 contents = 'exception'
                         contents = re.sub('<[^<]+?>', '', contents)
+                        schedule.log(contents)
+
                         currentTime = int(time.time())
                         dbm.setSetting(str(i)+'_runtime', str(currentTime))
                         dbm.setSetting(str(i)+'_status', str(0))
                         dbm.setSetting(str(i)+'_statusDetail', str(datetime.now()) + ' - ' + str(contents))
-                else:
-                    schedule.log ("status = " + str(status))
+                #else:
+                #    schedule.log ("status = " + str(status))
 
             i += 1
 

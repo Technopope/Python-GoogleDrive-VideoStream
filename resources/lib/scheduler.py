@@ -58,6 +58,8 @@ class scheduler:
     def log(self,message):
         if self.logfile is not None:
             self.logfile.write(message + "\n")
+            self.logfile.flush()
+
         else:
             print message + "\n"
 
