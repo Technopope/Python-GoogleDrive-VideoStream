@@ -144,15 +144,18 @@ class cloudservice(object):
             xbmcvfs.mkdir(path)
 
 
-        changeToken = self.addon.getSetting(self.instanceName+'_changetoken',0)
+        changeToken = self.addon.getSetting(self.instanceName+'_'+str(folderID)+'_changetoken','')
+
+        if changeToken == '0':
+            changeToken = ''
 
 
-        nextPageToken = 0
+        nextPageToken = ''
         largestChangeId = ''
         isContinue = True
         while isContinue:
             if fetchChangeID:
-                (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
+                (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(folderID,contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
                 print "changeToken " + str(changeToken) + "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken) + "\n"
 
             if changeTracking and largestChangeId == changeToken:
@@ -161,12 +164,12 @@ class cloudservice(object):
             if changeTracking:
                 if nextPageToken == '' or nextPageToken is None:
                     isContinue = False
-                    self.addon.setSetting(self.instanceName + '_changetoken', str(largestChangeId))
+                    self.addon.setSetting(self.instanceName +'_'+str(folderID)+'_changetoken', str(largestChangeId))
 
             else:
                 mediaItems = self.getMediaList(folderID,contentType=contentType)
                 isContinue = False
-                self.addon.setSetting(self.instanceName + '_changetoken', str(largestChangeId))
+                self.addon.setSetting(self.instanceName +'_'+str(folderID)+'_changetoken', str(largestChangeId))
 
 
             if mediaItems and not encfs:

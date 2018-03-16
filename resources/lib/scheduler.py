@@ -121,7 +121,7 @@ class scheduler:
             except:
                 return count-1
 
-    def saveChangeNumber(self, instanceName, folderID,changeNumber):
+    def setChangeNumber(self, instanceName, folderID,changeNumber):
         #self.dbm[instanceName + '_changenumber'] = changeNumber
         self.settings.setSetting(instanceName + '_'+str(folderID)+'_changenumber', changeNumber)
 

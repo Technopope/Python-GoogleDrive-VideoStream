@@ -510,7 +510,7 @@ class gdrive(cloudservice):
     #   parameters: prompt for video quality (optional)
     #   returns: list of packages (file, folder)
     ##
-    def getChangeList(self, contentType=7, nextPageToken='', changeToken=''):
+    def getChangeList(self, folderID, contentType=7, nextPageToken='', changeToken=''):
 
 
         url = ''
@@ -519,7 +519,11 @@ class gdrive(cloudservice):
         url = self.API_URL +'changes'
 
 #            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
-        url = url + "?includeTeamDriveItems=true&supportsTeamDrives=true&includeDeleted=true&includeSubscribed=false&maxResults=300"
+
+        if folderID == 'root':
+            url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=false&maxResults=300"
+        else:
+            url = url + "?teamDriveId="+str(folderID)+"&includeTeamDriveItems=true&supportsTeamDrives=true&includeDeleted=true&includeSubscribed=false&maxResults=300"
         if (changeToken != ''):
             url = url + '&startChangeId=' + str(changeToken)
         if (nextPageToken != ''):
@@ -536,7 +540,7 @@ class gdrive(cloudservice):
             # if action fails, validate login
             try:
               response = urllib2.urlopen(req)
-              xbmc.sleep(1000)
+              #xbmc.sleep(1000)
 
             except urllib2.URLError, e:
 
@@ -548,10 +552,10 @@ class gdrive(cloudservice):
                 except socket.timeout, e:
                     return ([],nextPageToken,changeToken)
                 except urllib2.URLError, e:
-                  xbmc.log('getChangeList '+str(e))
+                  xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
                   return
               else:
-                xbmc.log('getChangeList '+str(e))
+                xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
                 return ([],nextPageToken,changeToken)
             except socket.timeout, e:
                 return ([],nextPageToken,changeToken)
