@@ -830,6 +830,12 @@ class contentengine(object):
             encfs = settings.getParameter('encfs', False)
             encryptedPath = settings.getParameter('epath', '')
             dencryptedPath = settings.getParameter('dpath', '')
+            changeTracking = settings.getParameter('changes', False)
+
+            if type == '1' or type == '2':
+                changeTracking = True
+            elif type == '0':
+                changeTracking = False
 
             params = re.search(r'^([^\|]+)\|(.*)$', str(folderID))
             if params:
@@ -879,7 +885,7 @@ class contentengine(object):
                     xbmcgui.Dialog().endForm()
                 elif mode == 'buildstrmscheduler' and frequency is not None and type is not None:
                     tasks = scheduler.scheduler(settings=addon)
-                    cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&changes='+changeTracking+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
                     tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled.')
 
@@ -969,15 +975,15 @@ class contentengine(object):
                         if constants.CONST.spreadsheet and service.cloudResume == '2':
                             spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                             if catalog:
-                                count += service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force, host=host, LOGGING=LOGGING)
+                                count += service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host, LOGGING=LOGGING, changeTracking=changeTracking)
                             else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force, host=host,LOGGING=LOGGING)
+                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking)
                             spreadsheetFile.close()
                         else:
                             if catalog:
-                                count += service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True, resolution=resolution, force=force, host=host,LOGGING=LOGGING)
+                                count += service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking)
                             else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=True,resolution=resolution, force=force, host=host,LOGGING=LOGGING)
+                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking)
 
                         #count
 
@@ -1009,14 +1015,9 @@ class contentengine(object):
 
                     else:
 
-                        changeTracking = False
-                        if mode == 'buildstrm2':
-                            changeTracking = True
-
-
                         if instanceName != '':
                             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
-                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, force=force, host=host,LOGGING=LOGGING)
+                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING)
 
                         else:
                             count = 1
@@ -1029,7 +1030,7 @@ class contentengine(object):
                                     #else:
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
-                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=True, resolution=resolution, host=host,LOGGING=LOGGING)
+                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, host=host,LOGGING=LOGGING)
                                     break
                                 if username is None:
                                     #fallback on first defined account

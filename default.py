@@ -94,7 +94,7 @@ if pid == 0:
 
                 if status is None:
                     schedule.log ("status = " + str(status) + 'job' + str(i))
-                elif (type == schedule.SYNC_BOTH or type == schedule.SYNC_CHANGE_ONLY) and status == 0 and frequency is not None and runtime < (currentTime - (frequency*60)) :
+                elif status == 0 and frequency is not None and runtime < (currentTime - (frequency*60)) :
                     cmd = dbm.getSetting(str(i)+'_cmd', None)
                     schedule.log ("time to run job #" + str(i) + ' runtime ' + str(runtime) + ' test ' + str(currentTime - (frequency*60))+  'cmd' + str(cmd))
 
@@ -102,6 +102,12 @@ if pid == 0:
                         currentTime = int(time.time())
                         dbm.setSetting(str(i)+'_runtime', str(currentTime))
                         dbm.setSetting(str(i)+'_status', str(1))
+
+                        #do a full sync only
+                        if type == schedule.SYNC_BOTH and (runtime is None or runtime == 0):
+                            dbm.setSetting(str(i)+'_type', str(schedule.SYNC_INITIAL_ONLY))
+
+
                         cmd = re.sub('buildstrmscheduler', 'buildstrm', cmd)
                         cmd = re.sub(' ', '%20', cmd)
                         if cmd.startswith('http'):
@@ -121,6 +127,9 @@ if pid == 0:
                         dbm.setSetting(str(i)+'_runtime', str(currentTime))
                         dbm.setSetting(str(i)+'_status', str(0))
                         dbm.setSetting(str(i)+'_statusDetail', str(datetime.now()) + ' - ' + str(contents))
+                        if type == schedule.SYNC_BOTH and (runtime is None or runtime == 0):
+                            dbm.setSetting(str(i)+'_type', str(schedule.SYNC_CHANGE_ONLY))
+
                 #else:
                 #    schedule.log ("status = " + str(status))
 

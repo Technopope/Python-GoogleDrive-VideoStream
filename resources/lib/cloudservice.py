@@ -143,8 +143,9 @@ class cloudservice(object):
         else:
             xbmcvfs.mkdir(path)
 
-
-        changeToken = self.addon.getSetting(self.instanceName+'_'+str(folderID)+'_changetoken','')
+        changeToken = ''
+        if fetchChangeID:
+            changeToken = self.addon.getSetting(self.instanceName+'_'+str(folderID)+'_changetoken','')
 
         if changeToken == '0':
             changeToken = ''
@@ -165,12 +166,15 @@ class cloudservice(object):
             if changeTracking:
                 if nextPageToken == '' or nextPageToken is None:
                     isContinue = False
+                    xbmc.log("saving changeToken = "+ str(largestChangeId), xbmc.LOGDEBUG)
                     self.addon.setSetting(self.instanceName +'_'+str(folderID)+'_changetoken', str(largestChangeId))
 
             else:
                 mediaItems = self.getMediaList(folderID,contentType=contentType)
                 isContinue = False
-                self.addon.setSetting(self.instanceName +'_'+str(folderID)+'_changetoken', str(largestChangeId))
+                if fetchChangeID:
+                    xbmc.log("saving changeToken = "+ str(largestChangeId), xbmc.LOGDEBUG)
+                    self.addon.setSetting(self.instanceName +'_'+str(folderID)+'_changetoken', str(largestChangeId))
 
 
             if mediaItems and not encfs:

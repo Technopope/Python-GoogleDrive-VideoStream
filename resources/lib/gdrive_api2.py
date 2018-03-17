@@ -524,12 +524,12 @@ class gdrive(cloudservice):
             url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=false&maxResults=300"
         else:
             url = url + "?teamDriveId="+str(folderID)+"&includeTeamDriveItems=true&supportsTeamDrives=true&includeDeleted=true&includeSubscribed=false&maxResults=300"
-        if (changeToken != ''):
+        if (nextPageToken == '' and changeToken != ''):
             url = url + '&startChangeId=' + str(changeToken)
         if (nextPageToken != ''):
             url = url + '&pageToken=' + str(nextPageToken)
 
-
+        xbmc.log("URL = "+ str(url), xbmc.LOGDEBUG)
         nextURL = ''
         nextPageToken = ''
         while True:
@@ -562,6 +562,8 @@ class gdrive(cloudservice):
 
             response_data = response.read()
             response.close()
+            #xbmc.log(response_data, xbmc.LOGDEBUG)
+
 
             # parsing page for videos
             # video-entry
@@ -584,6 +586,11 @@ class gdrive(cloudservice):
             for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
                 nextURL = r.group(1)
+
+            # max change ID
+            for r in re.finditer('\"largestChangeId\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                maxChangeID = r.group(1)
 
             ## look for more pages of videos
             for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
