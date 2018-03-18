@@ -128,6 +128,28 @@ class contentengine(object):
 
 
     ##
+    # add a menu to a directory screen
+    #   parameters: url to resolve, title to display, optional: icon, fanart, total_items, instance name
+    ##
+    def addStatusText(self, title, job=None):
+            listitem = xbmcgui.ListItem(title)
+
+            # disallow play controls on menus
+            listitem.setProperty('IsPlayable', 'false')
+
+            if job is not None:
+                cm=[]
+
+                cm.append(( self.addon.getLocalizedString(30227), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete_task&job='+str(job)+')' ))
+
+                listitem.addContextMenuItems(cm, True)
+
+
+            xbmcplugin.addDirectoryItem(self.plugin_handle, '', listitem,
+                                    isFolder=True, totalItems=1)
+
+
+    ##
     # Providing a context type, return what content to display based on user's preferences
     #   parameters: current context type plugin was invoked in (audio, video, photos)
     ##
@@ -670,11 +692,11 @@ class contentengine(object):
             while (i <= count):
                 task = tasks.getScheduledTask(i)
                 if task[0] != '':
-                    j=0
-                    while (j < len(task)):
-                        print str(task[j]) + ','
-                        j = j + 1
-                    print "\n"
+                    #j=0
+                    #while (j < len(task)):
+                        #print str(task[j]) + ','
+                        #j = j + 1
+                    #print "\n"
 
                     #    TASK_INSTANCE = 0
                     #    TASK_FREQUENCY = 1
@@ -705,7 +727,7 @@ class contentengine(object):
                         status = str(task[tasks.TASK_STATUS]) + ' ' + str(task[tasks.TASK_TYPE]) + ' ' + str(task[tasks.TASK_RUNTIME]) +'??'
 
                     results = re.search(r'\&filename=([^\&]+).*\&username=([^\&]+)\&', str(task[tasks.TASK_CMD]))
-                    self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'job #' + str(i) + ' username=' +str(results.group(2)) +' folder='+ str(results.group(1)) +' '+ str(status), job=i)
+                    self.addStatusText('job #' + str(i) + ' username=' +str(results.group(2)) +' folder='+ str(results.group(1)) +' '+ str(status), job=i)
                 i += 1
 
         elif mode == 'delete_task':
@@ -713,6 +735,13 @@ class contentengine(object):
 
             if job is not None:
                 addon.setSetting(job + '_instance', '')
+
+        elif mode == 'run_task':
+            job = settings.getParameter('job',None)
+
+            #if job is not None:
+
+
 
         elif mode == 'new_task':
 
@@ -761,7 +790,7 @@ class contentengine(object):
 
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30224), 'folder',list)
                     xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
-                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[2,'initial sync and ongoing tracking'],[1,'skip intial sync but start ongoing tracking'],[0,'initial one time sync only']])
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[2,'full sync then ongoing tracking'],[1,'start change tracking'],[0,'full syncs only']])
 
                     xbmcgui.Dialog().endForm()
                 else:
@@ -831,7 +860,7 @@ class contentengine(object):
             encryptedPath = settings.getParameter('epath', '')
             dencryptedPath = settings.getParameter('dpath', '')
             changeTracking = settings.getParameter('changes', False)
-
+            changeToken = ''
             if type == '1' or type == '2':
                 changeTracking = True
             elif type == '0':
@@ -885,9 +914,9 @@ class contentengine(object):
                     xbmcgui.Dialog().endForm()
                 elif mode == 'buildstrmscheduler' and frequency is not None and type is not None:
                     tasks = scheduler.scheduler(settings=addon)
-                    cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&changes='+changeTracking+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&changes='+str(changeTracking)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
                     tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled.')
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
 
 
 
@@ -926,7 +955,7 @@ class contentengine(object):
 
                         strmFile.write(host + '/' + url+'\n')
                         strmFile.close()
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file.')
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
 
 
                 else:
@@ -971,23 +1000,29 @@ class contentengine(object):
                             if titleDecrypted is not None:
                                 title = titleDecrypted.group(1)
 
+
+                        changeToken = settings.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
+                        xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
+
                         count = 0
+                        newcount=0
                         if constants.CONST.spreadsheet and service.cloudResume == '2':
                             spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                             if catalog:
-                                count += service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host, LOGGING=LOGGING, changeTracking=changeTracking)
+                                (newcount, changeToken) = service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host, LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
                             else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking)
+                                (newcount,changeToken) = service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
                             spreadsheetFile.close()
                         else:
-                            if catalog:
-                                count += service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking)
-                            else:
-                                count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking)
 
+                            if catalog:
+                                (newcount,changeToken) = service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
+                            else:
+                                (newcount,changeToken) = service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
+                        count += newcount
                         #count
 
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created '+str(count)+' STRM file(s).')
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created '+str(count)+' STRM file(s). (changetoken = '+ str(changeToken) + ')')
 
                     elif filename != '':
                                     if encfs:
@@ -1011,13 +1046,16 @@ class contentengine(object):
                                     strmFile = xbmcvfs.File(filename, "w")
                                     strmFile.write(host + '/' + url + '\n')
                                     strmFile.close()
-                                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file.')
+                                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
 
                     else:
 
                         if instanceName != '':
+                            changeToken = settings.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
+                            xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
+
                             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
-                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING)
+                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeToken=changeToken)
 
                         else:
                             count = 1
@@ -1030,7 +1068,10 @@ class contentengine(object):
                                     #else:
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
-                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, host=host,LOGGING=LOGGING)
+                                    changeToken = settings.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
+                                    xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
+
+                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, host=host,LOGGING=LOGGING, changeToken=changeToken)
                                     break
                                 if username is None:
                                     #fallback on first defined account

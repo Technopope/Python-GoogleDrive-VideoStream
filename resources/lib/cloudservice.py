@@ -118,7 +118,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken=''):
 
         if host is None:
             PLUGIN_URL = self.PLUGIN_URL
@@ -143,10 +143,6 @@ class cloudservice(object):
         else:
             xbmcvfs.mkdir(path)
 
-        changeToken = ''
-        if fetchChangeID:
-            changeToken = self.addon.getSetting(self.instanceName+'_'+str(folderID)+'_changetoken','')
-
         if changeToken == '0':
             changeToken = ''
 
@@ -166,25 +162,23 @@ class cloudservice(object):
             if changeTracking:
                 if nextPageToken == '' or nextPageToken is None:
                     isContinue = False
-                    xbmc.log("saving changeToken = "+ str(largestChangeId), xbmc.LOGDEBUG)
-                    self.addon.setSetting(self.instanceName +'_'+str(folderID)+'_changetoken', str(largestChangeId))
+                    #self.addon.setSetting(self.instanceName +'_'+str(folderID)+'_changetoken', str(largestChangeId))
 
             else:
                 mediaItems = self.getMediaList(folderID,contentType=contentType)
                 isContinue = False
-                if fetchChangeID:
-                    xbmc.log("saving changeToken = "+ str(largestChangeId), xbmc.LOGDEBUG)
-                    self.addon.setSetting(self.instanceName +'_'+str(folderID)+'_changetoken', str(largestChangeId))
 
 
             if mediaItems and not encfs:
                 for item in mediaItems:
                     url = 0
                     if not changeTracking and item.file is None:
+                        newcount=0
                         if catalog:
-                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host)
+                            (newcount,nothing) = self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host)
                         else:
-                            count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host)
+                            (newcount,nothing) = self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host)
+                        count += newcount
                     elif item.file is not None:
 
                         #'content_type': 'video',
@@ -417,7 +411,7 @@ class cloudservice(object):
 
                                 strmFile.write(url+'\n')
                                 strmFile.close()
-        return count
+        return (count, largestChangeId)
 
 
     ##

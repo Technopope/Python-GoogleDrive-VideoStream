@@ -73,9 +73,13 @@ class xbmcaddon:
     ##
     def getSetting(self,key, default=None):
         try:
-           return self.dbm[key]
+            self.dbm.sync()
         except:
-           return default
+            self.dbm = anydbm.open(self.dbmfile,'r')
+        try:
+            return self.dbm[key]
+        except:
+            return default
 
 
 
@@ -86,8 +90,9 @@ class xbmcaddon:
         self.dbm.close()
         self.dbm = anydbm.open(self.dbmfile,'w')
         self.dbm[key] = value
+        self.dbm.sync()
         self.dbm.close()
-        self.dbm = anydbm.open(self.dbmfile,'r')
+        #self.dbm = anydbm.open(self.dbmfile,'r')
         return
 
 

@@ -61,7 +61,7 @@ print "Google Drive Media Server ready....\n"
 
 pid = os.fork()
 if pid == 0:
-    dbm = settingsdbm.settingsdbm(dbmfile)
+    dbm = server.dbm
     schedule = scheduler.scheduler(logfile=dbm.getSetting('scheduler_logfile', None))
 
     i=0
@@ -90,6 +90,9 @@ if pid == 0:
                 frequency = dbm.getIntSetting(str(i)+'_frequency', None)
                 status = dbm.getIntSetting(str(i)+'_status', None)
                 type = dbm.getIntSetting(str(i)+'_type', None)
+                folderID = dbm.getSetting(str(i)+'_folder', None)
+                instanceName = dbm.getSetting(str(i)+'_instance', None)
+
                 schedule.log ('job ' + str(i)+"instance = " + str(instance) +' frequency' + str(frequency) + ' type' + str(type))
 
                 if status is None:
@@ -104,8 +107,8 @@ if pid == 0:
                         dbm.setSetting(str(i)+'_status', str(1))
 
                         #do a full sync only
-                        if type == schedule.SYNC_BOTH and (runtime is None or runtime == 0):
-                            dbm.setSetting(str(i)+'_type', str(schedule.SYNC_INITIAL_ONLY))
+                        #if type == schedule.SYNC_BOTH and (runtime is None or runtime == 0):
+                        #    dbm.setSetting(str(i)+'_type', str(schedule.SYNC_INITIAL_ONLY))
 
 
                         cmd = re.sub('buildstrmscheduler', 'buildstrm', cmd)
@@ -122,7 +125,10 @@ if pid == 0:
                                 contents = 'exception'
                         contents = re.sub('<[^<]+?>', '', contents)
                         schedule.log(contents)
-
+                        results = re.search(r'\(changetoken = ([^\)]+)\)', contents)
+                        if results is not None:
+                            dbm.setSetting(str(instanceName) +'_'+str(folderID)+'_changetoken', str(results.group(1)))
+                            schedule.log(str(instanceName) +'_'+str(folderID)+'_changetoken' +  str(results.group(1)))
                         currentTime = int(time.time())
                         dbm.setSetting(str(i)+'_runtime', str(currentTime))
                         dbm.setSetting(str(i)+'_status', str(0))

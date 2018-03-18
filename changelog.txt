@@ -1,3 +1,4 @@
+- resolve deadlock issue with scheduler updating change tracking numbers
 - activate the scheduler
 - fix gplayer .play missing error
 - fix for default.py in STRM folder creation
