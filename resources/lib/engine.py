@@ -860,6 +860,7 @@ class contentengine(object):
             encryptedPath = settings.getParameter('epath', '')
             dencryptedPath = settings.getParameter('dpath', '')
             changeTracking = settings.getParameter('changes', False)
+
             changeToken = ''
             if type == '1' or type == '2':
                 changeTracking = True

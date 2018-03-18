@@ -38,12 +38,14 @@ class settingsdbm:
         self.isReadOnly = True
 
 
-    def getSetting(self, key, default=None):
+    def getSetting(self, key, default=None, forceSync=False):
         if not self.isReadOnly:
             self.dbm.close()
             self.dbm = anydbm.open(self.dbmfile,'r')
             self.isReadOnly = True
 
+        if forceSync:
+            self.dbm.sync()
         if key is '':
             return None
         try:
@@ -51,11 +53,14 @@ class settingsdbm:
         except:
             return default
 
-    def getBoolSetting(self, key, default=None):
+    def getBoolSetting(self, key, default=None, forceSync=False):
         if not self.isReadOnly:
             self.dbm.close()
             self.dbm = anydbm.open(self.dbmfile,'r')
             self.isReadOnly = True
+
+        if forceSync:
+            self.dbm.sync()
 
         if key is '':
             return None
@@ -68,12 +73,15 @@ class settingsdbm:
         except:
             return default
 
-    def getIntSetting(self, key, default=None):
+    def getIntSetting(self, key, default=None, forceSync=False):
         if not self.isReadOnly:
             self.dbm.sync()
             self.dbm.close()
             self.dbm = anydbm.open(self.dbmfile,'r')
             self.isReadOnly = True
+
+        if forceSync:
+            self.dbm.sync()
 
         if key is '':
             return None
@@ -82,11 +90,14 @@ class settingsdbm:
         except:
             return default
 
-    def setSetting(self, key, value):
+    def setSetting(self, key, value, forceSync=False):
         if self.isReadOnly:
             self.dbm.close()
             self.dbm = anydbm.open(self.dbmfile,'w')
             self.isReadOnly = False
+
+        if forceSync:
+            self.dbm.sync()
 
         self.dbm[key] = value
         self.dbm.sync()
