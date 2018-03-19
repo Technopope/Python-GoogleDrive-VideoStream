@@ -31,10 +31,10 @@ def File(filename, type):
 def mkdir(path):
     #path = re.sub(r'//.',r'/', path)
 
-    #try:
-    os.mkdir(path)
-    #except:
-    #    return
+    try:
+        os.mkdir(path)
+    except:
+        return
 
 
 def exists(path):
