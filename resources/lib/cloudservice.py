@@ -261,7 +261,8 @@ class cloudservice(object):
 
                                     filename = str(title) + '(' + str(year) + ')'
                                     pathLib = moviePath +'/'+str(filename)
-                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                    #xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                    xbmcvfs.mkdir(pathLib)
                                 else:
                                     pathLib = videoPath
 
