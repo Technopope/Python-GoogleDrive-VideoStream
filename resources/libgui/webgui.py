@@ -458,6 +458,22 @@ class webGUI(BaseHTTPRequestHandler):
             #self.server.ready = False
             return
 
+        # force refresh of scheduler
+        elif  re.search(r'/default.py\?mode\=scheduler', str(decryptkeyvalue)):
+
+            self.server.addon = constants.addon
+            self.server.addon.__init__()
+            self.server.setDBM()
+
+            results = re.search(r'\?(.*)$', str(decryptkeyvalue))
+            if results:
+                query = str(results.group(1))
+
+            mediaEngine = engine.contentengine()
+            mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
+            return
+
+
         # enroll read/write token
         elif  re.search(r'/default.py\?mode\=enroll_rw', str(decryptkeyvalue)):
 

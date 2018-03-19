@@ -32,35 +32,10 @@ import re
 from resources.libgui import settingsdbm
 from resources.lib import scheduler
 
+from multiprocessing import Process
 
-# default.py [settings-dbm] [PORT] [SSL-certificate]
-try:
-    port = int(sys.argv[2])
-except:
-    port = 9988
-try:
-    dbmfile = str(sys.argv[1])
-except:
-    dbmfile = './gdrive.db'
 
-try:
-    sslcert = str(sys.argv[3])
-except:
-    sslcert = None
-
-#try:
-server = webgui.WebGUIServer(('',  port), webgui.webGUI)
-if sslcert is not None:
-    import ssl
-    server.socket = ssl.wrap_socket (server.socket, certfile=sslcert, server_side=True)
-
-server.setDBM(dbmfile)
-server.setPort(port)
-
-print "Google Drive Media Server ready....\n"
-
-pid = os.fork()
-if pid == 0:
+def job_scheduler(server, sleepTimer):
     dbm = server.dbm
     schedule = scheduler.scheduler(logfile=dbm.getSetting('scheduler_logfile', None))
 
@@ -146,12 +121,49 @@ if pid == 0:
 
         time.sleep(60)
 
-else:
+if __name__ == '__main__':
+
+
+    # default.py [settings-dbm] [PORT] [SSL-certificate]
+    try:
+        port = int(sys.argv[2])
+    except:
+        port = 9988
+    try:
+        dbmfile = str(sys.argv[1])
+    except:
+        dbmfile = './gdrive.db'
+
+    try:
+        sslcert = str(sys.argv[3])
+    except:
+        sslcert = None
+
+    #try:
+    server = webgui.WebGUIServer(('',  port), webgui.webGUI)
+    if sslcert is not None:
+        import ssl
+        server.socket = ssl.wrap_socket (server.socket, certfile=sslcert, server_side=True)
+
+    server.setDBM(dbmfile)
+    server.setPort(port)
+
+    print "Google Drive Media Server ready....\n"
+
+
+
+    p = Process(target=job_scheduler, args=(server, 60))
+    p.start()
+    #p.join()
+    #pid = os.fork()
+    #if pid == 0:
+
+
+    #else:
     while server.ready:
         server.handle_request()
     server.socket.close()
 
 #except: pass
-
 
 #default.run()
