@@ -1205,7 +1205,7 @@ class gdrive(cloudservice):
     def getTeamDrives(self):
 
         # retrieve all items
-        url = self.API_URL +'teamdrives'
+        url = self.API_URL +'teamdrives?pageSize=100'
         drives = []
 
         while True:
@@ -1246,17 +1246,17 @@ class gdrive(cloudservice):
 
 
             # look for more pages of videos
-            nextURL = ''
-            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+            nextPageToken = ''
+            for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
-                nextURL = r.group(1)
+                nextPageToken = r.group(1)
 
 
             # are there more pages to process?
-            if nextURL == '':
+            if nextPageToken == '':
                 break
             else:
-                url = nextURL
+                url = self.API_URL +'teamdrives?pageSize=100&pageToken=' + str(nextPageToken)
 
         return drives
 

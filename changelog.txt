@@ -1,3 +1,4 @@
+- ensure all team drives are fetched (fix pagination)
 - add missing delete method
 v0.1.11 (2018-03-19)
 - implement: Error in last release 0.1.10 #43
