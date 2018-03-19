@@ -35,6 +35,7 @@ from resources.lib import engine
 from resources.libgui import xbmcplugin
 from resources.libgui import settingsdbm
 from resources.libgui import xbmc
+from resources.libgui import xbmcaddon
 
 
 if constants.CONST.DEBUG:
@@ -54,7 +55,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         HTTPServer.__init__(self, *args, **kw)
         self.ready = True
         import constants
-        self.addon = constants.addon
+        #self.addon = constants.addon
+        self.addon = None#xbmcaddon.xbmcaddon(dbm)
         self.hide = False
         self.keyvalue = False
         self.saltfile = None
@@ -69,10 +71,13 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
     # set DBM
     def setDBM(self, dbm=None):
+
         if dbm is not None:
             self.dbm = settingsdbm.settingsdbm(dbm)
         else:
             self.dbm.reset()
+        self.addon = xbmcaddon.xbmcaddon(dbm=self.dbm)
+        #constants.addon = self.addon
 
         # login password?
         try:

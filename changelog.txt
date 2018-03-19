@@ -1,3 +1,4 @@
+- fix for DBM fetching of change token (moved out of buildstrm method)
 - resolve deadlock issue with scheduler updating change tracking numbers
 - activate the scheduler
 - fix gplayer .play missing error

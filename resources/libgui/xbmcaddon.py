@@ -21,7 +21,7 @@ import anydbm
 import re
 import os
 
-
+from resources.libgui import settingsdbm
 # The purpose of this class is to override  xbmcaddon and supply equivalent subroutines when ran without KODI
 #
 
@@ -37,13 +37,18 @@ class xbmcaddon:
 
     ##
     ##
-    def __init__(self):
+    def __init__(self, dbm=None):
 
-        self.dbmfile = './gdrive.db'
-        if os.path.exists(self.dbmfile):
-            self.dbm = anydbm.open(self.dbmfile,'r')
+        if dbm is None:
+            self.dbm = settingsdbm.settingsdbm('./gdrive.db')
+            #self.dbmfile = './gdrive.db'
+            #if os.path.exists(self.dbmfile):
+            #    self.dbm = anydbm.open(self.dbmfile,'r')
+            #else:
+            #    self.dbm = anydbm.open(self.dbmfile,'c')
         else:
-            self.dbm = anydbm.open(self.dbmfile,'c')
+            self.dbm = dbm
+
         self.language = {}
         try:
             file = open('./resources/language/english/strings.xml', "r")
@@ -71,7 +76,10 @@ class xbmcaddon:
     ##
     # return the setting from DBM
     ##
-    def getSetting(self,key, default=None):
+    def getSetting(self,key, default=None, forceSync=False):
+
+        return self.dbm.getSetting(key,default=default, forceSync=forceSync)
+
         try:
             self.dbm.sync()
         except:
@@ -86,7 +94,9 @@ class xbmcaddon:
     ##
     # return the setting from DBM
     ##
-    def setSetting(self,key,value):
+    def setSetting(self,key,value, forceSync=False):
+        return self.dbm.setSetting(key,value, forceSync=forceSync)
+
         self.dbm.close()
         self.dbm = anydbm.open(self.dbmfile,'w')
         self.dbm[key] = value

@@ -113,6 +113,9 @@ if pid == 0:
 
                         cmd = re.sub('buildstrmscheduler', 'buildstrm', cmd)
                         cmd = re.sub(' ', '%20', cmd)
+                        changeToken = dbm.getSetting(str(instanceName) +'_'+str(folderID)+'_changetoken', '')
+                        cmd = cmd + '&change_token=' + str(changeToken)
+
                         if cmd.startswith('http'):
                             try:
                                 contents = urllib2.urlopen(cmd).read()
@@ -126,15 +129,15 @@ if pid == 0:
                         contents = re.sub('<[^<]+?>', '', contents)
                         schedule.log(contents)
                         results = re.search(r'\(changetoken = ([^\)]+)\)', contents)
-                        if results is not None:
+                        if results is not None and results.group(1) != changeToken:
                             dbm.setSetting(str(instanceName) +'_'+str(folderID)+'_changetoken', str(results.group(1)))
                             schedule.log(str(instanceName) +'_'+str(folderID)+'_changetoken' +  str(results.group(1)))
                         currentTime = int(time.time())
                         dbm.setSetting(str(i)+'_runtime', str(currentTime))
                         dbm.setSetting(str(i)+'_status', str(0))
-                        dbm.setSetting(str(i)+'_statusDetail', str(datetime.now()) + ' - ' + str(contents))
                         if type == schedule.SYNC_BOTH and (runtime is None or runtime == 0):
                             dbm.setSetting(str(i)+'_type', str(schedule.SYNC_CHANGE_ONLY))
+                        dbm.setSetting(str(i)+'_statusDetail', str(datetime.now()) + ' - ' + str(contents), forceSync=True)
 
                 #else:
                 #    schedule.log ("status = " + str(status))
