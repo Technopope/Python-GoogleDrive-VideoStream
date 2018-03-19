@@ -17,6 +17,7 @@
 
 '''
 import os
+import re
 
 #
 # The purpose of this class is to override  xbmcgui and supply equivalent subroutines when ran without KODI
