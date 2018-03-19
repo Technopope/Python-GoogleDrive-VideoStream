@@ -68,8 +68,6 @@ def job_scheduler(server, sleepTimer):
                 folderID = dbm.getSetting(str(i)+'_folder', None)
                 instanceName = dbm.getSetting(str(i)+'_instance', None)
 
-                schedule.log ('job ' + str(i)+"instance = " + str(instance) +' frequency' + str(frequency) + ' type' + str(type))
-
                 if status is None:
                     schedule.log ("status = " + str(status) + 'job' + str(i))
                 elif status == 0 and frequency is not None and runtime < (currentTime - (frequency*60)) :
