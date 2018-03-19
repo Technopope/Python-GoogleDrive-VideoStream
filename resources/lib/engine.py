@@ -153,7 +153,7 @@ class contentengine(object):
     # Providing a context type, return what content to display based on user's preferences
     #   parameters: current context type plugin was invoked in (audio, video, photos)
     ##
-    def getContentType(self,contextType,encfs):
+    def getContentType(self,settings,contextType,encfs):
 
         #contentType
         #video context
@@ -179,7 +179,7 @@ class contentengine(object):
           if contextType == 'video':
 
             if encfs:
-                contentTypeDecider =  int(settingsModule.getSettingInt('context_evideo',0))
+                contentTypeDecider =  int(settings.getSettingInt('context_evideo',0))
 
                 if contentTypeDecider == 1 or contentTypeDecider == 2 :
                     contentType = 8
@@ -187,7 +187,7 @@ class contentengine(object):
                     contentType = 9
 
             else:
-                contentTypeDecider = int(settingsModule.getSettingInt('context_video',0))
+                contentTypeDecider = int(settings.getSettingInt('context_video',0))
 
                 if contentTypeDecider == 2:
                     contentType = 2
@@ -202,14 +202,14 @@ class contentengine(object):
 
           elif contextType == 'audio':
             if encfs:
-                contentTypeDecider =  int(settingsModule.getSettingInt('context_emusic',0))
+                contentTypeDecider =  int(settings.getSettingInt('context_emusic',0))
                 if contentTypeDecider == 1:
                     contentType = 8
                 else:
                     contentType = 10
             else:
 
-                contentTypeDecider = int(settingsModule.getSettingInt('context_music', 0))
+                contentTypeDecider = int(settings.getSettingInt('context_music', 0))
 
                 if contentTypeDecider == 1:
                     contentType = 4
@@ -221,13 +221,13 @@ class contentengine(object):
 
           elif contextType == 'image':
             if encfs:
-                contentTypeDecider =  int(settingsModule.getSettingInt('context_ephoto',0))
+                contentTypeDecider =  int(settings.getSettingInt('context_ephoto',0))
                 if contentTypeDecider == 1:
                     contentType = 8
                 else:
                     contentType = 11
             else:
-                contentTypeDecider = int(settingsModule.getSettingInt('context_photo', 0))
+                contentTypeDecider = int(settings.getSettingInt('context_photo', 0))
 
                 if contentTypeDecider == 2:
                     contentType = 7
@@ -666,7 +666,7 @@ class contentengine(object):
         #support encfs?
         encfs = settingsModule.getParameter('encfs', False)
 
-        contentType = self.getContentType(contextType,encfs)
+        contentType = self.getContentType(settingsModule,contextType,encfs)
 
 
         if KODI:
