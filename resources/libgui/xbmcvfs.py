@@ -29,7 +29,7 @@ def File(filename, type):
     return open(filename, type)
 
 def mkdir(path):
-    path = re.sub(r'//.',r'/', path)
+    #path = re.sub(r'//.',r'/', path)
 
     #try:
     os.mkdir(path)
