@@ -1,3 +1,5 @@
+- add missing delete method
+v0.1.11 (2018-03-19)
 - implement: Error in last release 0.1.10 #43
 - fix for DBM fetching of change token (moved out of buildstrm method)
 - resolve deadlock issue with scheduler updating change tracking numbers

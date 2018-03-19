@@ -41,6 +41,9 @@ def exists(path):
         return False
 
 
+def delete(path):
+    return
+
 
 
 
