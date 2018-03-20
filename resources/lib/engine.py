@@ -423,7 +423,7 @@ class contentengine(object):
                     if username is not None and username != '':
                         self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
-                    if username is None:
+                    if username is None or username == '':
                         break
                     count = count + 1
                 return None
@@ -619,7 +619,7 @@ class contentengine(object):
             #global variables
             self.PLUGIN_URL = sys.argv[0]
             self.plugin_handle = int(sys.argv[1])
-            plugin_queries = settingsModule.parse_query(sys.argv[2][1:])
+            plugin_queries = settings.parse_query(sys.argv[2][1:])
 
         else:
             self.plugin_handle = writer

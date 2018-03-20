@@ -249,7 +249,7 @@ class settings:
 
     def getSetting(self, key, default='', forceSync=False):
         try:
-            value = self.addon.getSetting(key, forceSync=forceSync)
+            value = self.addon.getSetting(key)
             if value == 'true' or value == 'True':
                 return True
             elif value == 'false' or value == 'False':
