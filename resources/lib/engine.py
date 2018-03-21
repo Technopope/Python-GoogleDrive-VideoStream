@@ -865,8 +865,6 @@ class contentengine(object):
 
             if mode == 'buildstrmscheduler' or  mode == 'buildstrm':
 
-                print "XXXX\n"
-
 
                 if KODI:
                     silent = settingsModule.getParameter('silent', settingsModule.getSetting('strm_silent',0))
