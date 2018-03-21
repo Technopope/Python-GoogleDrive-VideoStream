@@ -2361,14 +2361,14 @@ class contentengine(object):
                                         thumbnailImage=package.file.thumbnail, path=mediaURL.url+'|' + service.getHeadersEncoded())
                         item.setPath(mediaURL.url+'|' + service.getHeadersEncoded())
                         xbmcplugin.setResolvedUrl(self.plugin_handle, True, item, encrypted=True)
-                    elif KODI and service is not None and service.settingsModule.streamer:
+                    elif KODI and service is not None and service.settings.streamer:
                         # test streamer
                         from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                         from resources.lib import streamer
                         from SocketServer import ThreadingMixIn
                         import threading
                         try:
-                            server = streamer.MyHTTPServer(('',  service.settingsModule.streamPort), streamer.myStreamer)
+                            server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
                             server.setAccount(service, '')
                             #if we make it here, streamer was not already running as a service, so we need to abort and playback using normal method, otherwise we will lock
                             useStreamer = True
@@ -2377,7 +2377,7 @@ class contentengine(object):
 
                         if useStreamer:
 
-                            url = 'http://localhost:' + str(service.settingsModule.streamPort) + '/crypto_playurl'
+                            url = 'http://localhost:' + str(service.settings.streamPort) + '/crypto_playurl'
                             req = urllib2.Request(url, 'instance='+str(service.instanceName)+'&url=' + mediaURL.url)
                             try:
                                 response = urllib2.urlopen(req)
@@ -2387,9 +2387,9 @@ class contentengine(object):
 
 
                             item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                            thumbnailImage=package.file.thumbnail, path='http://localhost:' + str(service.settingsModule.streamPort) + '/play')
+                                            thumbnailImage=package.file.thumbnail, path='http://localhost:' + str(service.settings.streamPort) + '/play')
 
-                            item.setPath('http://localhost:' + str(service.settingsModule.streamPort) + '/play')
+                            item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
                             xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
 
 
@@ -2981,14 +2981,14 @@ class contentengine(object):
                             # use streamer if defined
                             # streamer
                             useStreamer = False
-                            if KODI and service is not None and service.settingsModule.streamer:
+                            if KODI and service is not None and service.settings.streamer:
                                 # test streamer
                                 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                                 from resources.lib import streamer
                                 from SocketServer import ThreadingMixIn
                                 import threading
                                 try:
-                                    server = streamer.MyHTTPServer(('',  service.settingsModule.streamPort), streamer.myStreamer)
+                                    server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
                                     server.setAccount(service, '')
                                     #if we make it here, streamer was not already running as a service, so we need to abort and playback using normal method, otherwise we will lock
                                     useStreamer = True
@@ -2996,10 +2996,10 @@ class contentengine(object):
                                 except:
                                     useStreamer = True
 
-                            if KODI and useStreamer and service is not None and service.settingsModule.streamer:
+                            if KODI and useStreamer and service is not None and service.settings.streamer:
 
 
-                                url = 'http://localhost:' + str(service.settingsModule.streamPort) + '/playurl'
+                                url = 'http://localhost:' + str(service.settings.streamPort) + '/playurl'
                                 req = urllib2.Request(url, 'instance='+str(service.instanceName)+'&url=' + mediaURL.url)
 
                                 try:
@@ -3010,7 +3010,7 @@ class contentengine(object):
                                     xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
 
-                                item.setPath('http://localhost:' + str(service.settingsModule.streamPort) + '/play')
+                                item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
                                 xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
 
 
@@ -3035,7 +3035,6 @@ class contentengine(object):
                         elif float(package.file.resume) > 0:
                             player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
                         else:
-                            print "ITEM = " + item.path + "\n"
                             player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
                     else:
                             item.setPath(mediaURL.url)
