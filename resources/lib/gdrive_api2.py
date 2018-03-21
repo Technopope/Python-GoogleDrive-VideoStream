@@ -104,6 +104,7 @@ class gdrive(cloudservice):
 
         try:
             username = self.getInstanceSetting('username')
+            #username = self.getInstanceSetting(str(instanceName) + '_username')
         except:
             username = ''
         self.authorization = authorization.authorization(username)

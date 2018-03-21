@@ -17,6 +17,7 @@
 
 '''
 import anydbm
+import os
 
 class settingsdbm:
     # Settings
@@ -28,20 +29,32 @@ class settingsdbm:
         self.dbmfile = dbmfile
         #setup encryption password
 
-        self.dbm = anydbm.open(dbmfile,'r')
+        try:
+            self.dbm = anydbm.open(dbmfile,'r')
+        except:
+            self.dbm = anydbm.open(dbmfile,'c')
+
         self.isReadOnly = True
 
 
     def reset(self):
         self.dbm.close()
-        self.dbm = anydbm.open(self.dbmfile,'r')
+        try:
+            self.dbm = anydbm.open(self.dbmfile,'r')
+        except:
+            self.dbm = anydbm.open(self.dbmfile,'c')
+
         self.isReadOnly = True
 
 
     def getSetting(self, key, default=None, forceSync=False):
         if not self.isReadOnly:
             self.dbm.close()
-            self.dbm = anydbm.open(self.dbmfile,'r')
+            try:
+                self.dbm = anydbm.open(self.dbmfile,'r')
+            except:
+                self.dbm = anydbm.open(self.dbmfile,'c')
+
             self.isReadOnly = True
 
         if forceSync:
@@ -56,7 +69,11 @@ class settingsdbm:
     def getBoolSetting(self, key, default=None, forceSync=False):
         if not self.isReadOnly:
             self.dbm.close()
-            self.dbm = anydbm.open(self.dbmfile,'r')
+            try:
+                self.dbm = anydbm.open(self.dbmfile,'r')
+            except:
+                self.dbm = anydbm.open(self.dbmfile,'c')
+
             self.isReadOnly = True
 
         if forceSync:
@@ -77,7 +94,11 @@ class settingsdbm:
         if not self.isReadOnly:
             self.dbm.sync()
             self.dbm.close()
-            self.dbm = anydbm.open(self.dbmfile,'r')
+            try:
+                self.dbm = anydbm.open(self.dbmfile,'r')
+            except:
+                self.dbm = anydbm.open(self.dbmfile,'c')
+
             self.isReadOnly = True
 
         if forceSync:
@@ -93,7 +114,11 @@ class settingsdbm:
     def setSetting(self, key, value, forceSync=False):
         if self.isReadOnly:
             self.dbm.close()
-            self.dbm = anydbm.open(self.dbmfile,'w')
+            try:
+                self.dbm = anydbm.open(self.dbmfile,'w')
+            except:
+                self.dbm = anydbm.open(self.dbmfile,'c')
+
             self.isReadOnly = False
 
         if forceSync:
