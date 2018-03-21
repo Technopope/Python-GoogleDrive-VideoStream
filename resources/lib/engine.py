@@ -748,7 +748,6 @@ class contentengine(object):
 
 
 
-
             hostTemp = settingsModule.getParameter('host', '')
             if hostTemp != '':
                 host = hostTemp
@@ -827,7 +826,6 @@ class contentengine(object):
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30223), 'instance', list=instances)
 
                     xbmcgui.Dialog().endForm()
-                    return
 
             if mode == 'new_task' and instanceName != '' and instanceName is not None and (frequency is None or folderID is None or type is None):
                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
@@ -864,238 +862,242 @@ class contentengine(object):
 
                     xbmcgui.Dialog().endForm()
 
-                    return
 
-            if KODI:
-                silent = settingsModule.getParameter('silent', settingsModule.getSetting('strm_silent',0))
-                if silent == '':
-                    silent = 0
+            if mode == 'buildstrmscheduler' or  mode == 'buildstrm':
 
-                try:
-                    path = settingsModule.getSetting('strm_path')
-                except:
-                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                    addon.setSetting('strm_path', path)
-
-                if path == '' or path is None:
-                    path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                    addon.setSetting('strm_path', path)
-
-                if path != '' and path is not None:
-                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
-
-            # path not defined, prompt
-            elif not KODI:
-                try:
-                    path = settingsModule.getParameter('strm_path', '')
-                    path = path.replace('%2F','/')
-                except:
-                    path = None
-
-                if path is None or path == '':
-
-                    if frequency is not None and type is not None:
-                        xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&frequency='+str(frequency)+'&type='+str(type)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
-                    else:
-                        xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
-                    xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', settingsModule.getSetting('strm_path',''))
-                    xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog')
-                    xbmcgui.Dialog().booleanSelector('append resolution to STRM filename?','resolution')
-                    xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
-                    xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
-                    xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port', default=host)
-                    xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
-
-                    xbmcgui.Dialog().endForm()
-                elif mode == 'buildstrmscheduler' and frequency is not None and type is not None:
-                    tasks = scheduler.scheduler(settings=addon)
-                    cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&changes='+str(changeTracking)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
-                    tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
+                print "XXXX\n"
 
 
+                if KODI:
+                    silent = settingsModule.getParameter('silent', settingsModule.getSetting('strm_silent',0))
+                    if silent == '':
+                        silent = 0
 
-            if mode == 'buildstrm' and path != '' and path is not None and (not KODI or returnPrompt):
-
-                if KODI and silent != 2:
                     try:
-                        pDialog = xbmcgui.DialogProgressBG()
-                        pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
+                        path = settingsModule.getSetting('strm_path')
                     except:
-                        pDialog = None
-                else:
-                    pDialog = None
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
 
-                url = settingsModule.getParameter('streamurl')
-                url = re.sub('---', '&', url)
-                title = settingsModule.getParameter('title')
-                type = int(settingsModule.getParameterInt('type', 0))
+                    if path == '' or path is None:
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
 
-                if url != '':
+                    if path != '' and path is not None:
+                        returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
-                        filename = path + '/' + title+'.strm'
-                        strmFile = xbmcvfs.File(filename, "w")
+                # path not defined, prompt
+                elif not KODI:
+                    try:
+                        path = settingsModule.getParameter('strm_path', '')
+                        path = path.replace('%2F','/')
+                    except:
+                        path = None
 
-                        if not KODI:
-                            if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+                    if path is None or path == '':
 
-                                if params and plugin_handle.server.hide:
-                                    base = str(params.group(1))
-                                    extended = str(params.group(1))
-                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
-                                else:
-                                    url = str(url) + '&kv=' +plugin_handle.server.encrypt.encryptString(url)
-
-
-                        strmFile.write(host + '/' + url+'\n')
-                        strmFile.close()
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
-
-
-                else:
-
-
-
-                    if folderID != '':
-
-                        count = 1
-                        loop = True
-                        while loop:
-                            instanceName = constants.PLUGIN_NAME+str(count)
-                            username = settingsModule.getSetting(instanceName+'_username', None)
-                            if username == invokedUsername:
-
-                                #let's log in
-                                #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
-                                    #service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
-                                #else:
-                                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
-
-                                loop = False
-
-                            if username is None:
-                                try:
-                                    service
-                                except NameError:
-                                    #fallback on first defined account
-                                    #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
-                                    #    service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
-                                    #else:
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settingsModule,DBM=DBM)
-                                break
-                            count = count + 1
-
-                        # encfs -- extract filename
-                        if encfs:
-                            extrapulatedFolderName = re.compile('([^/]+)/$')
-
-                            titleDecrypted = extrapulatedFolderName.match(dencryptedPath)
-
-                            if titleDecrypted is not None:
-                                title = titleDecrypted.group(1)
-
-
-                        #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '', forceSync=True)
-                        xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
-
-                        count = 0
-                        newcount=0
-                        if constants.CONST.spreadsheet and service.cloudResume == '2':
-                            spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
-                            if catalog:
-                                (newcount, changeToken) = service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host, LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
-                            else:
-                                (newcount,changeToken) = service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
-                            spreadsheetFile.close()
+                        if frequency is not None and type is not None:
+                            xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&frequency='+str(frequency)+'&type='+str(type)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                         else:
+                            xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                        xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', settingsModule.getSetting('strm_path',''))
+                        xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog')
+                        xbmcgui.Dialog().booleanSelector('append resolution to STRM filename?','resolution')
+                        xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
+                        xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
+                        xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port', default=host)
+                        xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
 
-                            if catalog:
-                                (newcount,changeToken) = service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
-                            else:
-                                (newcount,changeToken) = service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
-                        count += newcount
-                        #count
+                        xbmcgui.Dialog().endForm()
+                    elif mode == 'buildstrmscheduler' and frequency is not None and type is not None:
+                        tasks = scheduler.scheduler(settings=addon)
+                        cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&changes='+str(changeTracking)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                        tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
 
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created '+str(count)+' STRM file(s). (changetoken = '+ str(changeToken) + ')')
 
-                    elif filename != '':
-                                    if encfs:
-                                        values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
-                                        # encfs -- extract filename
-                                        extrapulatedFileName = re.compile('.*?/([^/]+)$')
 
-                                        titleDecrypted = extrapulatedFileName.match(dencryptedPath)
+                if mode == 'buildstrm' and path != '' and path is not None and (not KODI or returnPrompt):
 
-                                        if titleDecrypted is not None:
-                                            title = titleDecrypted.group(1)
+                    if KODI and silent != 2:
+                        try:
+                            pDialog = xbmcgui.DialogProgressBG()
+                            pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
+                        except:
+                            pDialog = None
+                    else:
+                        pDialog = None
 
+                    url = settingsModule.getParameter('streamurl')
+                    url = re.sub('---', '&', url)
+                    title = settingsModule.getParameter('title')
+                    type = int(settingsModule.getParameterInt('type', 0))
+
+                    if url != '':
+
+                            filename = path + '/' + title+'.strm'
+                            strmFile = xbmcvfs.File(filename, "w")
+
+                            if not KODI:
+                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                    params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+
+                                    if params and plugin_handle.server.hide:
+                                        base = str(params.group(1))
+                                        extended = str(params.group(1))
+                                        url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
                                     else:
-                                        values = {'title': title, 'filename': filename, 'username': invokedUsername}
-                                    if type == 1:
-                                        url = self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
-                                    else:
-                                        url = self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
+                                        url = str(url) + '&kv=' +plugin_handle.server.encrypt.encryptString(url)
 
-                                    filename = path + '/' + title+'.strm'
-                                    strmFile = xbmcvfs.File(filename, "w")
-                                    strmFile.write(host + '/' + url + '\n')
-                                    strmFile.close()
-                                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
+
+                            strmFile.write(host + '/' + url+'\n')
+                            strmFile.close()
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
+
 
                     else:
 
-                        if instanceName != '':
-                            #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
-                            xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
 
-                            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
-                            service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeToken=changeToken)
 
-                        else:
+                        if folderID != '':
+
                             count = 1
-                            while True:
+                            loop = True
+                            while loop:
                                 instanceName = constants.PLUGIN_NAME+str(count)
                                 username = settingsModule.getSetting(instanceName+'_username', None)
-                                if username != '' and username is not None and username == invokedUsername:
+                                if username == invokedUsername:
+
+                                    #let's log in
                                     #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
-                                    #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                        #service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
                                     #else:
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
 
-                                    #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
-                                    xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
+                                    loop = False
 
-                                    service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, host=host,LOGGING=LOGGING, changeToken=changeToken)
-                                    break
                                 if username is None:
-                                    #fallback on first defined account
                                     try:
                                         service
                                     except NameError:
                                         #fallback on first defined account
                                         #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
-                                        #        service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings)
+                                        #    service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                         #else:
                                         service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settingsModule,DBM=DBM)
                                     break
                                 count = count + 1
 
-                if KODI and silent != 2:
-                    try:
-                        pDialog.update(100)
-                        pDialog.close()
-                    except:
-                        pDialog = None
-                if KODI and silent == 0:
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
-            xbmcplugin.endOfDirectory(self.plugin_handle)
+                            # encfs -- extract filename
+                            if encfs:
+                                extrapulatedFolderName = re.compile('([^/]+)/$')
+
+                                titleDecrypted = extrapulatedFolderName.match(dencryptedPath)
+
+                                if titleDecrypted is not None:
+                                    title = titleDecrypted.group(1)
 
 
-            if mode == 'buildstrm' and logfile is not None and logfile != '':
-                LOGGING.close()
+                            #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '', forceSync=True)
+                            xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
 
-            return
+                            count = 0
+                            newcount=0
+                            if constants.CONST.spreadsheet and service.cloudResume == '2':
+                                spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
+                                if catalog:
+                                    (newcount, changeToken) = service.buildSTRM(path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host, LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
+                                else:
+                                    (newcount,changeToken) = service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
+                                spreadsheetFile.close()
+                            else:
+
+                                if catalog:
+                                    (newcount,changeToken) = service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
+                                else:
+                                    (newcount,changeToken) = service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken)
+                            count += newcount
+                            #count
+
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created '+str(count)+' STRM file(s). (changetoken = '+ str(changeToken) + ')')
+
+                        elif filename != '':
+                                        if encfs:
+                                            values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
+                                            # encfs -- extract filename
+                                            extrapulatedFileName = re.compile('.*?/([^/]+)$')
+
+                                            titleDecrypted = extrapulatedFileName.match(dencryptedPath)
+
+                                            if titleDecrypted is not None:
+                                                title = titleDecrypted.group(1)
+
+                                        else:
+                                            values = {'title': title, 'filename': filename, 'username': invokedUsername}
+                                        if type == 1:
+                                            url = self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
+                                        else:
+                                            url = self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
+
+                                        filename = path + '/' + title+'.strm'
+                                        strmFile = xbmcvfs.File(filename, "w")
+                                        strmFile.write(host + '/' + url + '\n')
+                                        strmFile.close()
+                                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
+
+                        else:
+
+                            if instanceName != '':
+                                #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
+                                xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
+
+                                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
+                                service.buildSTRM(path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, force=force, host=host,LOGGING=LOGGING, changeToken=changeToken)
+
+                            else:
+                                count = 1
+                                while True:
+                                    instanceName = constants.PLUGIN_NAME+str(count)
+                                    username = settingsModule.getSetting(instanceName+'_username', None)
+                                    if username != '' and username is not None and username == invokedUsername:
+                                        #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
+                                        #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                        #else:
+                                        service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
+
+                                        #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
+                                        xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
+
+                                        service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, host=host,LOGGING=LOGGING, changeToken=changeToken)
+                                        break
+                                    if username is None:
+                                        #fallback on first defined account
+                                        try:
+                                            service
+                                        except NameError:
+                                            #fallback on first defined account
+                                            #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
+                                            #        service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings)
+                                            #else:
+                                            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settingsModule,DBM=DBM)
+                                        break
+                                    count = count + 1
+
+                    if KODI and silent != 2:
+                        try:
+                            pDialog.update(100)
+                            pDialog.close()
+                        except:
+                            pDialog = None
+                    if KODI and silent == 0:
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
+                xbmcplugin.endOfDirectory(self.plugin_handle)
+
+
+                if mode == 'buildstrm' and logfile is not None and logfile != '':
+                    LOGGING.close()
+
+                return
 
 
         elif mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll' or mode == 'scheduler' or mode == 'enroll_rw':
