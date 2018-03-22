@@ -118,7 +118,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken=''):
+    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken=''):
 
         if host is None:
             PLUGIN_URL = self.PLUGIN_URL
@@ -177,9 +177,9 @@ class cloudservice(object):
                     if not changeTracking and item.file is None:
                         newcount=0
                         if catalog:
-                            (newcount,nothing) = self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host)
                         else:
-                            (newcount,nothing) = self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host)
                         count += newcount
                     elif item.file is not None:
 
@@ -214,6 +214,17 @@ class cloudservice(object):
                         #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
                         if (not xbmcvfs.exists(strmFileName) or force) and not catalog:
                             strmFile = xbmcvfs.File(strmFileName, "w")
+
+                            if not KODI:
+                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                    params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+
+                                    if params and plugin_handle.server.hide:
+                                        base = str(params.group(1))
+                                        extended = str(params.group(1))
+                                        url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                    else:
+                                        url = str(url)
 
                             strmFile.write(url+'\n')
                             strmFile.close()
@@ -280,6 +291,17 @@ class cloudservice(object):
                                     xbmcvfs.delete(filename)
                                 elif not item.file.deleted and (not xbmcvfs.exists(strmFileName) or force):
                                     strmFile = xbmcvfs.File(strmFileName, "w")
+
+                                    if not KODI:
+                                        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+
+                                            if params and plugin_handle.server.hide:
+                                                base = str(params.group(1))
+                                                extended = str(params.group(1))
+                                                url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                            else:
+                                                url = str(url)
                                     strmFile.write(url+'\n')
                                     strmFile.close()
                                     count += 1
@@ -350,7 +372,7 @@ class cloudservice(object):
                         dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
 
                         #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                        self.buildSTRM(path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host)
+                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host)
 
                     elif index in fileListINodes.keys():
                         xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
@@ -376,6 +398,17 @@ class cloudservice(object):
                             if (not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm') or force):
                                 filename = str(path) + '/' + str(title)+'.strm'
                                 strmFile = xbmcvfs.File(filename, "w")
+
+                                if not KODI:
+                                    if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+
+                                        if params and plugin_handle.server.hide:
+                                            base = str(params.group(1))
+                                            extended = str(params.group(1))
+                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                        else:
+                                            url = str(url)
 
                                 strmFile.write(url+'\n')
                                 strmFile.close()
@@ -411,6 +444,17 @@ class cloudservice(object):
                             if (not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm') or force):
                                 filename = str(path) + '/' + str(title)+'.strm'
                                 strmFile = xbmcvfs.File(filename, "w")
+
+                                if not KODI:
+                                    if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+
+                                        if params and plugin_handle.server.hide:
+                                            base = str(params.group(1))
+                                            extended = str(params.group(1))
+                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                        else:
+                                            url = str(url)
 
                                 strmFile.write(url+'\n')
                                 strmFile.close()

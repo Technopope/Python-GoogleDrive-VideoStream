@@ -87,7 +87,11 @@ def job_scheduler(server, sleepTimer):
                         cmd = re.sub('buildstrmscheduler', 'buildstrm', cmd)
                         cmd = re.sub(' ', '%20', cmd)
                         changeToken = dbm.getSetting(str(instanceName) +'_'+str(folderID)+'_changetoken', '')
-                        cmd = cmd + '&change_token=' + str(changeToken)
+                        # first run, run full don't do change tracking
+                        if not (type == schedule.SYNC_BOTH and (runtime is None or runtime == 0)):
+                            cmd = cmd + '&changes=True'
+                        if changeToken != '' and changeToken != '0':
+                            cmd = cmd + '&change_token=' + str(changeToken)
 
                         if cmd.startswith('http'):
                             try:
