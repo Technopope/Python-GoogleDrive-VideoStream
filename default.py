@@ -32,7 +32,7 @@ import re
 from resources.libgui import settingsdbm
 from resources.lib import scheduler
 
-from multiprocessing import Process
+#from multiprocessing import Process
 
 
 def job_scheduler(server, sleepTimer):
@@ -154,14 +154,17 @@ if __name__ == '__main__':
 
 
 
-    p = Process(target=job_scheduler, args=(server, 60))
-    p.start()
+    #p = Process(target=job_scheduler, args=(server, 60))
+    #p.start()
     #p.join()
-    #pid = os.fork()
-    #if pid == 0:
+    try:
+        pid = os.fork()
 
+        if pid == 0:
+            job_scheduler(server,60)
+    except:
+        pass
 
-    #else:
     while server.ready:
         server.handle_request()
     server.socket.close()
