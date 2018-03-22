@@ -797,7 +797,7 @@ class contentengine(object):
             if instanceName == '':
                 instanceName= None
 
-            if (instanceName is None):
+            if mode == 'new_task' and instanceName is None:
                 if not KODI:
                     xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&content_type='+contextType)
 
@@ -809,6 +809,7 @@ class contentengine(object):
                     instanceName = constants.PLUGIN_NAME+str(count)
                     username = settingsModule.getSetting(instanceName+'_username', None)
                     if username is None or username == '':
+                        instanceName = ''
                         break
                     if username != '':
                         if KODI:

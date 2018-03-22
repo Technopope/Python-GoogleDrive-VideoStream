@@ -156,7 +156,9 @@ class cloudservice(object):
                 (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(folderID,contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
                 xbmc.log("changeToken " + str(changeToken) + "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken), xbmc.LOGDEBUG)
 
-            if changeTracking and largestChangeId == changeToken:
+            # nothing to process (no new changes)
+            # changeToken is blank, change tracking is enabled, so this is the first time run -- we want to fetch the largest change ID but not cycle through the existing change records
+            if changeTracking and (largestChangeId == changeToken or changeToken == ''):
                 isContinue = False
                 break
             if changeTracking:
