@@ -205,7 +205,7 @@ class cloudservice(object):
                             pDialog.update(message=title)
 
                         strmFileName = str(path) + '/' + str(title)
-                        if resolution and item.file is not None and item.file.resolution is not None:
+                        if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
                             strmFileName += ' - ' + str(item.file.resolution[0]) + 'p.strm'
                             videoResolution = str(item.file.resolution[0])
                         else:
@@ -281,7 +281,7 @@ class cloudservice(object):
 
                             if pathLib != '':
                                 strmFileName = str(pathLib) + '/' +str(filename)
-                                if resolution and item.file is not None and item.file.resolution is not None:
+                                if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
                                     strmFileName += ' - ' + str(item.file.resolution[0]) + 'p.strm'
                                     videoResolution = str(item.file.resolution[0])
                                 else:
