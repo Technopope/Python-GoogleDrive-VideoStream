@@ -751,6 +751,11 @@ class contentengine(object):
             hostTemp = settingsModule.getParameter('host', '')
             if hostTemp != '':
                 host = hostTemp
+
+            if not bool(re.match('^http', host, re.I)):
+                host = 'http://' + str(host)
+
+
             force = settingsModule.getParameter('force', False)
 
             logfile = settingsModule.getParameter('logfile', None)

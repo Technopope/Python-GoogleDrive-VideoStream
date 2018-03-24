@@ -93,7 +93,7 @@ def job_scheduler(server, sleepTimer):
                         if changeToken != '' and changeToken != '0':
                             cmd = cmd + '&change_token=' + str(changeToken)
 
-                        if cmd.startswith('http'):
+                        if bool(re.match('^http', cmd, re.I)) :
                             try:
                                 contents = urllib2.urlopen(cmd).read()
                             except:
@@ -154,20 +154,22 @@ if __name__ == '__main__':
 
 
 
-    #p = Process(target=job_scheduler, args=(server, 60))
-    #p.start()
     #p.join()
+    pid =1
     try:
+        #p = Process(target=job_scheduler, args=(server, 60))
+        #p.start()
         pid = os.fork()
-
-        if pid == 0:
-            job_scheduler(server,60)
     except:
         pass
+    if pid == 0:
+        job_scheduler(server,60)
+    else:
+        while server.ready:
+            server.handle_request()
+        server.socket.close()
 
-    while server.ready:
-        server.handle_request()
-    server.socket.close()
+
 
 #except: pass
 

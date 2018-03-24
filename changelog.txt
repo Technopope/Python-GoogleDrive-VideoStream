@@ -1,3 +1,5 @@
+- force http to be generated in STRM files if absent in host variable
+- make a change to forking logic
 v0.1.12 (2018-03-21)
 - change emby strm file creation from [#p].strm to - #p.strm
 - ensure all team drives are fetched (fix pagination)
