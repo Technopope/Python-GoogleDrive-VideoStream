@@ -118,7 +118,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True):
+    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append=''):
 
         if host is None:
             PLUGIN_URL = self.PLUGIN_URL
@@ -177,9 +177,9 @@ class cloudservice(object):
                     if not changeTracking and item.file is None:
                         newcount=0
                         if catalog:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode, append=append)
                         else:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append)
                         count += newcount
                     elif item.file is not None:
 
@@ -207,9 +207,9 @@ class cloudservice(object):
                         strmFileName = str(path) + '/' + str(title)
                         skip = False
                         if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
-                            strmFileName += ' - ' + str(item.file.resolution[0]) + 'p.strm'
+                            strmFileName += ' - ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
                             videoResolution = str(item.file.resolution[0])
-                        elif skip0Res:
+                        elif resolution and skip0Res:
                             skip = True
 
                         else:
@@ -287,9 +287,9 @@ class cloudservice(object):
                             if pathLib != '':
                                 strmFileName = str(pathLib) + '/' +str(filename)
                                 if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
-                                    strmFileName += ' - ' + str(item.file.resolution[0]) + 'p.strm'
+                                    strmFileName += ' - ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
                                     videoResolution = str(item.file.resolution[0])
-                                elif skip0Res:
+                                elif resolution and skip0Res:
                                     skip = True
                                 else:
                                     strmFileName += '.strm'
@@ -379,7 +379,7 @@ class cloudservice(object):
                         dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
 
                         #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode)
+                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode,  append=append)
 
                     elif index in fileListINodes.keys():
                         xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
