@@ -118,7 +118,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken=''):
+    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True):
 
         if host is None:
             PLUGIN_URL = self.PLUGIN_URL
@@ -177,9 +177,9 @@ class cloudservice(object):
                     if not changeTracking and item.file is None:
                         newcount=0
                         if catalog:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode)
                         else:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode)
                         count += newcount
                     elif item.file is not None:
 
@@ -205,14 +205,18 @@ class cloudservice(object):
                             pDialog.update(message=title)
 
                         strmFileName = str(path) + '/' + str(title)
+                        skip = False
                         if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
                             strmFileName += ' - ' + str(item.file.resolution[0]) + 'p.strm'
                             videoResolution = str(item.file.resolution[0])
+                        elif skip0Res:
+                            skip = True
+
                         else:
                             strmFileName += '.strm'
 
                         #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
-                        if (not xbmcvfs.exists(strmFileName) or force) and not catalog:
+                        if original and not skip and (not xbmcvfs.exists(strmFileName) or force) and not catalog:
                             strmFile = xbmcvfs.File(strmFileName, "w")
 
                             if not KODI:
@@ -279,17 +283,20 @@ class cloudservice(object):
                                 else:
                                     pathLib = videoPath
 
+                            skip = False
                             if pathLib != '':
                                 strmFileName = str(pathLib) + '/' +str(filename)
                                 if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
                                     strmFileName += ' - ' + str(item.file.resolution[0]) + 'p.strm'
                                     videoResolution = str(item.file.resolution[0])
+                                elif skip0Res:
+                                    skip = True
                                 else:
                                     strmFileName += '.strm'
 
                                 if item.file.deleted and xbmcvfs.exists(strmFileName):
                                     xbmcvfs.delete(filename)
-                                elif not item.file.deleted and (not xbmcvfs.exists(strmFileName) or force):
+                                elif original and not skip and not item.file.deleted and (not xbmcvfs.exists(strmFileName) or force):
                                     strmFile = xbmcvfs.File(strmFileName, "w")
 
                                     if not KODI:
@@ -372,7 +379,7 @@ class cloudservice(object):
                         dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
 
                         #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host)
+                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode)
 
                     elif index in fileListINodes.keys():
                         xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)

@@ -1,3 +1,4 @@
+- building STRM - add transcode, original, skip 0p flags, add resolution append message
 - fix check fo 0p resolution
 - force http to be generated in STRM files if absent in host variable
 - make a change to forking logic
