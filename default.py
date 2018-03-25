@@ -88,7 +88,7 @@ def job_scheduler(server, sleepTimer):
                         cmd = re.sub(' ', '%20', cmd)
                         changeToken = dbm.getSetting(str(instanceName) +'_'+str(folderID)+'_changetoken', '')
                         # first run, run full don't do change tracking
-                        if not (type == schedule.SYNC_BOTH and (runtime is None or runtime == 0)):
+                        if not  type == schedule.SYNC_INITIAL_ONLY and not (type == schedule.SYNC_BOTH and (runtime is None or runtime == 0)):
                             cmd = cmd + '&changes=True'
                         if type != schedule.SYNC_INITIAL_ONLY and changeToken != '' and changeToken != '0':
                             cmd = cmd + '&change_token=' + str(changeToken)
