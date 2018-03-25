@@ -897,12 +897,12 @@ class contentengine(object):
                         returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
                 # path not defined, prompt
-                elif not KODI:
-                    try:
-                        path = settingsModule.getParameter('strm_path', '')
-                        path = path.replace('%2F','/')
-                    except:
-                        path = None
+                elif mode == 'new_task' and not KODI:
+#                    try:
+#                        path = settingsModule.getParameter('strm_path', '')
+#                        path = path.replace('%2F','/')
+#                    except:
+#                        path = None
 
                     if path is None or path == '':
 
@@ -923,11 +923,11 @@ class contentengine(object):
                             xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
 
                         xbmcgui.Dialog().endForm()
-                    elif mode == 'buildstrmscheduler' and frequency is not None and type is not None:
-                        tasks = scheduler.scheduler(settings=addon)
-                        cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&append='+str(append)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&original='+str(original) + '&transcode='+str(transcode)+'&skip=' + str(skip0Res)  +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
-                        tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
+                elif mode == 'buildstrmscheduler' and frequency is not None and type is not None:
+                    tasks = scheduler.scheduler(settings=addon)
+                    cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&append='+str(append)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&original='+str(original) + '&transcode='+str(transcode)+'&skip=' + str(skip0Res)  +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
 
 
 
