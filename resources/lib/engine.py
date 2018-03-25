@@ -897,14 +897,14 @@ class contentengine(object):
                         returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
                 # path not defined, prompt
-                elif mode == 'new_task' and not KODI:
+                elif not KODI:
 #                    try:
 #                        path = settingsModule.getParameter('strm_path', '')
 #                        path = path.replace('%2F','/')
 #                    except:
 #                        path = None
 
-                    if path is None or path == '':
+                    #if path is None or path == '':
 
                         if frequency is not None and type is not None:
                             xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&frequency='+str(frequency)+'&type='+str(type)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
