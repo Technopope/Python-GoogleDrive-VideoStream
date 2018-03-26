@@ -206,9 +206,19 @@ class cloudservice(object):
 
                         strmFileName = str(path) + '/' + str(title)
                         skip = False
+                        extraFiles = []
                         if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+                            extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&pquality=2'])
+
+                            if int(item.file.resolution[0]) > 480:
+                                extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&pquality=1'])
+                            if int(item.file.resolution[0]) > 720:
+                                extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&pquality=0'])
+
+
                             strmFileName += ' - ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
                             videoResolution = str(item.file.resolution[0])
+
                         elif resolution and skip0Res:
                             skip = True
 
@@ -216,24 +226,43 @@ class cloudservice(object):
                             strmFileName += '.strm'
 
                         #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
-                        if original and not skip and (not xbmcvfs.exists(strmFileName) or force) and not catalog:
-                            strmFile = xbmcvfs.File(strmFileName, "w")
+                        if not skip and (not xbmcvfs.exists(strmFileName) or force) and not catalog:
 
-                            if not KODI:
-                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                    params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+                            if original:
+                                strmFile = xbmcvfs.File(strmFileName, "w")
 
-                                    if params and plugin_handle.server.hide:
-                                        base = str(params.group(1))
-                                        extended = str(params.group(1))
-                                        url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
-                                    else:
-                                        url = str(url)
+                                if not KODI:
+                                    if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
-                            strmFile.write(url+'\n')
-                            strmFile.close()
+                                        if params and plugin_handle.server.hide:
+                                            base = str(params.group(1))
+                                            extended = str(params.group(1))
+                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                        else:
+                                            url = str(url)
+
+                                strmFile.write(url+'\n')
+                                strmFile.close()
+
+                            if transcode:
+                                for x in extraFiles:
+                                    strmFile = xbmcvfs.File(x[0], "w")
+                                    tmpURL = x[1]
+                                    if not KODI:
+                                        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+
+                                            if params and plugin_handle.server.hide:
+                                                base = str(params.group(1))
+                                                extended = str(params.group(1))
+                                                tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                            else:
+                                                tmpURL = str(tmpURL)
+                                    strmFile.write(tmpURL+'\n')
+                                    strmFile.close()
                             count += 1
-                        else:
+                        elif not skip and (not xbmcvfs.exists(strmFileName) or force) and catalog:
                             episode = ''
                             # nekwebdev contribution
                             pathLib = ''
@@ -288,6 +317,7 @@ class cloudservice(object):
                                 strmFileName = str(pathLib) + '/' +str(filename)
                                 extraFiles = []
                                 if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+
                                     extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&pquality=2'])
 
                                     if int(item.file.resolution[0]) > 480:
@@ -307,36 +337,39 @@ class cloudservice(object):
                                 if item.file.deleted and xbmcvfs.exists(strmFileName):
                                     xbmcvfs.delete(filename)
                                 elif original and not skip and not item.file.deleted and (not xbmcvfs.exists(strmFileName) or force):
-                                    strmFile = xbmcvfs.File(strmFileName, "w")
 
-                                    if not KODI:
-                                        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+                                    if original:
+                                        strmFile = xbmcvfs.File(strmFileName, "w")
 
-                                            if params and plugin_handle.server.hide:
-                                                base = str(params.group(1))
-                                                extended = str(params.group(1))
-                                                url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
-                                            else:
-                                                url = str(url)
-                                    strmFile.write(url+'\n')
-                                    strmFile.close()
-
-                                    for x in extraFiles:
-                                        strmFile = xbmcvfs.File(x[0], "w")
-                                        tmpURL = x[1]
                                         if not KODI:
                                             if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+                                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
                                                 if params and plugin_handle.server.hide:
                                                     base = str(params.group(1))
                                                     extended = str(params.group(1))
-                                                    tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
                                                 else:
-                                                    tmpURL = str(tmpURL)
-                                        strmFile.write(tmpURL+'\n')
+                                                    url = str(url)
+                                        strmFile.write(url+'\n')
                                         strmFile.close()
+
+                                    if transcode:
+                                        for x in extraFiles:
+                                            strmFile = xbmcvfs.File(x[0], "w")
+                                            tmpURL = x[1]
+                                            if not KODI:
+                                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                                    params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+
+                                                    if params and plugin_handle.server.hide:
+                                                        base = str(params.group(1))
+                                                        extended = str(params.group(1))
+                                                        tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                    else:
+                                                        tmpURL = str(tmpURL)
+                                            strmFile.write(tmpURL+'\n')
+                                            strmFile.close()
 
                                     count += 1
 

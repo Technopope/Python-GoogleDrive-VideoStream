@@ -1,3 +1,4 @@
+- fixes for building STRM in non-catalog mode
 v0.1.14 (2018-03-25)
 - building STRM - enable creation of google transcode STRM
 - building STRM - add transcode, original, skip 0p flags, add resolution append message
