@@ -286,9 +286,19 @@ class cloudservice(object):
                             skip = False
                             if pathLib != '':
                                 strmFileName = str(pathLib) + '/' +str(filename)
+                                extraFiles = []
                                 if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+                                    extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&pquality=2'])
+
+                                    if int(item.file.resolution[0]) > 480:
+                                        extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&pquality=1'])
+                                    if int(item.file.resolution[0]) > 720:
+                                        extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&pquality=0'])
+
+
                                     strmFileName += ' - ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
                                     videoResolution = str(item.file.resolution[0])
+
                                 elif resolution and skip0Res:
                                     skip = True
                                 else:
@@ -311,6 +321,23 @@ class cloudservice(object):
                                                 url = str(url)
                                     strmFile.write(url+'\n')
                                     strmFile.close()
+
+                                    for x in extraFiles:
+                                        strmFile = xbmcvfs.File(x[0], "w")
+                                        tmpURL = x[1]
+                                        if not KODI:
+                                            if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+
+                                                if params and plugin_handle.server.hide:
+                                                    base = str(params.group(1))
+                                                    extended = str(params.group(1))
+                                                    tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                else:
+                                                    tmpURL = str(tmpURL)
+                                        strmFile.write(tmpURL+'\n')
+                                        strmFile.close()
+
                                     count += 1
 
                             if spreadsheetFile is not None:
