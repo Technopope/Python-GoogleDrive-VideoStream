@@ -1021,16 +1021,16 @@ class contentengine(object):
                             if constants.CONST.spreadsheet and service.cloudResume == '2':
                                 spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                                 if catalog:
-                                    (newcount, changeToken) = service.buildSTRM(self.plugin_handle, path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=hostTemp, LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append)
+                                    (newcount, changeToken) = service.buildSTRM(self.plugin_handle, path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=hostTemp, LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt)
                                 else:
-                                    (newcount,changeToken) = service.buildSTRM(self.plugin_handle, path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append)
+                                    (newcount,changeToken) = service.buildSTRM(self.plugin_handle, path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append,removeExt=removeExt)
                                 spreadsheetFile.close()
                             else:
 
                                 if catalog:
-                                    (newcount,changeToken) = service.buildSTRM(self.plugin_handle, path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append)
+                                    (newcount,changeToken) = service.buildSTRM(self.plugin_handle, path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append,removeExt=removeExt)
                                 else:
-                                    (newcount,changeToken) = service.buildSTRM(self.plugin_handle, path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append)
+                                    (newcount,changeToken) = service.buildSTRM(self.plugin_handle, path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt)
                             count += newcount
                             #count
 
@@ -1067,7 +1067,7 @@ class contentengine(object):
                                 xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
 
                                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
-                                service.buildSTRM(self.plugin_handle, path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append)
+                                service.buildSTRM(self.plugin_handle, path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt)
 
                             else:
                                 count = 1
@@ -1083,7 +1083,7 @@ class contentengine(object):
                                         #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
                                         xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
 
-                                        service.buildSTRM(self.plugin_handle, path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, host=hostTemp,LOGGING=LOGGING, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append)
+                                        service.buildSTRM(self.plugin_handle, path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, host=hostTemp,LOGGING=LOGGING, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt)
                                         break
                                     if username is None:
                                         #fallback on first defined account

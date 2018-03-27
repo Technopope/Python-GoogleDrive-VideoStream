@@ -118,7 +118,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append=''):
+    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False):
 
         if host is None:
             PLUGIN_URL = self.PLUGIN_URL
@@ -204,7 +204,11 @@ class cloudservice(object):
                         if pDialog is not None:
                             pDialog.update(message=title)
 
-                        strmFileName = str(path) + '/' + str(title)
+                        if removeExt:
+                            strmFileName = str(path) + '/' + str(re.sub(r'\.[^\.]+$',r'', title))
+                        else:
+                            strmFileName = str(path) + '/' + str(title)
+
                         skip = False
                         extraFiles = []
                         if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
@@ -314,7 +318,12 @@ class cloudservice(object):
 
                             skip = False
                             if pathLib != '':
-                                strmFileName = str(pathLib) + '/' +str(filename)
+
+                                if removeExt:
+                                    strmFileName = str(pathLib) + '/' + str(re.sub(r'\.[^\.]+$',r'', filename))
+                                else:
+                                    strmFileName = str(pathLib) + '/' + str(filename)
+
                                 extraFiles = []
                                 if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
 
