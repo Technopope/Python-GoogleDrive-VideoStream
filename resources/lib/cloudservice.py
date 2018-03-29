@@ -204,35 +204,37 @@ class cloudservice(object):
                         if pDialog is not None:
                             pDialog.update(message=title)
 
-                        if removeExt:
-                            strmFileName = str(path) + '/' + str(re.sub(r'\.[^\.]+$',r'', title))
-                        else:
-                            strmFileName = str(path) + '/' + str(title)
-
-                        skip = False
-                        extraFiles = []
-                        if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
-                            extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&pquality=2'])
-
-                            if int(item.file.resolution[0]) > 480:
-                                extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&pquality=1'])
-                            if int(item.file.resolution[0]) > 720:
-                                extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&pquality=0'])
-
-
-                            strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
-                            videoResolution = str(item.file.resolution[0])
-
-                        elif resolution and skip0Res:
-                            skip = True
-
-                        else:
-                            strmFileName += '.strm'
-
                         #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
-                        if not skip and (not xbmcvfs.exists(strmFileName) or force) and not catalog:
+                        if not catalog:
 
-                            if original:
+
+                            if removeExt:
+                                strmFileName = str(path) + '/' + str(re.sub(r'\.[^\.]+$',r'', title))
+                            else:
+                                strmFileName = str(path) + '/' + str(title)
+
+                            skip = False
+                            extraFiles = []
+                            if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+                                extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&pquality=2'])
+
+                                if int(item.file.resolution[0]) > 480:
+                                    extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&pquality=1'])
+                                if int(item.file.resolution[0]) > 720:
+                                    extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&pquality=0'])
+
+
+                                strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
+                                videoResolution = str(item.file.resolution[0])
+
+                            elif resolution and skip0Res:
+                                skip = True
+
+                            else:
+                                strmFileName += '.strm'
+
+
+                            if original and not skip and (not xbmcvfs.exists(strmFileName) or force):
                                 strmFile = xbmcvfs.File(strmFileName, "w")
 
                                 if not KODI:
@@ -242,14 +244,14 @@ class cloudservice(object):
                                         if params and plugin_handle.server.hide:
                                             base = str(params.group(1))
                                             extended = str(params.group(1))
-                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&pquality=0')
                                         else:
-                                            url = str(url)
+                                            url = str(url) + '&pquality=0'
 
                                 strmFile.write(url+'\n')
                                 strmFile.close()
 
-                            if transcode:
+                            if transcode and not skip and (not xbmcvfs.exists(strmFileName) or force):
                                 for x in extraFiles:
                                     strmFile = xbmcvfs.File(x[0], "w")
                                     tmpURL = x[1]
@@ -266,7 +268,7 @@ class cloudservice(object):
                                     strmFile.write(tmpURL+'\n')
                                     strmFile.close()
                             count += 1
-                        elif not skip and (not xbmcvfs.exists(strmFileName) or force) and catalog:
+                        elif catalog:
                             episode = ''
                             # nekwebdev contribution
                             pathLib = ''
@@ -319,12 +321,10 @@ class cloudservice(object):
                             skip = False
                             if pathLib != '':
 
-
-                                #if removeExt and pathLib == videoPath:
-                                #    strmFileName = str(pathLib) + '/' + str(re.sub(r'\.[^\.]+$',r'', filename))
-                                #    print "REMOVE = " + str(removeExt) +strmFileName + "\n"
-                                #else:
-                                #    strmFileName = str(pathLib) + '/' + str(filename)
+                                if removeExt and pathLib == videoPath:
+                                    strmFileName = str(pathLib) + '/' + str(re.sub(r'\.[^\.]+$',r'', filename))
+                                else:
+                                    strmFileName = str(pathLib) + '/' + str(filename)
 
                                 extraFiles = []
                                 if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
@@ -359,10 +359,10 @@ class cloudservice(object):
                                                 if params and plugin_handle.server.hide:
                                                     base = str(params.group(1))
                                                     extended = str(params.group(1))
-                                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&pquality=0')
                                                 else:
-                                                    url = str(url)
-                                        strmFile.write(url+'\n')
+                                                    url = str(url) + '&pquality=0'
+                                        strmFile.write(url +'\n')
                                         strmFile.close()
 
                                     if transcode:
