@@ -220,7 +220,7 @@ class cloudservice(object):
                                 extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&pquality=0'])
 
 
-                            strmFileName += ' - ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
+                            strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
                             videoResolution = str(item.file.resolution[0])
 
                         elif resolution and skip0Res:
@@ -320,11 +320,11 @@ class cloudservice(object):
                             if pathLib != '':
 
 
-                                if removeExt and pathLib == videoPath:
-                                    strmFileName = str(pathLib) + '/' + str(re.sub(r'\.[^\.]+$',r'', filename))
-                                    print "REMOVE = " + str(removeExt) +strmFileName + "\n"
-                                else:
-                                    strmFileName = str(pathLib) + '/' + str(filename)
+                                #if removeExt and pathLib == videoPath:
+                                #    strmFileName = str(pathLib) + '/' + str(re.sub(r'\.[^\.]+$',r'', filename))
+                                #    print "REMOVE = " + str(removeExt) +strmFileName + "\n"
+                                #else:
+                                #    strmFileName = str(pathLib) + '/' + str(filename)
 
                                 extraFiles = []
                                 if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
@@ -337,7 +337,7 @@ class cloudservice(object):
                                         extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&pquality=0'])
 
 
-                                    strmFileName += ' - ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
+                                    strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
                                     videoResolution = str(item.file.resolution[0])
 
                                 elif resolution and skip0Res:
