@@ -752,7 +752,7 @@ class contentengine(object):
             #if hostTemp == '':
             #    host = hostTemp
 
-            if not bool(re.match('^http', hostTemp, re.I)):
+            if hostTemp is not None and not bool(re.match('^http', hostTemp, re.I)):
                 hostTemp = 'http://' + str(hostTemp)
 
 
@@ -1056,7 +1056,11 @@ class contentengine(object):
 
                                         filename = path + '/' + title+'.strm'
                                         strmFile = xbmcvfs.File(filename, "w")
-                                        strmFile.write(host + '/' + url + '\n')
+                                        if KODI:
+                                            strmFile.write(url + '\n')
+                                        else:
+                                            strmFile.write(host + '/' + url + '\n')
+
                                         strmFile.close()
                                         xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
 

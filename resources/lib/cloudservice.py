@@ -80,7 +80,7 @@ class cloudservice(object):
 
     def getInstanceSetting(self,setting, default=None):
         try:
-            return self.addon.getSetting(self.instanceName+'_'+setting, default=default)
+            return self.addon.getSetting(self.instanceName+'_'+setting)
         except:
             return default
 
