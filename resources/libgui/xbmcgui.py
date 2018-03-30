@@ -62,7 +62,7 @@ class Dialog(object):
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output +'<input type="submit" value="submit"/></form><br/>'
 
 
-    def booleanSelector(self, label1, variable, default=True):
+    def booleanSelector(self, label1, variable, default=True, disable=None):
         if default:
             trueValue = ' selected '
             falseValue = ''
@@ -70,7 +70,12 @@ class Dialog(object):
             trueValue = ''
             falseValue = ' selected '
 
-        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(label1) + '<select name="'+str(variable)+'"><option value="true"'+str(trueValue)+'>true</option><option value="false"'+str(falseValue)+'>false</option></select><br/>'
+        if disable is not None:
+            xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(label1) + '<select name="'+str(variable)+'" id="'+str(variable)+'" onchange="toggle_'+str(variable)+'()" onload="toggle_'+str(variable)+'()"><option value="true"'+str(trueValue)+'>true</option><option value="false"'+str(falseValue)+'>false</option></select><br/>' + '<script>function toggle_'+str(variable)+'() {if (document.getElementById("'+str(variable)+'").value=="'+str(disable[1])+'"){document.getElementById("'+str(disable[0])+'").disabled=true;document.getElementById("'+str(disable[0])+'").value="'+str(disable[2])+'";}else{document.getElementById("'+str(disable[0])+'").disabled=false;}}</script>'
+
+        else:
+            xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(label1) + '<select name="'+str(variable)+'" id="'+str(variable)+'"><option value="true"'+str(trueValue)+'>true</option><option value="false"'+str(falseValue)+'>false</option></select><br/>'
+
         return
 
     def textField(self, label1, variable, default='', isOptional=False,format=''):

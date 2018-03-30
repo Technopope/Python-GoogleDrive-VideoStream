@@ -66,12 +66,13 @@
 	<string id="30221">Scheduled Tasks</string>
 	<string id="30222">Create new scheduled task</string>
 	<string id="30223">Select an account to export STRM files</string>
-	<string id="30224">Google Drive folder to export STRM files</string>
+	<string id="30224">Drive to export STRM files</string>
 	<string id="30225">Frequency of exporting</string>
 	<string id="30226">Type of job</string>
 	<string id="30227">Delete job</string>
 	<string id="30228">Play Google Transcode - </string>
-
+	<string id="30229">Catalog into Movies/TV/Other?</string>
+	<string id="30230">Frequency to run the scheduled task (in minutes)?</string>
 
     <string id="30043">Options</string>
 
