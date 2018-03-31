@@ -145,8 +145,8 @@ class contentengine(object):
                 listitem.addContextMenuItems(cm, True)
 
 
-            xbmcplugin.addDirectoryItem(self.plugin_handle, '', listitem,
-                                    isFolder=True, totalItems=1)
+            xbmcplugin.addDirectoryItem(self.plugin_handle, title, listitem,
+                                    isFolder=False, totalItems=1)
 
 
     ##
@@ -421,10 +421,11 @@ class contentengine(object):
                 while True:
                     instanceName = self.PLUGIN_NAME+str(count)
                     username = settingsModule.getSetting(instanceName+'_username', None)
+                    type = settingsModule.getSetting(instanceName+'_type', None)
                     if username is not None and username != '':
                         self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
-                    if username is None or username == '':
+                    if (username is None or username == '') and (type is None or type == ''):
                         break
                     count = count + 1
                 return None
@@ -726,8 +727,8 @@ class contentengine(object):
                     else:
                     #    status += 'every '+str(task[1])+' mins looking for changes -- never ran'
                         status = str(task[tasks.TASK_STATUS]) + ' ' + str(task[tasks.TASK_TYPE]) + ' ' + str(task[tasks.TASK_RUNTIME]) +'??'
-
-                    results = re.search(r'\&filename=([^\&]+).*\&username=([^\&]+)\&', str(task[tasks.TASK_CMD]))
+                    cmd = re.sub('\&amp\;', '\&', task[tasks.TASK_CMD])
+                    results = re.search(r'\&filename=([^\&]+).*\&username=([^\&]+)\&', str(cmd))
                     self.addStatusText('job #' + str(i) + ' username=' +str(results.group(2)) +' folder='+ str(results.group(1)) +' '+ str(status), job=i)
                 i += 1
 
@@ -832,6 +833,7 @@ class contentengine(object):
                 if KODI:
                     returnValue = xbmcgui.Dialog().select(addon.getLocalizedString(30223), list=instances)
                     instanceName = instances_values[returnValue]
+                    invokedUsername = instances[returnValue]
 
                 else:
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30223), 'instance', list=instances)
@@ -859,11 +861,33 @@ class contentengine(object):
                         list_values.append(str(drive.id))
 
                 if KODI:
+                    try:
+                        path = settingsModule.getSetting('strm_path')
+                    except:
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
+
+                    if path == '' or path is None:
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
+
+                    if path != '' and path is not None:
+                        returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+
                     returnValue = xbmcgui.Dialog().select(addon.getLocalizedString(30224),list)
                     folderID = list_values[returnValue]
                     filename = list[returnValue]
-                    frequency = xbmcgui.Dialog().input(addon.getLocalizedString(30224), '60', type=xbmcgui.INPUT_NUMERIC)
-                    type = xbmcgui.Dialog().select(addon.getLocalizedString(30224),['full syncs only', 'start change tracking', 'full sync then ongoing tracking'])
+                    frequency = xbmcgui.Dialog().input(addon.getLocalizedString(30225), '60', type=xbmcgui.INPUT_NUMERIC)
+                    type = xbmcgui.Dialog().select(addon.getLocalizedString(30226),['full syncs only', 'start change tracking', 'full sync then ongoing tracking'])
+                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30229))
+                    if returnPrompt:
+                        catalog = True
+
+                    tasks = scheduler.scheduler(settings=addon)
+                    #cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&append='+str(append)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&original='+str(original) + '&transcode='+str(transcode)+'&skip=' + str(skip0Res)  +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    cmd = str(self.PLUGIN_URL)+'?'+ 'mode=buildstrm&remove_ext='+str(removeExt)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
 
                 else:
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30224), 'folder',list)
@@ -971,20 +995,21 @@ class contentengine(object):
 
                     else:
 
-                        if KODI:
-                            silent = settingsModule.getParameter('silent', settingsModule.getSetting('strm_silent',0))
-                            if silent == '':
-                                silent = 0
-
-
-                            if not silent:
-                                returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30229))
-                                if returnPrompt:
-                                    catalog = True
 
 
 
                         if folderID != '':
+
+                            if KODI:
+                                silent = settingsModule.getParameter('silent', settingsModule.getSetting('strm_silent',0))
+                                if silent == '':
+                                    silent = 0
+
+
+                                if not silent:
+                                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30229))
+                                    if returnPrompt:
+                                        catalog = True
 
                             count = 1
                             loop = True
@@ -1411,11 +1436,12 @@ class contentengine(object):
                     self.addMenu(self.PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
 
                     teamdrives = service.getTeamDrives();
-                    for drive in teamdrives:
-                        #self.addMenu(self.PLUGIN_URL+'?mode=index&folder='+str(drive.id)+'&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']')
-                        service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True), contextType=contextType, encfs=False )
+                    if teamdrives is not None:
+                        for drive in teamdrives:
+                            #self.addMenu(self.PLUGIN_URL+'?mode=index&folder='+str(drive.id)+'&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']')
+                            service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True), contextType=contextType, encfs=False )
 
-                        #folder.folder(folderID,'') ***
+                            #folder.folder(folderID,'') ***
 
 
                 if KODI:

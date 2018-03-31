@@ -115,8 +115,8 @@ class scheduler:
         count = 0
         while (1):
             try:
-                setting = self.settings.getSetting(str(count) + '_instance',None)
-                if setting is None:
+                setting = self.settings.getSetting(str(count) + '_instance')
+                if setting is None or setting == '':
                     return count-1
                 #self.dbm[str(count) + '_instance']
                 count += 1
