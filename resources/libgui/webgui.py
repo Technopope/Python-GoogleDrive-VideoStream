@@ -113,7 +113,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             self.encrypt = encryption.encryption(self.saltfile,self.saltpassword)
         except:
             self.encrypt = None
-            print "ENCRYPT = FALSE\n\n"
+            #print "ENCRYPT = FALSE\n\n"
 
 
         try:

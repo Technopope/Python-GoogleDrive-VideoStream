@@ -50,7 +50,7 @@ class addDirectoryItem(object):
         label = label.replace("<",'(')
         label = label.replace(">",')')
 
-        if url != '' and (plugin_handle.server.keyvalue or plugin_handle.server.hide) and plugin_handle.server.encrypt is not None:
+        if url != '' and plugin_handle.server.encrypt.ENCRYPTION_ENABLE == 1 and (plugin_handle.server.keyvalue or plugin_handle.server.hide) and plugin_handle.server.encrypt is not None:
             params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
             if params and plugin_handle.server.hide:
