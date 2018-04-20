@@ -57,8 +57,9 @@ class settingsdbm:
 
             self.isReadOnly = True
 
-        if forceSync:
-            self.dbm.sync()
+#        if forceSync:
+            #self.dbm.sync()
+
         if key is '':
             return None
         try:
@@ -76,8 +77,8 @@ class settingsdbm:
 
             self.isReadOnly = True
 
-        if forceSync:
-            self.dbm.sync()
+#        if forceSync:
+#            self.dbm.sync()
 
         if key is '':
             return None
@@ -101,8 +102,8 @@ class settingsdbm:
 
             self.isReadOnly = True
 
-        if forceSync:
-            self.dbm.sync()
+ #       if forceSync:
+ #           self.dbm.sync()
 
         if key is '':
             return None
@@ -121,8 +122,8 @@ class settingsdbm:
 
             self.isReadOnly = False
 
-        if forceSync:
-            self.dbm.sync()
+ #       if forceSync:
+ #           self.dbm.sync()
 
         self.dbm[key] = value
         self.dbm.sync()
