@@ -93,7 +93,7 @@ class settingsdbm:
 
     def getIntSetting(self, key, default=None, forceSync=False):
         if not self.isReadOnly:
-            self.dbm.sync()
+            #self.dbm.sync()
             self.dbm.close()
             try:
                 self.dbm = anydbm.open(self.dbmfile,'r')
@@ -126,7 +126,7 @@ class settingsdbm:
  #           self.dbm.sync()
 
         self.dbm[key] = value
-        self.dbm.sync()
+        #self.dbm.sync()
 
         return
 
