@@ -977,7 +977,7 @@ class contentengine(object):
                             strmFile = xbmcvfs.File(filename, "w")
 
                             if not KODI:
-                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                if (plugin_handle.server.keyvalue or plugin_handle.server.hide) and  plugin_handle.server.encrypt is not None and plugin_handle.server.encrypt.ENCRYPTION_ENABLE == 1:
                                     params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
                                     if params and plugin_handle.server.hide:
@@ -985,7 +985,7 @@ class contentengine(object):
                                         extended = str(params.group(1))
                                         url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
                                     else:
-                                        url = str(url)
+                                        url = str(url) + '&kv=' +plugin_handle.server.encrypt.encryptString(url)
 
 
                             strmFile.write(host + '/' + url+'\n')

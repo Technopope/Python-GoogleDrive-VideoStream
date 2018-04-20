@@ -1,4 +1,6 @@
-- implement fix: Auto default quality #50
+- fix: auto detect for pycrypto #49
+- fix: Auto default quality #50
+- fix: Python crypto not found #44
 - fix for displaying accounts on scheduler
 - sync with recent KODI fixes
 v0.1.15 (2018-03-29)
