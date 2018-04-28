@@ -63,6 +63,10 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.saltpassword = None
         self.cryptoSalt = None
         self.cryptoPassword = None
+        self.embyFilterUsers = False
+        self.embyLog = None
+        self.embyLogPtr = 0
+        self.embyUserList = None
         self.logins = {}
 
     # set port
@@ -100,6 +104,13 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
 
         try:
+            if self.dbm.getSetting('emby_user') == 'true':
+                self.embyLog = self.dbm.getSetting('emby_log')
+                self.embyFilterUsers = True
+
+        except: pass
+
+        try:
             from resources.lib import encryption
 
             try:
@@ -124,6 +135,23 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         xbmc.openLog(self.dbm.getSetting('logfile', None), debug=self.dbm.getBoolSetting('debug', False))
 
 
+    def file_len(fname):
+        with open(fname) as f:
+            for i, l in enumerate(f):
+                pass
+        return i + 1
+
+    def whitelistIPs():
+        with open(fname) as f:
+            for i, l in enumerate(f):
+                pass
+        return i + 1
+
+    def checkIP(IP):
+        with open(fname) as f:
+            for i, l in enumerate(f):
+                pass
+        return i + 1
 
 class webGUI(BaseHTTPRequestHandler):
 
@@ -407,6 +435,14 @@ class webGUI(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_GET(self):
 
+        if self.server.embyFilterUsers:
+            IP =  self.client_address[0]
+            print "IP" + IP
+            self.send_response(403)
+            self.end_headers()
+            return
+
+
         if self.path == '/favicon.ico':
             return
 
@@ -424,6 +460,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         # debug - print headers in log
         headers = str(self.headers)
+
         xbmc.log(self.requestline)
         xbmc.log(headers)
 
