@@ -66,8 +66,9 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.embyFilterUsers = False
         self.embyLog = None
         self.embyLogPtr = 0
-        self.embyUserList = None
+        self.embyUserList = {}
         self.logins = {}
+        self.embyUserList['127.0.0.1'] = True
 
     # set port
     def setPort(self, port):
@@ -141,17 +142,30 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                 pass
         return i + 1
 
+
+    def readLog(self,fname):
+        with open(fname) as f:
+            line = f.readline()
+            while line:
+                results = re.search(r' to (\d+\.\d+\.\d+\.\d+)\. .*?/Users/\w{32}/', str(line))
+                if results:
+                    IP = str(results.group(1))
+                    self.embyUserList[IP] = True
+                    print "found IP = " + IP + "\n"
+                line = f.readline()
+
+
     def whitelistIPs():
         with open(fname) as f:
             for i, l in enumerate(f):
                 pass
         return i + 1
 
-    def checkIP(IP):
-        with open(fname) as f:
-            for i, l in enumerate(f):
-                pass
-        return i + 1
+    def checkIP(self,IP):
+        try:
+            return self.embyUserList[IP]
+        except:
+            return False
 
 class webGUI(BaseHTTPRequestHandler):
 
@@ -436,11 +450,14 @@ class webGUI(BaseHTTPRequestHandler):
     def do_GET(self):
 
         if self.server.embyFilterUsers:
+            self.server.readLog(self.server.embyLog)
+
             IP =  self.client_address[0]
-            print "IP" + IP
-            self.send_response(403)
-            self.end_headers()
-            return
+
+            if not self.server.checkIP(IP):
+                self.send_response(403)
+                self.end_headers()
+                return
 
 
         if self.path == '/favicon.ico':
