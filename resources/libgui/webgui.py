@@ -615,11 +615,40 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         elif  re.search(r'/test', str(decryptkeyvalue)):
-            self.send_response(307)
-            self.send_header('Location', '')
+            self.send_response(200)
+            self.send_header('Set-Cookie', 'quality=1')
+
+#            self.send_response(307)
+#            self.send_header('Location', '')
             self.end_headers()
             return
 
+        elif  re.search(r'/SD', str(decryptkeyvalue)):
+            self.send_response(200)
+            self.send_header('Set-Cookie', 'quality=2')
+
+#            self.send_response(307)
+#            self.send_header('Location', '')
+            self.end_headers()
+            return
+
+        elif  re.search(r'/720p', str(decryptkeyvalue)):
+            self.send_response(200)
+            self.send_header('Set-Cookie', 'quality=1')
+
+#            self.send_response(307)
+#            self.send_header('Location', '')
+            self.end_headers()
+            return
+
+        elif  re.search(r'/1080p', str(decryptkeyvalue)):
+            self.send_response(200)
+            self.send_header('Set-Cookie', 'quality=0')
+
+#            self.send_response(307)
+#            self.send_header('Location', '')
+            self.end_headers()
+            return
 
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
             if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
@@ -1160,6 +1189,8 @@ class webGUI(BaseHTTPRequestHandler):
             if results:
                 query = str(results.group(1))
 
+            query = query + self.cookieQuality(headers)
+
             mediaEngine = engine.contentengine()
             mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
             return
@@ -1349,6 +1380,18 @@ class webGUI(BaseHTTPRequestHandler):
                   return True
           except:
               return False
+
+    def cookieQuality(self,headers):
+
+        if headers is None:
+            return False
+        for r in re.finditer('Cookie\:[^\n]+quality\=(\S+)' ,
+                     str(headers), re.DOTALL):
+          quality = r.group(1)
+          try:
+              return '&preferred_quality=' + quality
+          except:
+              return ''
 
 #    def get_ip_address(self):
 #        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
