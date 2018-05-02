@@ -1189,7 +1189,7 @@ class webGUI(BaseHTTPRequestHandler):
             if results:
                 query = str(results.group(1))
 
-            query = query + self.cookieQuality(headers)
+            query = query + str(self.cookieQuality(headers))
 
             mediaEngine = engine.contentengine()
             mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
