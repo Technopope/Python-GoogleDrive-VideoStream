@@ -1189,8 +1189,9 @@ class webGUI(BaseHTTPRequestHandler):
             if results:
                 query = str(results.group(1))
 
-            #query = query + str(self.cookieQuality(headers))
-
+            query = query + str(self.cookieQuality(headers))
+            print "QUERY = " + query + "\n"
+            return
             mediaEngine = engine.contentengine()
             mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
             return
