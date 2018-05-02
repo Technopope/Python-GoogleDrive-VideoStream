@@ -1396,7 +1396,7 @@ class webGUI(BaseHTTPRequestHandler):
         for r in re.finditer('Cookie\:[^\n]+quality\=(\S+)' ,
                      str(headers), re.DOTALL):
           quality = r.group(1)
-          return '&preferred_quality=' + str(quality)
+          return '&override=true&preferred_quality=' + str(quality)
         return ''
 
 #    def get_ip_address(self):
