@@ -172,7 +172,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             return self.embyUserList[IP]
         except:
             xbmc.log('IP not found ' + IP)
-            return False
+        return False
 
 class webGUI(BaseHTTPRequestHandler):
 
@@ -1335,7 +1335,7 @@ class webGUI(BaseHTTPRequestHandler):
           except:
               return False
 
-    def get_ip_address(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        return s.getsockname()[0]
+#    def get_ip_address(self):
+#        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#        s.connect(("8.8.8.8", 80))
+#        return s.getsockname()[0]
