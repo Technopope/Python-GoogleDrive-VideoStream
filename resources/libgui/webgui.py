@@ -177,6 +177,12 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 class webGUI(BaseHTTPRequestHandler):
 
 
+
+    def __init__(self, *args):
+        self.override = False
+        BaseHTTPRequestHandler.__init__(self, *args)
+
+
     def log_message(self, format, *args):
         message =  "%s - %s - [%s] %s\n" % (self.address_string(), self.client_address[0],self.log_date_time_string(),format%args)
         print >> sys.stderr, message
@@ -1189,7 +1195,10 @@ class webGUI(BaseHTTPRequestHandler):
             if results:
                 query = str(results.group(1))
 
-            query = query + str(self.cookieQuality(headers))
+            quality = str(self.cookieQuality(headers))
+            if quality != '':
+                query = query + quality
+                self.override = True
             mediaEngine = engine.contentengine()
             mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
             return

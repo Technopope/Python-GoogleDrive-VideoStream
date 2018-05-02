@@ -105,7 +105,7 @@ class setResolvedUrl(object):
             playbackBuffer.playback.append({'auth':auth,'url':url,'cookie':cookie})
             #auth = auth.replace("+",' ')
             #plugin_handle.send_header('Authorization', auth)
-            if not encrypted and (plugin_handle.server.addon.getSetting('passthrough')) == 'true':
+            if not plugin_handle.override and not encrypted and (plugin_handle.server.addon.getSetting('passthrough')) == 'true':
                 auth = auth.replace("Bearer+",'')
                 playbackURL = url + '&access_token='+auth
             elif encrypted:

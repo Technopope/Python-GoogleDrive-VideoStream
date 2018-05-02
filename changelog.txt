@@ -1,3 +1,4 @@
+- add logic to override passthrough with forced transcode quality selection by cookie
 - add support to quality selection cookie
 - implemented: Using cookies to set preferred resolution #31
 - implemented: Add a feature to disable access unless authenticated in emby #41
