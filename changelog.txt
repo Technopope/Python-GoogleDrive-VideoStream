@@ -1,3 +1,4 @@
+v0.1.17 (2018-05-01)
 - enable emby IP filtering
 v0.1.16 (2018-04-20)
 - fix: auto detect for pycrypto #49

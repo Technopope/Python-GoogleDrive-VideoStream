@@ -151,7 +151,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                 if results:
                     IP = str(results.group(1))
                     self.embyUserList[IP] = True
-                    print "found IP = " + IP + "\n"
+                    #print "found IP = " + IP + "\n"
                 line = f.readline()
 
 
@@ -182,6 +182,17 @@ class webGUI(BaseHTTPRequestHandler):
 
     #Handler for the GET requests
     def do_POST(self):
+
+        if self.server.embyFilterUsers:
+
+            IP =  self.client_address[0]
+
+            if not self.server.checkIP(IP):
+                self.server.readLog(self.server.embyLog)
+                if not self.server.checkIP(IP):
+                    self.send_response(403)
+                    self.end_headers()
+                    return
 
 
         decryptkeyvalue = self.path
@@ -450,14 +461,15 @@ class webGUI(BaseHTTPRequestHandler):
     def do_GET(self):
 
         if self.server.embyFilterUsers:
-            self.server.readLog(self.server.embyLog)
 
             IP =  self.client_address[0]
 
             if not self.server.checkIP(IP):
-                self.send_response(403)
-                self.end_headers()
-                return
+                self.server.readLog(self.server.embyLog)
+                if not self.server.checkIP(IP):
+                    self.send_response(403)
+                    self.end_headers()
+                    return
 
 
         if self.path == '/favicon.ico':
