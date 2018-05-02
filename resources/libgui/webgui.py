@@ -144,7 +144,10 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
 
     def readLog(self,fname):
+        xbmc.log('opening emby log...')
+
         with open(fname) as f:
+            xbmc.log('searching emby log...')
             line = f.readline()
             while line:
                 results = re.search(r' to (\d+\.\d+\.\d+\.\d+)\. .*?/Users/\w{32}/', str(line))
@@ -152,6 +155,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                     IP = str(results.group(1))
                     self.embyUserList[IP] = True
                     #print "found IP = " + IP + "\n"
+                    xbmc.log('add IP' + IP)
+
                 line = f.readline()
 
 
@@ -163,8 +168,10 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
     def checkIP(self,IP):
         try:
+            xbmc.log('whitelisted IP' + IP)
             return self.embyUserList[IP]
         except:
+            xbmc.log('IP not found ' + IP)
             return False
 
 class webGUI(BaseHTTPRequestHandler):
