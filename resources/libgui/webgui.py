@@ -149,13 +149,14 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         with open(fname) as f:
             xbmc.log('searching emby log...')
             line = f.readline()
+            count = 0
             while line:
-                results = re.search(r' to (\d+\.\d+\.\d+\.\d+)\. .*?/Users/\w{32}/', str(line))
+                results = re.search(r' to (\S+)\. .*?/Users/\w{32}/', str(line))
                 if results:
                     IP = str(results.group(1))
                     self.embyUserList[IP] = True
                     #print "found IP = " + IP + "\n"
-                    xbmc.log('add IP' + IP)
+                    count = count + 1
 
                 line = f.readline()
 
@@ -168,7 +169,6 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
     def checkIP(self,IP):
         try:
-            xbmc.log('whitelisted IP' + IP)
             return self.embyUserList[IP]
         except:
             xbmc.log('IP not found ' + IP)
@@ -200,6 +200,11 @@ class webGUI(BaseHTTPRequestHandler):
                     self.send_response(403)
                     self.end_headers()
                     return
+                else:
+                    xbmc.log('accepted whitelisted IP ' + IP)
+
+            else:
+                xbmc.log('accepted whitelisted IP ' + IP)
 
 
         decryptkeyvalue = self.path
@@ -467,17 +472,6 @@ class webGUI(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_GET(self):
 
-        if self.server.embyFilterUsers:
-
-            IP =  self.client_address[0]
-
-            if not self.server.checkIP(IP):
-                self.server.readLog(self.server.embyLog)
-                if not self.server.checkIP(IP):
-                    self.send_response(403)
-                    self.end_headers()
-                    return
-
 
         if self.path == '/favicon.ico':
             return
@@ -496,9 +490,30 @@ class webGUI(BaseHTTPRequestHandler):
 
         # debug - print headers in log
         headers = str(self.headers)
-
         xbmc.log(self.requestline)
         xbmc.log(headers)
+
+
+        if self.server.embyFilterUsers:
+
+            IP = re.search(r'X-Real-IP: (\S+)', str(headers))
+            if IP is not None:
+                IP = str(IP.group(1))
+            else:
+                IP =  self.client_address[0]
+
+            if not self.server.checkIP(IP):
+                self.server.readLog(self.server.embyLog)
+                if not self.server.checkIP(IP):
+                    self.send_response(403)
+                    self.end_headers()
+                    return
+                else:
+                    xbmc.log('accepted whitelisted IP ' + IP)
+
+            else:
+                xbmc.log('accepted whitelisted IP ' + IP)
+
 
         host = re.search(r'Host: (\S+)', str(headers))
         if host is not None:
