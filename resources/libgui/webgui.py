@@ -1385,12 +1385,12 @@ class webGUI(BaseHTTPRequestHandler):
     def cookieQuality(self,headers):
 
         if headers is None:
-            return False
+            return ''
         for r in re.finditer('Cookie\:[^\n]+quality\=(\S+)' ,
                      str(headers), re.DOTALL):
           quality = r.group(1)
           try:
-              return '&preferred_quality=' + quality
+              return '&preferred_quality=' + str(quality)
           except:
               return ''
 
