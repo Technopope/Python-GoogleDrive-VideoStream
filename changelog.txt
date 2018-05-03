@@ -1,3 +1,4 @@
+v0.1.18 (2018-05-02)
 - add logic to override passthrough with forced transcode quality selection by cookie
 - add support to quality selection cookie
 - implemented: Using cookies to set preferred resolution #31
