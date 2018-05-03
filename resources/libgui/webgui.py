@@ -69,7 +69,6 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.embyUserList = {}
         self.logins = {}
         self.embyUserList['127.0.0.1'] = True
-        self.embyUserList[str(self.get_ip_address())] = True
 
     # set port
     def setPort(self, port):
@@ -181,6 +180,8 @@ class webGUI(BaseHTTPRequestHandler):
 
     def __init__(self, *args):
         self.override = False
+        self.server.embyUserList[str(self.get_ip_address())] = True
+
         BaseHTTPRequestHandler.__init__(self, *args)
 
 
