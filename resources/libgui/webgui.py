@@ -110,6 +110,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                 self.embyLog = self.dbm.getSetting('emby_log')
                 self.embyFilterUsers = True
 
+                self.embyUserList[self.dbm.getSetting('emby_ip')] = True
+
         except: pass
 
         try:
