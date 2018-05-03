@@ -69,6 +69,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.embyUserList = {}
         self.logins = {}
         self.embyUserList['127.0.0.1'] = True
+        self.embyUserList[str(self.get_ip_address())] = True
 
     # set port
     def setPort(self, port):
@@ -501,6 +502,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         if self.server.embyFilterUsers:
+
 
             IP = re.search(r'X-Real-IP: (\S+)', str(headers))
             if IP is not None:
@@ -1399,7 +1401,7 @@ class webGUI(BaseHTTPRequestHandler):
           return '&override=true&preferred_quality=' + str(quality)
         return ''
 
-#    def get_ip_address(self):
-#        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#        s.connect(("8.8.8.8", 80))
-#        return s.getsockname()[0]
+    def get_ip_address(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
