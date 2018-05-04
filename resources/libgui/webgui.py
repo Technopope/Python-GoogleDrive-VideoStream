@@ -646,7 +646,7 @@ class webGUI(BaseHTTPRequestHandler):
 #            self.send_header('Location', '')
             self.end_headers()
             with open('./resources/videos/blank.mp4', 'rb') as f:
-                response.write(f.read())
+                self.wfile.write(f.read())
 
             return
 
