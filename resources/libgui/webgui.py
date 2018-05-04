@@ -69,6 +69,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.embyUserList = {}
         self.logins = {}
         self.embyUserList['127.0.0.1'] = True
+        self.embyUserList[str(self.get_ip_address())] = True
 
     # set port
     def setPort(self, port):
@@ -108,6 +109,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             if self.dbm.getSetting('emby_user') == 'true':
                 self.embyLog = self.dbm.getSetting('emby_log')
                 self.embyFilterUsers = True
+
+                self.embyUserList[self.dbm.getSetting('emby_ip')] = True
 
         except: pass
 
@@ -174,12 +177,18 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
             xbmc.log('IP not found ' + IP)
         return False
 
+    def get_ip_address(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+
 class webGUI(BaseHTTPRequestHandler):
 
 
 
     def __init__(self, *args):
         self.override = False
+
         BaseHTTPRequestHandler.__init__(self, *args)
 
 
@@ -501,6 +510,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         if self.server.embyFilterUsers:
+
 
             IP = re.search(r'X-Real-IP: (\S+)', str(headers))
             if IP is not None:
@@ -1401,7 +1411,4 @@ class webGUI(BaseHTTPRequestHandler):
           return '&override=true&preferred_quality=' + str(quality)
         return ''
 
-#    def get_ip_address(self):
-#        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#        s.connect(("8.8.8.8", 80))
-#        return s.getsockname()[0]
+
