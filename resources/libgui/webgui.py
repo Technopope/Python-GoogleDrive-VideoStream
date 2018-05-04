@@ -632,10 +632,12 @@ class webGUI(BaseHTTPRequestHandler):
         elif  re.search(r'/SD', str(decryptkeyvalue)):
             self.send_response(200)
             self.send_header('Set-Cookie', 'quality=2')
-
 #            self.send_response(307)
 #            self.send_header('Location', '')
             self.end_headers()
+            with open('./resources/videos/blank.mp4', 'rb') as f:
+                response.write(f.read())
+
             return
 
         elif  re.search(r'/720p', str(decryptkeyvalue)):
