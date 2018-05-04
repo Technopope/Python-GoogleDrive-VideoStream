@@ -637,35 +637,39 @@ class webGUI(BaseHTTPRequestHandler):
 #            self.send_response(307)
 #            self.send_header('Location', '')
             self.end_headers()
+
             return
 
-        elif  re.search(r'/SD', str(decryptkeyvalue)):
+        elif  re.search(r'/quality=SD', str(decryptkeyvalue)):
             self.send_response(200)
             self.send_header('Set-Cookie', 'quality=2')
-#            self.send_response(307)
-#            self.send_header('Location', '')
             self.end_headers()
             with open('./resources/videos/blank.mp4', 'rb') as f:
                 self.wfile.write(f.read())
-
             return
 
-        elif  re.search(r'/720p', str(decryptkeyvalue)):
+        elif  re.search(r'/quality=720p', str(decryptkeyvalue)):
             self.send_response(200)
             self.send_header('Set-Cookie', 'quality=1')
-
-#            self.send_response(307)
-#            self.send_header('Location', '')
             self.end_headers()
+            with open('./resources/videos/blank.mp4', 'rb') as f:
+                self.wfile.write(f.read())
             return
 
-        elif  re.search(r'/1080p', str(decryptkeyvalue)):
+        elif  re.search(r'/quality=1080p', str(decryptkeyvalue)):
             self.send_response(200)
             self.send_header('Set-Cookie', 'quality=0')
-
-#            self.send_response(307)
-#            self.send_header('Location', '')
             self.end_headers()
+            with open('./resources/videos/blank.mp4', 'rb') as f:
+                self.wfile.write(f.read())
+            return
+
+        elif  re.search(r'/quality=unset', str(decryptkeyvalue)):
+            self.send_response(200)
+            self.send_header('Set-Cookie', 'quality=')
+            self.end_headers()
+            with open('./resources/videos/blank.mp4', 'rb') as f:
+                self.wfile.write(f.read())
             return
 
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
