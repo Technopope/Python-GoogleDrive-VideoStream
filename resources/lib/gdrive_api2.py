@@ -2034,56 +2034,46 @@ class gdrive(cloudservice):
         return '';
 
 
-    def getSubFolderPath(self,folderID):
+    def getSubFolderPath(self,folderID, folderCache= {}):
+
+        if folderID in folderCache.keys():
+            return self.getSubFolderPath(folderCache[folderID][1]) + '/'  + str(folderCache[folderID][0])
 
 
         url = 'https://www.googleapis.com/drive/v2/files/'+str(folderID)+'?includeTeamDriveItems=true&supportsTeamDrives=true&q=trashed%3Dfalse&fields=title%2Cparents';
 
-        while True:
-            req = urllib2.Request(url, None, self.getHeadersList())
+        req = urllib2.Request(url, None, self.getHeadersList())
 
-            # if action fails, validate login
+        # if action fails, validate login
+        try:
+          response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.refreshToken()
+            req = urllib2.Request(url, None, self.getHeadersList())
             try:
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.refreshToken()
-                req = urllib2.Request(url, None, self.getHeadersList())
-                try:
-                  response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                  xbmc.log('getMediaList'+str(e))
-                  return
-              else:
-                xbmc.log('getMediaList'+str(e))
-                return
+              xbmc.log('getSubFolderPath'+str(e))
+              return
+          else:
+            xbmc.log('getSubFolderPath'+str(e))
+            return
 
-            response_data = response.read()
-            response.close()
-            print response_data
+        response_data = response.read()
+        response.close()
+        print response_data
 
-            # parsing page for folders
-            for r2 in re.finditer('\"title\"\:\s+\"([^\"]+)\".*?\"parents\"\:\s+\[\s+[^\}]+\"id\"\:\s+\"([^\"]+)\"' ,response_data, re.DOTALL):
-                folderName = r2.group(1)
-                parentID = r2.group(2)
-                print "foldername = " + str(folderName) + "\n"
-                print "parent ID = " + str(parentID) + "\n"
-
-            # look for more pages of videos
-            nextURL = ''
-            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
-                             response_data, re.DOTALL):
-                nextURL = r.group(1)
+        # parsing page for folders
+        for r2 in re.finditer('\"title\"\:\s+\"([^\"]+)\".*?\"parents\"\:\s+\[\s+[^\}]+\"id\"\:\s+\"([^\"]+)\"' ,response_data, re.DOTALL):
+            folderName = r2.group(1)
+            parentID = r2.group(2)
+            print "foldername = " + str(folderName) + "\n"
+            print "parent ID = " + str(parentID) + "\n"
+            folderCache[str(folderID)] =  (folderName, parentID)
+            return str(self.getSubFolderPath(parentID,folderCache)) + '/' + str(folderName)
 
 
-            # are there more pages to process?
-            if nextURL == '':
-                break
-            else:
-                url = nextURL
-
-            #if ($$newDocuments{$resourceID}[pDrive::DBM->D->{'title'}] eq $folderName){
-            #        return $resourceID;
         return '';
 
 

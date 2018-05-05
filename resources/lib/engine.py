@@ -1471,7 +1471,12 @@ class contentengine(object):
                 xbmcplugin.endOfDirectory(self.plugin_handle)
                 return
 
-            service.getSubFolderPath(folderID)
+            directoryPath = service.getSubFolderPath(folderID)
+            print "PATH = " + str(directoryPath) + "\n"
+            try:
+                os.makedirs(directoryPath)
+            except OSError:
+                pass
             #return
 
             #if encrypted, get everything(as encrypted files will be of type application/ostream)
