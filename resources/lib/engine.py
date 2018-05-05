@@ -1471,6 +1471,9 @@ class contentengine(object):
                 xbmcplugin.endOfDirectory(self.plugin_handle)
                 return
 
+            service.getSubFolderPath(folderID)
+            #return
+
             #if encrypted, get everything(as encrypted files will be of type application/ostream)
             if encfs:
 

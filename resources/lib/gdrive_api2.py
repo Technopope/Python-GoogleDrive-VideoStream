@@ -2034,3 +2034,56 @@ class gdrive(cloudservice):
         return '';
 
 
+    def getSubFolderPath(self,folderID):
+
+
+        url = 'https://www.googleapis.com/drive/v2/files/'+str(folderID)+'?includeTeamDriveItems=true&supportsTeamDrives=true&q=trashed%3Dfalse&fields=title%2Cparents';
+
+        while True:
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log('getMediaList'+str(e))
+                  return
+              else:
+                xbmc.log('getMediaList'+str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+            print response_data
+
+            # parsing page for folders
+            for r2 in re.finditer('\"title\"\:\s+\"([^\"]+)\".*?\"parents\"\:\s+\[\s+[^\}]+\"id\"\:\s+\"([^\"]+)\"' ,response_data, re.DOTALL):
+                folderName = r2.group(1)
+                parentID = r2.group(2)
+                print "foldername = " + str(folderName) + "\n"
+                print "parent ID = " + str(parentID) + "\n"
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+            #if ($$newDocuments{$resourceID}[pDrive::DBM->D->{'title'}] eq $folderName){
+            #        return $resourceID;
+        return '';
+
+
