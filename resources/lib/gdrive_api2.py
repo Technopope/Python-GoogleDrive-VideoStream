@@ -2034,3 +2034,73 @@ class gdrive(cloudservice):
         return '';
 
 
+
+
+    # not used
+    def getSubFolderPath(self,folderID):
+
+
+        url = 'https://www.googleapis.com/drive/v2/files/'+str(folderID)+'?includeTeamDriveItems=true&supportsTeamDrives=true&q=trashed%3Dfalse&fields=nextLink%2Cname%2Cparents';
+
+        while True:
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log('getSubFolderID'+str(e))
+                  return
+              else:
+                xbmc.log('getSubFolderID'+str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+
+            # parsing page for folders
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
+                entryS = r2.group(1)
+                folderFanart = ''
+                folderIcon = ''
+                for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
+                    entry = r1.group(1)
+
+                    if 'folder' in entry:
+                        foldericon = self.getMediaInfo(entry, folderName=folderName)
+                        if foldericon != '':
+#                            foldericon = re.sub('\&gd\=true', '', foldericon)
+                            #need to cache
+                            folderIcon = foldericon + '|' + self.getHeadersEncoded()
+
+
+                for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
+                    entry = r1.group(1)
+                    media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart, icon=folderIcon)
+                    if media is not None:
+                        mediaFiles.append(media)
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+            #if ($$newDocuments{$resourceID}[pDrive::DBM->D->{'title'}] eq $folderName){
+            #        return $resourceID;
+        return '';
+
+
