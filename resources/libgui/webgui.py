@@ -488,8 +488,6 @@ class webGUI(BaseHTTPRequestHandler):
     def do_GET(self):
 
 
-        if self.path == '/favicon.ico':
-            return
 
         decryptkeyvalue = self.path
         if re.search(r'kv\=', str(self.path)):
@@ -507,6 +505,10 @@ class webGUI(BaseHTTPRequestHandler):
         headers = str(self.headers)
         xbmc.log(self.requestline)
         xbmc.log(headers)
+
+
+        if self.path == '/favicon.ico':
+            return
 
 
         if self.server.embyFilterUsers:
