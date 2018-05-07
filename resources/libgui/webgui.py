@@ -1234,6 +1234,11 @@ class webGUI(BaseHTTPRequestHandler):
             if quality != '':
                 query = query + quality
                 self.override = True
+
+            if '&override=true' in query:
+                self.override = True
+
+
             mediaEngine = engine.contentengine()
             mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
             return
