@@ -222,14 +222,27 @@ class webGUI(BaseHTTPRequestHandler):
                 xbmc.log('accepted whitelisted IP ' + IP)
 
 
+        #decryptkeyvalue = self.path
+        #if re.search(r'kv\=', str(self.path)):
+        #    from resources.lib import encryption
+
+        #    results = re.search(r'kv\=(.*)$', str(self.path))
+        #    if results:
+        #        keyvalue = str(results.group(1))
+        #        decryptkeyvalue = '/' + self.server.encrypt.decryptString(keyvalue).strip()
+        #        print decryptkeyvalue +"."
         decryptkeyvalue = self.path
         if re.search(r'kv\=', str(self.path)):
             from resources.lib import encryption
 
-            results = re.search(r'kv\=(.*)$', str(self.path))
+            results = re.search(r'kv\=([^\&]+)', str(self.path))
             if results:
                 keyvalue = str(results.group(1))
                 decryptkeyvalue = '/' + self.server.encrypt.decryptString(keyvalue).strip()
+                results = re.search(r'kv\=[^\&]+(\&.*)$', str(self.path))
+                if results:
+                    extras = str(results.group(1))
+                    decryptkeyvalue = decryptkeyvalue + extras
                 print decryptkeyvalue +"."
 
 
@@ -493,10 +506,14 @@ class webGUI(BaseHTTPRequestHandler):
         if re.search(r'kv\=', str(self.path)):
             from resources.lib import encryption
 
-            results = re.search(r'kv\=(.*)$', str(self.path))
+            results = re.search(r'kv\=([^\&]+)', str(self.path))
             if results:
                 keyvalue = str(results.group(1))
                 decryptkeyvalue = '/' + self.server.encrypt.decryptString(keyvalue).strip()
+                results = re.search(r'kv\=[^\&]+(\&.*)$', str(self.path))
+                if results:
+                    extras = str(results.group(1))
+                    decryptkeyvalue = decryptkeyvalue + extras
                 print decryptkeyvalue +"."
 
 
