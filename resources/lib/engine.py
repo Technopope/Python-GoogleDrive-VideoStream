@@ -930,18 +930,21 @@ class contentengine(object):
 
                         if frequency is not None and type is not None:
                             xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&frequency='+str(frequency)+'&type='+str(type)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                        elif filename != '' :
+                            xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&remove_ext=false&resolution=false&append=&skip=false&original=true&transcode=false&catalog=false&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                         else:
                             xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                         xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', settingsModule.getSetting('strm_path',''))
                         xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
-                        xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog', disable=['remove_ext', 'true', 'false'])
-                        xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
+                        if filename == '' :
+                            xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog', disable=['remove_ext', 'true', 'false'])
+                            xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
 
-                        xbmcgui.Dialog().booleanSelector('append resolution to STRM filename? (- ###p)','resolution')
-                        xbmcgui.Dialog().textField('append the following to the resolution (- APPEND ###p)','append',isOptional=True)
-                        xbmcgui.Dialog().booleanSelector('skip creating STRM for undetectable videos?','skip', True)
-                        xbmcgui.Dialog().booleanSelector('create original quality STRM files?','original', True)
-                        xbmcgui.Dialog().booleanSelector('create google transcode quality STRM files?','transcode', True)
+                            xbmcgui.Dialog().booleanSelector('append resolution to STRM filename? (- ###p)','resolution')
+                            xbmcgui.Dialog().textField('append the following to the resolution (- APPEND ###p)','append',isOptional=True)
+                            xbmcgui.Dialog().booleanSelector('skip creating STRM for undetectable videos?','skip', True)
+                            xbmcgui.Dialog().booleanSelector('create original quality STRM files?','original', True)
+                            xbmcgui.Dialog().booleanSelector('create google transcode quality STRM files?','transcode', True)
                         xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port', default=host)
                         xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
 
@@ -1072,32 +1075,32 @@ class contentengine(object):
                             xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created '+str(count)+' STRM file(s). (changetoken = '+ str(changeToken) + ')')
 
                         elif filename != '':
-                                        if encfs:
-                                            values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
-                                            # encfs -- extract filename
-                                            extrapulatedFileName = re.compile('.*?/([^/]+)$')
+                            if encfs:
+                                values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
+                                # encfs -- extract filename
+                                extrapulatedFileName = re.compile('.*?/([^/]+)$')
 
-                                            titleDecrypted = extrapulatedFileName.match(dencryptedPath)
+                                titleDecrypted = extrapulatedFileName.match(dencryptedPath)
 
-                                            if titleDecrypted is not None:
-                                                title = titleDecrypted.group(1)
+                                if titleDecrypted is not None:
+                                    title = titleDecrypted.group(1)
 
-                                        else:
-                                            values = {'title': title, 'filename': filename, 'username': invokedUsername}
-                                        if type == 1:
-                                            url = self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
-                                        else:
-                                            url = self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
+                            else:
+                                values = {'title': title, 'filename': filename, 'username': invokedUsername}
+                            if type == 1:
+                                url = self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
+                            else:
+                                url = self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
 
-                                        filename = path + '/' + title+'.strm'
-                                        strmFile = xbmcvfs.File(filename, "w")
-                                        if KODI:
-                                            strmFile.write(url + '\n')
-                                        else:
-                                            strmFile.write(host + '/' + url + '\n')
+                            filename = path + '/' + title+'.strm'
+                            strmFile = xbmcvfs.File(filename, "w")
+                            if KODI:
+                                strmFile.write(url + '\n')
+                            else:
+                                strmFile.write(host + '/' + url + '\n')
 
-                                        strmFile.close()
-                                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
+                            strmFile.close()
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
 
                         else:
 
