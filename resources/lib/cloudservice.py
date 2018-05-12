@@ -216,6 +216,7 @@ class cloudservice(object):
                             skip = False
                             extraFiles = []
                             if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+
                                 extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
 
                                 if int(item.file.resolution[0]) > 480:
@@ -251,22 +252,24 @@ class cloudservice(object):
                                 strmFile.write(url+'\n')
                                 strmFile.close()
 
-                            if transcode and not skip and (not xbmcvfs.exists(strmFileName) or force):
-                                for x in extraFiles:
-                                    strmFile = xbmcvfs.File(x[0], "w")
-                                    tmpURL = x[1]
-                                    if not KODI:
-                                        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+                            if transcode and not skip:# and (not xbmcvfs.exists(strmFileName) or force):
 
-                                            if params and plugin_handle.server.hide:
-                                                base = str(params.group(1))
-                                                extended = str(params.group(1))
-                                                tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
-                                            else:
-                                                tmpURL = str(tmpURL)
-                                    strmFile.write(tmpURL+'\n')
-                                    strmFile.close()
+                                for x in extraFiles:
+                                    if (not xbmcvfs.exists(x[0]) or force):
+                                        strmFile = xbmcvfs.File(x[0], "w")
+                                        tmpURL = x[1]
+                                        if not KODI:
+                                            if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+
+                                                if params and plugin_handle.server.hide:
+                                                    base = str(params.group(1))
+                                                    extended = str(params.group(1))
+                                                    tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                else:
+                                                    tmpURL = str(tmpURL)
+                                        strmFile.write(tmpURL+'\n')
+                                        strmFile.close()
                             count += 1
                         elif catalog:
                             episode = ''

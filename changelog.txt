@@ -1,3 +1,4 @@
+- fix for folders (not single STRM): catalog strms to false stops transcoding AND original streams being created #53
 - add manual whitelist ip
 - should whitelist local public IP for ffprobe requests
 v0.1.18 (2018-05-02)
