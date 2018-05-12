@@ -1357,26 +1357,43 @@ class gdrive(cloudservice):
     ##
     def getPlaybackCall(self, package=None, title='', isExact=True, contentType=None):
 
+        mediaURLs = []
+
+        docid = ''
         try:
-            pquality = int(self.settings.getParameter('preferred_quality', self.settings.getSetting('preferred_quality')))
             pformat = int(self.settings.getParameter('preferred_format', self.settings.getSetting('preferred_format')))
-            acodec = int(self.settings.getParameter('avoid_codec', self.settings.getSetting('avoid_codec')))
-            aformat = int(self.settings.getParameter('avoid_format', self.settings.getSetting('avoid_format')))
             #pquality = int(self.addon.getSetting('preferred_quality'))
             #pformat = int(self.addon.getSetting('preferred_format'))
             #acodec = int(self.addon.getSetting('avoid_codec'))
             #aformat = int(self.addon.getSetting('avoid_format'))
         except :
-            pquality=0
             pformat=0
+        try:
+            acodec = int(self.settings.getParameter('avoid_codec', self.settings.getSetting('avoid_codec')))
+        except :
             acodec=0
+        try:
+            aformat = int(self.settings.getParameter('avoid_format', self.settings.getSetting('avoid_format')))
+        except :
             aformat=0
 
+        try:
+            pquality = int(self.settings.getParameter('preferred_quality', self.settings.getSetting('preferred_quality')))
+            #pquality = int(self.addon.getSetting('preferred_quality'))
+            #pformat = int(self.addon.getSetting('preferred_format'))
+            #acodec = int(self.addon.getSetting('avoid_codec'))
+            #aformat = int(self.addon.getSetting('avoid_format'))
+        except :
+            pquality=3
+            docid = package.file.id
+
+            # new method of fetching original stream -- using alt=media
+            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
+
+            return (mediaURLs, package)
         print  "PREFER " + str(pquality) + "\n"
 
-        mediaURLs = []
-
-        docid = ''
 
         # for playback from STRM with title of video provided (best match)
         if package is None and title != '':
@@ -1738,14 +1755,24 @@ class gdrive(cloudservice):
     ##
     def getPublicStream(self,url):
 
+
         try:
-            pquality = int(self.addon.getSetting('preferred_quality'))
-            pformat = int(self.addon.getSetting('preferred_format'))
-            acodec = int(self.addon.getSetting('avoid_codec'))
+            pformat = int(self.settings.getParameter('preferred_format', self.settings.getSetting('preferred_format')))
         except :
-            pquality=-1
-            pformat=-1
-            acodec=-1
+            pformat=0
+        try:
+            acodec = int(self.settings.getParameter('avoid_codec', self.settings.getSetting('avoid_codec')))
+        except :
+            acodec=0
+        try:
+            aformat = int(self.settings.getParameter('avoid_format', self.settings.getSetting('avoid_format')))
+        except :
+            aformat=0
+
+        try:
+            pquality = int(self.settings.getParameter('preferred_quality', self.settings.getSetting('preferred_quality')))
+        except :
+            pquality=3
 
         mediaURLs = []
 
@@ -1831,28 +1858,28 @@ class gdrive(cloudservice):
                                     order = order + 1000
                                 elif pquality == 1:
                                     order = order + 3000
-                                elif pquality == 3:
+                                elif pquality == 2:
                                     order = order + 9000
                             elif int(itagDB[itag]['resolution']) == 720:
                                 if pquality == 0:
                                     order = order + 2000
                                 elif pquality == 1:
                                     order = order + 1000
-                                elif pquality == 3:
+                                elif pquality == 2:
                                     order = order + 9000
                             elif int(itagDB[itag]['resolution']) == 480:
                                 if pquality == 0:
                                     order = order + 3000
                                 elif pquality == 1:
                                     order = order + 2000
-                                elif pquality == 3:
+                                elif pquality == 2:
                                     order = order + 1000
                             elif int(itagDB[itag]['resolution']) < 480:
                                 if pquality == 0:
                                     order = order + 4000
                                 elif pquality == 1:
                                     order = order + 3000
-                                elif pquality == 3:
+                                elif pquality == 2:
                                     order = order + 2000
                         try:
                             if itagDB[itag]['codec'] == 'VP8/vorbis':

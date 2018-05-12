@@ -1,3 +1,5 @@
+v0.1.20 (2018-05-12)
+- fix: Can't get passthrough to work #55
 - cleanup single STRM creation (removed unapplicable prompts from process for a single file): catalog strms to false stops transcoding AND original streams being created #53
 - fix for folders (not single STRM): catalog strms to false stops transcoding AND original streams being created #53
 - add manual whitelist ip

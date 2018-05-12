@@ -1433,7 +1433,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         if headers is None:
             return ''
-        for r in re.finditer('Cookie\:[^\n]+quality\=(\S+)' ,
+        for r in re.finditer('Cookie\:[^\n]+quality\=(\d+)' ,
                      str(headers), re.DOTALL):
           quality = r.group(1)
           return '&override=true&preferred_quality=' + str(quality)
