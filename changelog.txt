@@ -1,3 +1,5 @@
+- fix for missing STRM fields
+- make "create Google Transcode" STRM files default to false
 v0.1.20 (2018-05-12)
 - fix: Can't get passthrough to work #55
 - cleanup single STRM creation (removed unapplicable prompts from process for a single file): catalog strms to false stops transcoding AND original streams being created #53

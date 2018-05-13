@@ -775,6 +775,7 @@ class contentengine(object):
             resolution = settingsModule.getParameter('resolution', False)
             removeExt = settingsModule.getParameter('remove_ext', False)
             folderID = settingsModule.getParameter('folder')
+            print "FOLDER = " + folderID + "\n"
             filename = settingsModule.getParameter('filename', None)
             title = settingsModule.getParameter('title')
             invokedUsername = settingsModule.getParameter('username')
@@ -936,7 +937,7 @@ class contentengine(object):
                             xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                         xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', settingsModule.getSetting('strm_path',''))
                         xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
-                        if filename == '' :
+                        if folderID != '' :
                             xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog', disable=['remove_ext', 'true', 'false'])
                             xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
 
@@ -944,7 +945,7 @@ class contentengine(object):
                             xbmcgui.Dialog().textField('append the following to the resolution (- APPEND ###p)','append',isOptional=True)
                             xbmcgui.Dialog().booleanSelector('skip creating STRM for undetectable videos?','skip', True)
                             xbmcgui.Dialog().booleanSelector('create original quality STRM files?','original', True)
-                            xbmcgui.Dialog().booleanSelector('create google transcode quality STRM files?','transcode', True)
+                            xbmcgui.Dialog().booleanSelector('create google transcode quality STRM files?','transcode', False)
                         xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port', default=host)
                         xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
 
