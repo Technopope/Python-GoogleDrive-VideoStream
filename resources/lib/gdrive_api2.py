@@ -445,7 +445,7 @@ class gdrive(cloudservice):
             # if action fails, validate login
             try:
               response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
+            except urllib2.HTTPError, e:
               if e.code == 403 or e.code == 401:
                 self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList())
@@ -455,6 +455,10 @@ class gdrive(cloudservice):
                   xbmc.log('getMediaList ' + str(e))
                   return
               else:
+                xbmc.log('getMediaList ' + str(e))
+                return
+
+            except urllib2.URLError, e:
                 xbmc.log('getMediaList ' + str(e))
                 return
 
@@ -543,7 +547,7 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
               #xbmc.sleep(1000)
 
-            except urllib2.URLError, e:
+            except urllib2.HTTPError, e:
 
               if e.code == 403 or e.code == 401:
                 self.refreshToken()
@@ -558,6 +562,9 @@ class gdrive(cloudservice):
               else:
                 xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
                 return ([],nextPageToken,changeToken)
+            except urllib2.URLError, e:
+                xbmc.log('getChangeList ' + str(e))
+                return
             except socket.timeout, e:
                 return ([],nextPageToken,changeToken)
 
