@@ -1,3 +1,5 @@
+- fix for catalogging disabling for STRM creation
+- improvements for STRM creation - adding stripping for title/show name
 - fix for missing STRM fields
 - make "create Google Transcode" STRM files default to false
 v0.1.20 (2018-05-12)
