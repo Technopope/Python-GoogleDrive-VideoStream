@@ -287,6 +287,7 @@ class cloudservice(object):
                             if not tv:
                                 tv = item.file.regtv3.match(title)
 
+
                             if tv:
                                 show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
                                 show = show.rstrip("\.")
@@ -391,7 +392,7 @@ class cloudservice(object):
                                 spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
                             if LOGGING is not None:
-                                print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(videoResolution)+'\t'+str(item.file.checksum) + '\t' + "\n"
+                                print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(videoResolution)+'\t'+str(item.file.checksum)
 
 
             elif mediaItems and encfs:
