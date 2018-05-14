@@ -775,7 +775,6 @@ class contentengine(object):
             resolution = settingsModule.getParameter('resolution', False)
             removeExt = settingsModule.getParameter('remove_ext', False)
             folderID = settingsModule.getParameter('folder')
-            print "FOLDER = " + folderID + "\n"
             filename = settingsModule.getParameter('filename', None)
             title = settingsModule.getParameter('title')
             invokedUsername = settingsModule.getParameter('username')
