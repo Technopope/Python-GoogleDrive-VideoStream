@@ -292,7 +292,7 @@ class cloudservice(object):
                                 if not show:
                                     show = tv.group(1).replace("\S{2,}\-\S{2,}", " ")
                                     show = show.rstrip("\-")
-                                show = show.strip('.').lower()
+                                show = show.strip('.').lower().strip()
                                 season = tv.group(2)
                                 if len(season) < 2:
                                     season = '0' + str(season)
@@ -311,7 +311,7 @@ class cloudservice(object):
                                 if movie:
                                     title = movie.group(1)
                                     title = re.sub(r'\.',r' ', title)
-                                    title = title.strip('.').lower()
+                                    title = title.strip('.').lower().strip()
                                     year = movie.group(2)
 
                                     filename = str(title) + '(' + str(year) + ')'
