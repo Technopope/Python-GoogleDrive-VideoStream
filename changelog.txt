@@ -1,3 +1,4 @@
+- fix: strm creation not inserting 'http://' at the start #57
 v0.1.22 (2018-05-18)
 - implemented: Scheduling STRM support non-catalog structures #45
 - testing: Scheduling STRM support non-catalog structures #45

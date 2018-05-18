@@ -990,7 +990,7 @@ class contentengine(object):
                                         url = str(url) + '&kv=' +plugin_handle.server.encrypt.encryptString(url)
 
 
-                            strmFile.write(host + '/' + url+'\n')
+                            strmFile.write(hostTemp + '/' + url+'\n')
                             strmFile.close()
                             xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
 
@@ -1096,7 +1096,7 @@ class contentengine(object):
                             if KODI:
                                 strmFile.write(url + '\n')
                             else:
-                                strmFile.write(host + '/' + url + '\n')
+                                strmFile.write(hostTemp + '/' + url + '\n')
 
                             strmFile.close()
                             xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
