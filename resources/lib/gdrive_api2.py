@@ -71,7 +71,7 @@ class gdrive(cloudservice):
     MEDIA_TYPE_VIDEO = 2
     MEDIA_TYPE_PICTURE = 3
     MEDIA_TYPE_UNKNOWN = 4
-    MEDIA_TYPE_VIDEO_HELPER = 4
+    MEDIA_TYPE_VIDEO_HELPER = 5
 
     MEDIA_TYPE_FOLDER = 0
 
@@ -837,6 +837,7 @@ class gdrive(cloudservice):
                     print "subtitle\n"
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO_HELPER, '', '', size=fileSize, checksum=md5, parentID=parentID)
                     media = package.package(mediaFile,folder.folder(folderName,'', parentID=parentID))
+                    media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 
                 # entry is a video
@@ -1414,7 +1415,7 @@ class gdrive(cloudservice):
             mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
 
             return (mediaURLs, package)
-        print  "PREFER " + str(pquality) + "\n"
+
 
 
         # for playback from STRM with title of video provided (best match)
@@ -2113,14 +2114,12 @@ class gdrive(cloudservice):
 
         response_data = response.read()
         response.close()
-        print response_data
+
 
         # parsing page for folders
         for r2 in re.finditer('\"title\"\:\s+\"([^\"]+)\".*?\"parents\"\:\s+\[\s+[^\}]+\"id\"\:\s+\"([^\"]+)\"' ,response_data, re.DOTALL):
             folderName = r2.group(1)
             parentID = r2.group(2)
-            print "foldername = " + str(folderName) + "\n"
-            print "parent ID = " + str(parentID) + "\n"
             folderCache[str(folderID)] =  (folderName, parentID)
             return str(self.getSubFolderPath(parentID,folderCache)) + '/' + str(folderName)
 

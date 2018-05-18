@@ -213,14 +213,13 @@ class cloudservice(object):
                             directoryPath = ''
                             if item.folder.parentID != None:
                                 directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
-                            print "PATH = " + str(directoryPath) + "\n"
                             try:
                                 os.makedirs(str(path) + str(directoryPath))
                             except OSError:
                                 pass
 
 
-                            if removeExt:
+                            if removeExt and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
                                 strmFileName = str(path) + '/' + str(directoryPath) +'/'+ str(re.sub(r'\.[^\.]+$',r'', title))
                             else:
                                 strmFileName = str(path) + '/' + str(directoryPath) +'/' + str(title)
@@ -228,7 +227,11 @@ class cloudservice(object):
 
                             skip = False
                             extraFiles = []
-                            if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+                            if item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
+                                skip = True
+                                print "SUBTITLE\n\n"
+                                self.downloadGeneralFile(item.mediaurl.url,strmFileName)
+                            elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
 
                                 extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
 
@@ -1021,7 +1024,9 @@ class cloudservice(object):
     def downloadGeneralFile(self, url, file, force=False):
 
         # already downloaded
-        if not force and xbmcvfs.exists(file) and xbmcvfs.File(file).size() > 0:
+        if KODI and not force and xbmcvfs.exists(file) and xbmcvfs.File(file, 'r').size() > 0:
+            return
+        elif not KODI and not force and xbmcvfs.exists(file) and os.path.getsize(file) > 0:
             return
 
         req = urllib2.Request(url, None, self.getHeadersList())
@@ -1654,9 +1659,10 @@ class cloudservice(object):
         req = urllib2.Request(url, None, self.getHeadersList())
 
         # already downloaded
-        if xbmcvfs.exists(file) and xbmcvfs.File(file).size() > 0:
+        if KODI and xbmcvfs.exists(file) and xbmcvfs.File(file).size() > 0:
             return
-
+        elif not KODI and xbmcvfs.exists(file) and os.path.getsize(file) > 0:
+            return
         f = xbmcvfs.File(file, 'w')
 
         # if action fails, validate login

@@ -28,6 +28,8 @@ import re
 def File(filename, type):
     return open(filename, type)
 
+
+
 def mkdir(path):
     #path = re.sub(r'//.',r'/', path)
 
@@ -58,6 +60,3 @@ class xbmcvfs:
     ##
     def __init__(self):
         return
-
-
-

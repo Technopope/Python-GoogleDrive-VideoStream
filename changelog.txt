@@ -1,3 +1,4 @@
+- implement: Download SRT and NFO when available. #46
 - add subtitles and nfo files to media collection objects and assign these MEDIA_VIDEO_HELPER file type
 - improvement: for downloadGeneralFile, move up the file check before the web call
 - fix: strm creation not inserting 'http://' at the start #57
