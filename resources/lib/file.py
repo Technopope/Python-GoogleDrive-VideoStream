@@ -40,7 +40,7 @@ class file:
 
     ##
     ##
-    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution=None, playcount=0, duration=-1, download='', checksum=''):
+    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution=None, playcount=0, duration=-1, download='', checksum='', parentID=None):
         self.id = id
         self.title = title
         self.showtitle = title
@@ -77,6 +77,7 @@ class file:
         self.isTV = False
         self.TVID = None
         self.MOVIEID = None
+        self.parentID = parentID
 
 
         self.cleantv = re.compile('(.+?)'

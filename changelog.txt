@@ -1,3 +1,5 @@
+v0.1.22 (2018-05-18)
+- implemented: Scheduling STRM support non-catalog structures #45
 - testing: Scheduling STRM support non-catalog structures #45
 - remove logging for favicon
 - improvements for STRM creation - remove blank lines from log

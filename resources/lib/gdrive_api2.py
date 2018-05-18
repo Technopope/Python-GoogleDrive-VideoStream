@@ -726,7 +726,7 @@ class gdrive(cloudservice):
     ##
     def getMediaPackage(self, entry, folderName='',contentType=2, fanart='', icon=''):
 
-
+                xbmc.log(entry, xbmc.LOGDEBUG)
                 resourceID = 0
                 resourceType = ''
                 title = ''
@@ -834,7 +834,7 @@ class gdrive(cloudservice):
 
                 # entry is a video
                 elif ((fileExtension.lower() == '' or fileExtension.lower() not in ('','sub')) and (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType or fileExtension.lower() in ('iso','ts', 'mkv', 'rmvb')) and contentType in (0,1,2,4,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount), duration=duration, checksum=md5)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount), duration=duration, checksum=md5, parentID=parentID)
 
                     if self.settings.parseTV:
                         tv = mediaFile.regtv1.match(title)
@@ -856,7 +856,7 @@ class gdrive(cloudservice):
 
                     if deleted:
                         mediaFile.deleted = True
-                    media = package.package(mediaFile,folder.folder(folderName,''))
+                    media = package.package(mediaFile,folder.folder(folderName,'', parentID=parentID))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
 
 
@@ -875,7 +875,7 @@ class gdrive(cloudservice):
 
                 # entry is a music file
                 elif ((resourceType == 'application/vnd.google-apps.audio' or (fileExtension.lower() == '' or fileExtension.lower() in ('flac', 'mp3')) or 'audio' in resourceType) and contentType in (1,2,3,4,6,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, fanart, '', size=fileSize, checksum=md5)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, fanart, '', size=fileSize, checksum=md5, parentID=parentID)
 
                     if self.settings.parseMusic:
 
@@ -893,7 +893,7 @@ class gdrive(cloudservice):
 
                 # entry is a photo
                 elif ((resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType) and contentType in (2,4,5,6,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, fanart, thumbnail, size=fileSize, download=url, checksum=md5)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, fanart, thumbnail, size=fileSize, download=url, checksum=md5, parentID=parentID)
 
                     photoURL = url
                     #*** downsize photo
@@ -915,14 +915,14 @@ class gdrive(cloudservice):
 
                 # entry is unknown
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, fanart, thumbnail, size=fileSize, checksum=md5)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, fanart, thumbnail, size=fileSize, checksum=md5, parentID=parentID)
                     media = package.package(mediaFile,folder.folder(folderName,'', parentID=parentID))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 
                 # all files (for saving to encfs)
                 elif (contentType >= 8):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, fanart, '', size=fileSize, checksum=md5)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, fanart, '', size=fileSize, checksum=md5, parentID=parentID)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     return media
@@ -2077,6 +2077,8 @@ class gdrive(cloudservice):
 
 
     def getSubFolderPath(self,folderID, folderCache= {}):
+
+        xbmc.log('getSubFolderPath' + ' folderid = '+ folderID, xbmc.LOGDEBUG)
 
         if folderID in folderCache.keys():
             return self.getSubFolderPath(folderCache[folderID][1]) + '/'  + str(folderCache[folderID][0])

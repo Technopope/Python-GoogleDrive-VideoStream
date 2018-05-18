@@ -210,7 +210,9 @@ class cloudservice(object):
                         #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
                         if not catalog:
 
-                            directoryPath = self.getSubFolderPath(folderID)
+                            directoryPath = ''
+                            if item.folder.parentID != None:
+                                directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
                             print "PATH = " + str(directoryPath) + "\n"
                             try:
                                 os.makedirs(str(path) + str(directoryPath))
