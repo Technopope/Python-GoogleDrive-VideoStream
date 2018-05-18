@@ -229,7 +229,6 @@ class cloudservice(object):
                             extraFiles = []
                             if item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
                                 skip = True
-                                print "SUBTITLE\n\n"
                                 self.downloadGeneralFile(item.mediaurl.url,strmFileName)
                             elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
 
@@ -340,13 +339,17 @@ class cloudservice(object):
                             skip = False
                             if pathLib != '':
 
-                                if removeExt and pathLib == videoPath:
+                                if removeExt and pathLib == videoPath and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
                                     strmFileName = str(pathLib) + '/' + str(re.sub(r'\.[^\.]+$',r'', filename))
                                 else:
                                     strmFileName = str(pathLib) + '/' + str(filename)
 
                                 extraFiles = []
-                                if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+                                if item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
+                                    skip = True
+                                    self.downloadGeneralFile(item.mediaurl.url,strmFileName)
+
+                                elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
 
                                     extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
 
@@ -403,10 +406,10 @@ class cloudservice(object):
 
                                     count += 1
 
-                            if spreadsheetFile is not None:
+                            if spreadsheetFile is not None and  item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
                                 spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
-                            if LOGGING is not None:
+                            if LOGGING is not None and  item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
                                 print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(videoResolution)+'\t'+str(item.file.checksum)
 
 
