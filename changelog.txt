@@ -1,4 +1,4 @@
-
+- remove logging for favicon
 - improvements for STRM creation - remove blank lines from log
 - improvements for STRM creation - better logic around movie dates
 - fix for catalogging disabling for STRM creation
