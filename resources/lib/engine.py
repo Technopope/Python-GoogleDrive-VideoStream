@@ -593,7 +593,6 @@ class contentengine(object):
 
         cloudservice2 = constants.cloudservice2
 
-
         #*** testing - gdrive
         #if constants.CONST.tvwindow:
         #    from resources.lib import tvWindow

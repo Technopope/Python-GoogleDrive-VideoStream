@@ -1,3 +1,4 @@
+- testing: Scheduling STRM support non-catalog structures #45
 - remove logging for favicon
 - improvements for STRM creation - remove blank lines from log
 - improvements for STRM creation - better logic around movie dates

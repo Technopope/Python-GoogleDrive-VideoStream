@@ -179,6 +179,8 @@ class cloudservice(object):
                         newcount=0
                         if catalog:
                             (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt, folderCache=folderCache)
+                        elif fetchChangeID:
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path, item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache)
                         else:
                             (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache)
                         count += newcount
@@ -208,7 +210,7 @@ class cloudservice(object):
                         #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
                         if not catalog:
 
-                            directoryPath = service.getSubFolderPath(folderID)
+                            directoryPath = self.getSubFolderPath(folderID)
                             print "PATH = " + str(directoryPath) + "\n"
                             try:
                                 os.makedirs(str(path) + str(directoryPath))

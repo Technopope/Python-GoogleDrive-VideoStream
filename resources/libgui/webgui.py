@@ -527,8 +527,6 @@ class webGUI(BaseHTTPRequestHandler):
         xbmc.log(headers)
 
 
-
-
         if self.server.embyFilterUsers:
 
 
@@ -573,6 +571,7 @@ class webGUI(BaseHTTPRequestHandler):
 
         # passed a kill signal?
         if decryptkeyvalue == '/kill':
+
             self.send_response(200)
             self.end_headers()
             if (self.server.username is not None and self.server.username != ''):
@@ -650,15 +649,6 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
 
-        elif  re.search(r'/test', str(decryptkeyvalue)):
-            self.send_response(200)
-            self.send_header('Set-Cookie', 'quality=1')
-
-#            self.send_response(307)
-#            self.send_header('Location', '')
-            self.end_headers()
-
-            return
 
         elif  re.search(r'/quality=SD', str(decryptkeyvalue)):
             self.send_response(200)
@@ -693,6 +683,7 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         elif decryptkeyvalue == '/list' or decryptkeyvalue == '/':
+
             if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 self.send_response(200)
                 self.end_headers()
