@@ -118,7 +118,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False):
+    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False, folderCache= {}):
 
 
         if host is None:
@@ -178,9 +178,9 @@ class cloudservice(object):
                     if not changeTracking and item.file is None:
                         newcount=0
                         if catalog:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt, folderCache=folderCache)
                         else:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache)
                         count += newcount
                     elif item.file is not None:
 
@@ -208,11 +208,19 @@ class cloudservice(object):
                         #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
                         if not catalog:
 
+                            directoryPath = service.getSubFolderPath(folderID)
+                            print "PATH = " + str(directoryPath) + "\n"
+                            try:
+                                os.makedirs(str(path) + str(directoryPath))
+                            except OSError:
+                                pass
+
 
                             if removeExt:
-                                strmFileName = str(path) + '/' + str(re.sub(r'\.[^\.]+$',r'', title))
+                                strmFileName = str(path) + '/' + str(directoryPath) +'/'+ str(re.sub(r'\.[^\.]+$',r'', title))
                             else:
-                                strmFileName = str(path) + '/' + str(title)
+                                strmFileName = str(path) + '/' + str(directoryPath) +'/' + str(title)
+
 
                             skip = False
                             extraFiles = []
@@ -454,7 +462,7 @@ class cloudservice(object):
                         dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
 
                         #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode,  append=append, removeExt=removeExt)
+                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache)
 
                     elif index in fileListINodes.keys():
                         xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)

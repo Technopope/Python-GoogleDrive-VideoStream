@@ -735,6 +735,7 @@ class gdrive(cloudservice):
                 fileExtension = ''
                 md5 = ''
                 deleted = False
+                parentID = None
 
                 url = ''
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
@@ -792,6 +793,13 @@ class gdrive(cloudservice):
                   deleted = True
                   break
 
+                for r in re.finditer('\"parentLink\"\:\s+\"[^\"]+\/([^\"]+)\",' ,
+                             entry, re.DOTALL):
+                  xbmc.log("parent ID = " + r.group(1))
+                  parentID = r.group(1)
+                  break
+
+
                 # file property - gdrive
                 resume = 0
                 playcount = 0
@@ -821,7 +829,7 @@ class gdrive(cloudservice):
                         newtitle = r.group(1)
                         title = '*' + newtitle
                         resourceID = 'SAVED SEARCH'
-                    media = package.package(None,folder.folder(resourceID,title, fanart, thumb=icon))
+                    media = package.package(None,folder.folder(resourceID,title, fanart, thumb=icon, parentID=parentID))
                     return media
 
                 # entry is a video
@@ -879,7 +887,7 @@ class gdrive(cloudservice):
 
                     if deleted:
                         mediaFile.deleted = True
-                    media = package.package(mediaFile,folder.folder(folderName,''))
+                    media = package.package(mediaFile,folder.folder(folderName,'', parentID=parentID))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 
@@ -897,7 +905,7 @@ class gdrive(cloudservice):
                             photoURL = re.sub('=s\d\d\d', '=s'+ str(self.settings.photoResolution), thumbnail)
 
 
-                    media = package.package(mediaFile,folder.folder(folderName,''))
+                    media = package.package(mediaFile,folder.folder(folderName,'', parentID=parentID))
                     media.setMediaURL(mediaurl.mediaurl(photoURL, '','',''))
                     return media
 
@@ -908,7 +916,7 @@ class gdrive(cloudservice):
                 # entry is unknown
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, fanart, thumbnail, size=fileSize, checksum=md5)
-                    media = package.package(mediaFile,folder.folder(folderName,''))
+                    media = package.package(mediaFile,folder.folder(folderName,'', parentID=parentID))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 

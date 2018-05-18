@@ -27,13 +27,14 @@ class folder:
 
     ##
     ##
-    def __init__(self, id, title, fanart='', thumb='', isRoot=False):
+    def __init__(self, id, title, fanart='', thumb='', isRoot=False, parentID=None):
         self.id = id
         self.title = title
         self.fanart = fanart
         self.thumb = thumb
         self.displaytitle = title
         self.isRoot = isRoot
+        self.parentID = parentID
 
     def displayTitle(self):
         return urllib.unquote(self.displaytitle)
