@@ -71,6 +71,7 @@ class gdrive(cloudservice):
     MEDIA_TYPE_VIDEO = 2
     MEDIA_TYPE_PICTURE = 3
     MEDIA_TYPE_UNKNOWN = 4
+    MEDIA_TYPE_VIDEO_HELPER = 4
 
     MEDIA_TYPE_FOLDER = 0
 
@@ -795,7 +796,6 @@ class gdrive(cloudservice):
 
                 for r in re.finditer('\"parentLink\"\:\s+\"[^\"]+\/([^\"]+)\",' ,
                              entry, re.DOTALL):
-                  xbmc.log("parent ID = " + r.group(1))
                   parentID = r.group(1)
                   break
 
@@ -830,6 +830,13 @@ class gdrive(cloudservice):
                         title = '*' + newtitle
                         resourceID = 'SAVED SEARCH'
                     media = package.package(None,folder.folder(resourceID,title, fanart, thumb=icon, parentID=parentID))
+                    return media
+
+                # subtitle or nfo file
+                elif (fileExtension.lower() in ('srt','nfo') and contentType in (0,1,2,4,7)):
+                    print "subtitle\n"
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO_HELPER, '', '', size=fileSize, checksum=md5, parentID=parentID)
+                    media = package.package(mediaFile,folder.folder(folderName,'', parentID=parentID))
                     return media
 
                 # entry is a video

@@ -1020,11 +1020,12 @@ class cloudservice(object):
     ##
     def downloadGeneralFile(self, url, file, force=False):
 
-        req = urllib2.Request(url, None, self.getHeadersList())
-
         # already downloaded
         if not force and xbmcvfs.exists(file) and xbmcvfs.File(file).size() > 0:
             return
+
+        req = urllib2.Request(url, None, self.getHeadersList())
+
 
         f = xbmcvfs.File(file, 'w')
 
