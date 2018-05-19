@@ -118,7 +118,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False, folderCache= {}):
+    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False, folderCache= {}, helperfiles=False):
 
 
         if host is None:
@@ -229,7 +229,9 @@ class cloudservice(object):
                             extraFiles = []
                             if item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
                                 skip = True
-                                self.downloadGeneralFile(item.mediaurl.url,strmFileName)
+                                if helperfiles:
+                                    self.downloadGeneralFile(item.mediaurl.url,strmFileName)
+
                             elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
 
                                 extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
@@ -285,7 +287,8 @@ class cloudservice(object):
                                                     tmpURL = str(tmpURL)
                                         strmFile.write(tmpURL+'\n')
                                         strmFile.close()
-                            count += 1
+                            if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
+                                count += 1
                         elif catalog:
                             episode = ''
                             # nekwebdev contribution
@@ -347,7 +350,8 @@ class cloudservice(object):
                                 extraFiles = []
                                 if item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
                                     skip = True
-                                    self.downloadGeneralFile(item.mediaurl.url,strmFileName)
+                                    if helperfiles:
+                                        self.downloadGeneralFile(item.mediaurl.url,strmFileName)
 
                                 elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
 
@@ -404,12 +408,13 @@ class cloudservice(object):
                                             strmFile.write(tmpURL+'\n')
                                             strmFile.close()
 
-                                    count += 1
+                                    if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
+                                        count += 1
 
-                            if spreadsheetFile is not None and  item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
+                            if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER and  spreadsheetFile is not None and  item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
                                 spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
-                            if LOGGING is not None and  item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
+                            if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER and LOGGING is not None and  item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
                                 print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(videoResolution)+'\t'+str(item.file.checksum)
 
 

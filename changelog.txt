@@ -1,3 +1,4 @@
+- add a parameter to STRM creation routine for: Download SRT and NFO when available. #46
 - remove NFO and SRT from saving to cloud spreadsheet and STRM log
 - implement: Download SRT and NFO when available. #46
 - add subtitles and nfo files to media collection objects and assign these MEDIA_VIDEO_HELPER file type
