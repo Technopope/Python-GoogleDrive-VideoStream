@@ -1282,7 +1282,7 @@ class cloudservice(object):
                         values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType, 'instance': self.instanceName }
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
-                        cm.append(( self.addon.getLocalizedString(30231), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=new_task&'+ urllib.urlencode(values)+')', ))
+                        cm.append(( self.addon.getLocalizedString(30231), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=new_task&'+ urllib.urlencode(values)+'&epath='+str(epath) +')', ))
                         #if folder.isRoot:
                         #    cm.append(( self.addon.getLocalizedString(30206), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&catalog=true&'+ urllib.urlencode(values)+')', ))
 
@@ -1291,7 +1291,7 @@ class cloudservice(object):
                         values = {'username': self.authorization.username, 'epath': epath, 'dpath': dpath, 'encfs':'true' ,'title': folder.title, 'folder': folder.id, 'content_type': contextType,  'instance': self.instanceName }
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
-                        cm.append(( self.addon.getLocalizedString(30231), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=new_task&'+ urllib.urlencode(values)+')', ))
+                        cm.append(( self.addon.getLocalizedString(30231), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=new_task&'+ urllib.urlencode(values)+'&epath='+str(epath)+')', ))
 
                     elif KODI and contextType == 'image':
                         # slideshow
@@ -1343,7 +1343,7 @@ class cloudservice(object):
                         values = {'username': self.authorization.username, 'title': folder.title,  'content_type': contextType, 'instance': self.instanceName }
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
-                        cm.append(( self.addon.getLocalizedString(30231), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=new_task&'+ urllib.urlencode(values)+')', ))
+                        cm.append(( self.addon.getLocalizedString(30231), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=new_task&'+ urllib.urlencode(values)+'&epath='+str(epath)+')', ))
                         if folder.isRoot:
                             cm.append(( self.addon.getLocalizedString(30201), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm2&'+ urllib.urlencode(values)+')', ))
 

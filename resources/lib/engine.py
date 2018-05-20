@@ -727,8 +727,12 @@ class contentengine(object):
                     #    status += 'every '+str(task[1])+' mins looking for changes -- never ran'
                         status = str(task[tasks.TASK_STATUS]) + ' ' + str(task[tasks.TASK_TYPE]) + ' ' + str(task[tasks.TASK_RUNTIME]) +'??'
                     cmd = re.sub('\&amp\;', '\&', task[tasks.TASK_CMD])
-                    results = re.search(r'\&filename=([^\&]+).*\&username=([^\&]+)\&', str(cmd))
-                    self.addStatusText('job #' + str(i) + ' username=' +str(results.group(2)) +' folder='+ str(results.group(1)) +' '+ str(status), job=i)
+                    results = re.search(r'\&folder=([^\&]+).*\&filename=([^\&]+).*\&title=([^\&]*).*\&username=([^\&]+)\&', str(cmd))
+                    if results:
+                        folderName = results.group(2)
+                        if folderName == 'None':
+                            folderName = results.group(3)
+                        self.addStatusText('job #' + str(i) + ' username=' +str(results.group(4)) +' folder='+ str(folderName) +' '+ str(status), job=i)
                 i += 1
 
         elif mode == 'delete_task':
@@ -842,7 +846,7 @@ class contentengine(object):
 
 
             # creating a scheduled task from scheduled tasks
-            if mode == 'new_task' and instanceName != '' and instanceName is not None and (frequency is None or folderID is None or type is None):
+            if mode == 'new_task' and instanceName != '' and instanceName is not None and folderID is None and (frequency is None or type is None):
                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
                 drives = service.getTeamDrives()
 
@@ -903,7 +907,7 @@ class contentengine(object):
                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
 
                 if not KODI:
-                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrmscheduler&instance='+str(instanceName)+'&username='+str(service.authorization.username)+'&folder='+str(folderID)+'&content_type='+contextType)
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrmscheduler&instance='+str(instanceName)+'&username='+str(service.authorization.username)+'&folder='+str(folderID)+ '&epath=' + str(encryptedPath) + '&content_type='+contextType + '&title='+str(title))
 
                 if KODI:
                     try:
