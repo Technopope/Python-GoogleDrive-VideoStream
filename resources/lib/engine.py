@@ -840,6 +840,8 @@ class contentengine(object):
 
                     xbmcgui.Dialog().endForm()
 
+
+            # creating a scheduled task from scheduled tasks
             if mode == 'new_task' and instanceName != '' and instanceName is not None and (frequency is None or folderID is None or type is None):
                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
                 drives = service.getTeamDrives()
@@ -896,6 +898,45 @@ class contentengine(object):
 
                     xbmcgui.Dialog().endForm()
 
+            # creating a scheduled task from right-click context on a folder
+            elif mode == 'new_task' and instanceName != '' and instanceName is not None and folderID is not None and (frequency is None or type is None):
+                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
+
+                if not KODI:
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrmscheduler&instance='+str(instanceName)+'&username='+str(service.authorization.username)+'&folder='+str(folderID)+'&content_type='+contextType)
+
+                if KODI:
+                    try:
+                        path = settingsModule.getSetting('strm_path')
+                    except:
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
+
+                    if path == '' or path is None:
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
+
+                    if path != '' and path is not None:
+                        returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+
+                    returnValue = xbmcgui.Dialog().select(addon.getLocalizedString(30224),list)
+                    frequency = xbmcgui.Dialog().input(addon.getLocalizedString(30225), '60', type=xbmcgui.INPUT_NUMERIC)
+                    type = xbmcgui.Dialog().select(addon.getLocalizedString(30226),['full syncs only', 'start change tracking', 'full sync then ongoing tracking'])
+                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30229))
+                    if returnPrompt:
+                        catalog = True
+
+                    tasks = scheduler.scheduler(settings=addon)
+                    #cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&append='+str(append)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&original='+str(original) + '&transcode='+str(transcode)+'&skip=' + str(skip0Res)  +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    cmd = str(self.PLUGIN_URL)+'?'+ 'mode=buildstrm&remove_ext='+str(removeExt)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
+
+                else:
+                    xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[2,'full sync then ongoing tracking'],[1,'start change tracking'],[0,'full syncs only']])
+
+                    xbmcgui.Dialog().endForm()
 
             if mode == 'buildstrmscheduler' or  mode == 'buildstrm':
 
