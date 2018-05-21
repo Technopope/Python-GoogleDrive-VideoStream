@@ -211,12 +211,14 @@ class cloudservice(object):
                         if not catalog:
 
                             directoryPath = ''
-                            if item.folder.parentID != None:
-                                directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
-                            try:
-                                os.makedirs(str(path) + str(directoryPath))
-                            except OSError:
-                                pass
+                            if fetchChangeID:
+
+                                if item.folder.parentID != None:
+                                    directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
+                                try:
+                                    os.makedirs(str(path) + str(directoryPath))
+                                except OSError:
+                                    pass
 
 
                             if removeExt and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:

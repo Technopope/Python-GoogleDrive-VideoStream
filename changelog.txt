@@ -1,3 +1,4 @@
+v0.1.24 (2018-05-20)
 - substitue title name for folder name: Allow the user create scheduled tasks for a particular folder #58
 v0.1.23 (2018-05-19)
 - add a parameter to STRM creation routine for: Download SRT and NFO when available. #46
