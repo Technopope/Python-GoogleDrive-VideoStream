@@ -1235,6 +1235,14 @@ class webGUI(BaseHTTPRequestHandler):
             mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
             return
 
+
+        elif re.search(r'/reset_task', str(decryptkeyvalue)):
+            for r in re.finditer('\&?job\=([^\&]+)' ,
+                     decryptkeyvalue, re.DOTALL):
+                job = r.group(1)
+                xbmc.log("resetting job " + str(job))
+                self.server.dbm.setSetting(str(job)+'_status',0)
+
         # redirect url to output
         else:
             # no options
