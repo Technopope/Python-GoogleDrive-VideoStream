@@ -852,9 +852,9 @@ class contentengine(object):
 
                     xbmcgui.Dialog().endForm()
 
-
+            xbmc.log("FOLDERID = " + str(folderID))
             # creating a scheduled task from scheduled tasks
-            if mode == 'new_task' and instanceName != '' and instanceName is not None and folderID is None and (frequency is None or type is None):
+            if mode == 'new_task' and instanceName != '' and instanceName is not None and (folderID is None or folderID == '') and (frequency is None or type is None):
                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
                 drives = service.getTeamDrives()
 
@@ -911,7 +911,7 @@ class contentengine(object):
                     xbmcgui.Dialog().endForm()
 
             # creating a scheduled task from right-click context on a folder
-            elif mode == 'new_task' and instanceName != '' and instanceName is not None and folderID is not None and (frequency is None or type is None):
+            elif mode == 'new_task' and instanceName != '' and instanceName is not None and (folderID is not None and folderID != '')  and (frequency is None or type is None):
                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
 
                 if not KODI:
