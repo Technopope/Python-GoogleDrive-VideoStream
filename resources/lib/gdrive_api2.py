@@ -768,7 +768,9 @@ class gdrive(cloudservice):
                   if self.settings.encfsDownloadType == 0:
                       url = r.group(1)
                   else:
+                      #xbmc.log('getMediaPackage - forcing to alt=media = ' + r.group(1))
                       url = self.API_URL +'files/' + str(resourceID) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                      #url = r.group(1)
                   break
                 for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -1291,10 +1293,10 @@ class gdrive(cloudservice):
     ##
     def getDownloadURL(self, docid):
 
-            #url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
 
-            #return url
-
+            return url
+            xbmc.log("IN GETDOWNLOAD\n")
             url = self.API_URL +'files/' + docid
 
             req = urllib2.Request(url, None, self.getHeadersList())
@@ -1409,6 +1411,7 @@ class gdrive(cloudservice):
             pquality=3
             docid = package.file.id
 
+            xbmc.log('getPlaybackCall - forcing to original')
             # new method of fetching original stream -- using alt=media
             url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
             mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
