@@ -1291,9 +1291,9 @@ class gdrive(cloudservice):
     ##
     def getDownloadURL(self, docid):
 
-            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            #url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
 
-            return url
+            #return url
 
             url = self.API_URL +'files/' + docid
 
