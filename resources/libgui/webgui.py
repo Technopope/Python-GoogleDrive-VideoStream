@@ -958,12 +958,15 @@ class webGUI(BaseHTTPRequestHandler):
                 decrypt.decryptStreamChunk(response,self.wfile, adjStart,adjEnd, chunksize=CHUNK)
 
             else:
+                import time
                 CHUNK = 16 * 1024
                 while True:
                     chunk = response.read(CHUNK)
                     if not chunk:
                         break
                     self.wfile.write(chunk)
+                    # testing of rate limitator
+                    ###time.sleep(0.02)
                     if constants.CONST.DEBUG:
                         print "HASH = " + str(hashlib.md5(chunk).hexdigest()) + "\n"
 
