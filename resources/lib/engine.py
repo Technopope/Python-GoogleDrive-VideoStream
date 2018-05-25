@@ -2381,10 +2381,12 @@ class contentengine(object):
 
             if isCheckOnly:
                 #check for item only
-                if validateExistence(filename):
-                        xbmcgui.Dialog().textField('exists=True','')
+                if service.validateExistence(filename):
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'exists=True')
+
                 else:
-                        xbmcgui.Dialog().textField('exists=False','')
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'exists=False')
+                xbmcplugin.endOfDirectory(self.plugin_handle)
 
                 return
 
