@@ -654,6 +654,9 @@ class contentengine(object):
 
         mode = settingsModule.getParameter('mode','main')
 
+        isCheckOnly = settingsModule.getParameter('checkonly',False)
+
+
         # make mode case-insensitive
         mode = mode.lower()
 
@@ -2374,6 +2377,16 @@ class contentengine(object):
             title = settingsModule.getParameter('title') #file title
             filename = settingsModule.getParameter('filename') #file ID
             folderID = settingsModule.getParameter('folder') #folder ID
+
+
+            if isCheckOnly:
+                #check for item only
+                if validateExistence(filename):
+                        xbmcgui.Dialog().textField('exists=True','')
+                else:
+                        xbmcgui.Dialog().textField('exists=False','')
+
+                return
 
 
             spreadsheetSTRM = settingsModule.getParameter('spreadsheet')

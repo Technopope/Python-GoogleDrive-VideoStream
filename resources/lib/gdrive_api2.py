@@ -1355,10 +1355,11 @@ class gdrive(cloudservice):
                     try:
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
-                        xbmc.log('getDownloadURL '+str(e))
+                        xbmc.log('getMediaDetails '+str(e))
                         return
                 else:
-                    xbmc.log('getDownloadURL '+str(e))
+                    xbmc.log('getMediaDetails '+str(e))
+
                     return
 
             response_data = response.read()
@@ -1369,6 +1370,32 @@ class gdrive(cloudservice):
                     entry = r1.group(1)
                     return self.getMediaPackage(entry)
 
+
+    def validateExistence(self, docid):
+
+            url = self.API_URL +'files/' + docid + '?includeTeamDriveItems=true&supportsTeamDrives=true'
+
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+
+            # if action fails, validate login
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    self.refreshToken()
+                    req = urllib2.Request(url, None, self.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        xbmc.log('getMediaDetails '+str(e))
+                        return False
+                else:
+                    xbmc.log('getMediaDetails '+str(e))
+
+                    return False
+
+            return True
 
 
 
