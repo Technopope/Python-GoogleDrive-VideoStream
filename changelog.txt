@@ -1,3 +1,4 @@
+- reset running scheduled jobs on load
 - fixing missing parameters on scheduled task
 - implement: Add an option to reset the runtime status of scheduled jobs #59
 v0.1.24 (2018-05-20)
