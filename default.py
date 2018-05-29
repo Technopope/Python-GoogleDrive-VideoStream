@@ -46,7 +46,7 @@ def job_scheduler(server, sleepTimer):
         if runtime is None:
             i += 1
             break
-        elif status == '1':
+        elif status == 1:
             schedule.log ("job #" + str(i)+ " is detected as incomplete")
             dbm.setSetting(str(i)+'_status', 0)
         i += 1
