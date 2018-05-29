@@ -1,3 +1,4 @@
+- fixing: Failed to pull down .nfo and .srt #61
 - reset running scheduled jobs on load
 - fixing missing parameters on scheduled task
 - implement: Add an option to reset the runtime status of scheduled jobs #59
