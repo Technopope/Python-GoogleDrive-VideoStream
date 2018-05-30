@@ -297,6 +297,7 @@ class cloudservice(object):
                             pathLib = ''
 
                             filename = str(title)
+                            originalfilename = str(title)
                             tv = False
                             tv = item.file.cleantv.match(title)
                             if not tv:
@@ -346,6 +347,9 @@ class cloudservice(object):
 
                                 if removeExt and pathLib == videoPath and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
                                     strmFileName = str(pathLib) + '/' + str(re.sub(r'\.[^\.]+$',r'', filename))
+                                elif item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
+                                    strmFileName = str(pathLib) + '/' + str(originalfilename)
+
                                 else:
                                     strmFileName = str(pathLib) + '/' + str(filename)
 
