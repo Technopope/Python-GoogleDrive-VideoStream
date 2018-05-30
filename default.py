@@ -78,6 +78,7 @@ def job_scheduler(server, sleepTimer):
                         currentTime = int(time.time())
                         dbm.setSetting(str(i)+'_runtime', str(currentTime))
                         dbm.setSetting(str(i)+'_status', str(1))
+                        schedule.log('runtime & status updated')
 
                         #do a full sync only
                         #if type == schedule.SYNC_BOTH and (runtime is None or runtime == 0):
@@ -93,6 +94,7 @@ def job_scheduler(server, sleepTimer):
                         if type != schedule.SYNC_INITIAL_ONLY and changeToken != '' and changeToken != '0':
                             cmd = cmd + '&change_token=' + str(changeToken)
 
+                        schedule.log('making call to API')
                         if bool(re.match('^http', cmd, re.I)) :
                             try:
                                 contents = urllib2.urlopen(cmd).read()
