@@ -322,7 +322,7 @@ class webGUI(BaseHTTPRequestHandler):
                 value = value.replace("%2F",'/')
                 value = value.replace("%3F",'?')
                 value = value.replace("%26",'&')
-                value = value.replace("%5c",'\\')
+                value = value.replace("%5C",'\\')
                 value = value.replace("%24",'$')
                 value = value.replace("%3A",':')
                 key = key.replace('passwrd','password')
