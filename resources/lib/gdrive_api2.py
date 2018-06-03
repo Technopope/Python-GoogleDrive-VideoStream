@@ -1436,6 +1436,8 @@ class gdrive(cloudservice):
             #aformat = int(self.addon.getSetting('avoid_format'))
         except :
             pquality=3
+
+        if pquality == 3:
             docid = package.file.id
 
             xbmc.log('getPlaybackCall - forcing to original')
