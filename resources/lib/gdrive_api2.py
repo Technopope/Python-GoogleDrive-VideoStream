@@ -727,7 +727,7 @@ class gdrive(cloudservice):
     ##
     def getMediaPackage(self, entry, folderName='',contentType=2, fanart='', icon=''):
 
-                xbmc.log(entry, xbmc.LOGDEBUG)
+                ##xbmc.log(entry, xbmc.LOGDEBUG)
                 resourceID = 0
                 resourceType = ''
                 title = ''

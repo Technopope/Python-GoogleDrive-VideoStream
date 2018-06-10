@@ -126,7 +126,7 @@ class cloudservice(object):
         else:
             PLUGIN_URL = str(host) + '/default.py'
 
-        xbmc.log("host = " + str(host) + ", PLUGIN_URL = " + str(PLUGIN_URL) + ", self.PLUGIN_URL = " + str(self.PLUGIN_URL), xbmc.LOGDEBUG)
+        ##xbmc.log("host = " + str(host) + ", PLUGIN_URL = " + str(PLUGIN_URL) + ", self.PLUGIN_URL = " + str(self.PLUGIN_URL), xbmc.LOGDEBUG)
         count = 0
         if catalog:
             if musicPath is None:
