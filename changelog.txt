@@ -1,3 +1,4 @@
+- fix for STRM logging
 - add pquality=3 = original
 - fix: Windows - \ is being replaced by %5C in settings #62
 - fixing: Failed to pull down .nfo and .srt #61
