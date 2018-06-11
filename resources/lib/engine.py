@@ -802,6 +802,7 @@ class contentengine(object):
             transcode = settingsModule.getParameter('transcode', True)
             helperfiles = settingsModule.getParameter('helperfiles', False)
             append = settingsModule.getParameter('append', '')
+            skipPartial = settingsModule.getParameter('skippartial', False)
             if append != '':
                 append += ' '
 
@@ -1002,6 +1003,7 @@ class contentengine(object):
                             xbmcgui.Dialog().booleanSelector('skip creating STRM for undetectable videos?','skip', True)
                             xbmcgui.Dialog().booleanSelector('create original quality STRM files?','original', True)
                             xbmcgui.Dialog().booleanSelector('create google transcode quality STRM files?','transcode', False)
+                            xbmcgui.Dialog().booleanSelector('skip partial files?','skippartial', False)
                         xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port', default=host)
                         xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
 
