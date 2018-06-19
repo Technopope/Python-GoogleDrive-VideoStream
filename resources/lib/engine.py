@@ -835,7 +835,7 @@ class contentengine(object):
                 while True:
                     instanceName = constants.PLUGIN_NAME+str(count)
                     username = settingsModule.getSetting(instanceName+'_username', None)
-                    if username is None or username == '':
+                    if username is None :#or username == '':
                         instanceName = ''
                         break
                     if username != '':
