@@ -1,3 +1,4 @@
+- fix: original taking precedence over override #68
 v0.1.25 (2018-06-12)
 - add STRM creation parameter - skip partial files
 - fix for STRM logging
