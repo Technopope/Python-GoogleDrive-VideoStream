@@ -2484,7 +2484,7 @@ class contentengine(object):
 
                     mediaFile = file.file(filename, title, '', 0, '','')
                     mediaFolder = folder.folder(folderID,'')
-                    (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8)
+                    (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8, override=self.plugin_handle.override)
                     #override title
                     package.file.title = title
                     #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
@@ -2584,7 +2584,7 @@ class contentengine(object):
                     encfs_inode = settingsModule.encfsInode
                     mediaFile = file.file(filename, title, '', 0, '','')
                     mediaFolder = folder.folder(folderID,'')
-                    (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8)
+                    (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8, override=self.plugin_handle.override)
                     #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
                     mediaURL = mediaURLs[0]
 
@@ -2813,11 +2813,11 @@ class contentengine(object):
                 if (filename != '' and mode == 'audio'):
                     mediaFile = file.file(filename, title, '', service.MEDIA_TYPE_MUSIC, '','')
                     mediaFolder = folder.folder(folderID,'')
-                    (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
+                    (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), override=self.plugin_handle.override)
                 elif filename != '':
                     mediaFile = file.file(filename, title, '', 0, '','')
                     mediaFolder = folder.folder(folderID,'')
-                    (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
+                    (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), override=self.plugin_handle.override)
                 # search
                 elif mode == 'search' and contextType == '':
 
@@ -2866,7 +2866,7 @@ class contentengine(object):
 
                 # title provided
                 else:
-                    (mediaURLs,package) = service.getPlaybackCall(None,title=title)
+                    (mediaURLs,package) = service.getPlaybackCall(None,title=title, override=self.plugin_handle.override)
 
                 #ensure there is something play
                 if package is not None:

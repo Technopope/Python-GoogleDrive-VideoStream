@@ -1406,7 +1406,7 @@ class gdrive(cloudservice):
     #   parameters: package (optional), title of media file, isExact allowing for fuzzy searches
     #   returns: url for playback
     ##
-    def getPlaybackCall(self, package=None, title='', isExact=True, contentType=None):
+    def getPlaybackCall(self, package=None, title='', isExact=True, contentType=None, override=False):
 
         mediaURLs = []
 
@@ -1500,9 +1500,10 @@ class gdrive(cloudservice):
         else:
             docid = package.file.id
 
-            # new method of fetching original stream -- using alt=media
-            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
-            mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
+            if not override:
+                # new method of fetching original stream -- using alt=media
+                url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
 
 
             # old method of fetching original stream -- using downloadURL
