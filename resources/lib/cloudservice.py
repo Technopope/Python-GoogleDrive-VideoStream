@@ -1645,13 +1645,16 @@ class cloudservice(object):
                 mediaURL.offline = True
 
         else:
-            if len(localFiles) == 0:
+            if len(localFiles) == 0 and len(totalList) > 0:
                 mediaURL = totalList[0]
                 if self.settings.download or  self.settings.cache:
                     mediaURL.url = totalList[0].url
                 else:
                     mediaURL.url = totalList[0].url +'|' + self.getHeadersEncoded()
 
+            # there are no transcode links (either because he file could not be processed by Google or the quota for transcode has been reached)
+            elif len(totalList) == 0:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': no playback links ', xbmc.LOGERROR)
             else:
                 mediaURL = mediaurl.mediaurl(str(totalList[0]), 'offline', 0, 0)
                 mediaURL.offline = True
