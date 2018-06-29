@@ -1743,6 +1743,18 @@ class gdrive(cloudservice):
                         mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
 
 
+        # if there are no transcode links, add at least the original quality
+        if len(mediaURLS) == 0:
+            docid = package.file.id
+
+            xbmc.log('getPlaybackCall - forcing to original')
+            # new method of fetching original stream -- using alt=media
+            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
+
+            return (mediaURLs, package)
+
+
         return (mediaURLs, package)
 
 
