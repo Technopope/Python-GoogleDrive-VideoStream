@@ -1744,7 +1744,7 @@ class gdrive(cloudservice):
 
 
         # if there are no transcode links, add at least the original quality
-        if len(mediaURLS) == 0:
+        if len(mediaURLs) == 0:
             docid = package.file.id
 
             xbmc.log('getPlaybackCall - forcing to original')
