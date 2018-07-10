@@ -328,7 +328,7 @@ class cloudservice(object):
                                     pathLib = pathLib +  '/season ' + str(season)
                                     if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
                                         xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                    filename = 'S' + str(season) + 'E' + str(episode)
+                                    filename = str(show) + ' ' +  'S' + str(season) + 'E' + str(episode)
                                 else:
                                     movie = item.file.cleanmovie.match(title)
                                     if not movie:

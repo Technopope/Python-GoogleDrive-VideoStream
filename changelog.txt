@@ -1,3 +1,4 @@
+- implement: STRM creation - tv shows & catalog - preserve show title #72
 - fix: add fallback to original if there are no transcode links
 - fix: original taking precedence over override #68
 v0.1.25 (2018-06-12)
