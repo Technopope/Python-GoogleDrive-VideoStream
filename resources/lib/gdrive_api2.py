@@ -559,15 +559,23 @@ class gdrive(cloudservice):
                     return ([],nextPageToken,changeToken)
                 except urllib2.URLError, e:
                   xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
-                  return
+                  return ([],nextPageToken,changeToken)
               elif e.code == 404:
+                xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
+                url = self.API_URL +'changes'
                 url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=false&maxResults=300"
+                if (nextPageToken == '' and changeToken != ''):
+                    url = url + '&startChangeId=' + str(changeToken)
+                if (nextPageToken != ''):
+                    url = url + '&pageToken=' + str(nextPageToken)
+
                 req = urllib2.Request(url, None, self.getHeadersList())
                 try:
                   response = urllib2.urlopen(req)
                 except socket.timeout, e:
                     return ([],nextPageToken,changeToken)
                 except urllib2.URLError, e:
+
                   if e.code == 403 or e.code == 401:
                     self.refreshToken()
                     req = urllib2.Request(url, None, self.getHeadersList())
@@ -577,13 +585,16 @@ class gdrive(cloudservice):
                         return ([],nextPageToken,changeToken)
                     except urllib2.URLError, e:
                       xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
-                      return
+                    return ([],nextPageToken,changeToken)
+
+                  xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
+                  return ([],nextPageToken,changeToken)
               else:
                 xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
                 return ([],nextPageToken,changeToken)
             except urllib2.URLError, e:
                 xbmc.log('getChangeList ' + str(e))
-                return
+                return ([],nextPageToken,changeToken)
             except socket.timeout, e:
                 return ([],nextPageToken,changeToken)
 
@@ -2189,3 +2200,44 @@ class gdrive(cloudservice):
         return '';
 
 
+    def isFolderIDInPath(self,folderID, targetFolderID):
+
+        xbmc.log('isFolderIDInPath' + ' folderid = '+ folderID, xbmc.LOGDEBUG)
+
+        if folderID == targetFolderID:
+            return True
+
+        url = 'https://www.googleapis.com/drive/v2/files/'+str(folderID)+'?includeTeamDriveItems=true&supportsTeamDrives=true&q=trashed%3Dfalse&fields=title%2Cparents';
+
+        req = urllib2.Request(url, None, self.getHeadersList())
+
+        # if action fails, validate login
+        try:
+          response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.refreshToken()
+            req = urllib2.Request(url, None, self.getHeadersList())
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              xbmc.log('isFolderIDInPath'+str(e))
+              return
+          else:
+            xbmc.log('isFolderIDInPath'+str(e))
+            return
+
+        response_data = response.read()
+        response.close()
+
+
+        # parsing page for folders
+        for r2 in re.finditer('\"title\"\:\s+\"[^\"]+\".*?\"parents\"\:\s+\[\s+[^\}]+\"id\"\:\s+\"([^\"]+)\"' ,response_data, re.DOTALL):
+            parentID = r2.group(1)
+            if targetFolderID == parentID:
+                return True
+            else:
+                return self.isFolderIDInPath(parentID, targetFolderID)
+
+
+        return False;

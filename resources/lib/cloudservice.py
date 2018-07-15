@@ -157,6 +157,7 @@ class cloudservice(object):
                 (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(folderID,contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
                 xbmc.log("changeToken " + str(changeToken) + "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken), xbmc.LOGDEBUG)
 
+
             # nothing to process (no new changes)
             # changeToken is blank, change tracking is enabled, so this is the first time run -- we want to fetch the largest change ID but not cycle through the existing change records
             if changeTracking and (largestChangeId == changeToken or changeToken == ''):
@@ -214,86 +215,93 @@ class cloudservice(object):
                             if not catalog:
 
                                 directoryPath = ''
+                                isInFolderID = False
                                 if fetchChangeID:
 
+                                    xbmc.log('buildSTRM' + ' item.folder.parentID = '+ item.folder.parentID, xbmc.LOGDEBUG)
                                     if item.folder.parentID != None:
-                                        directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
-                                    try:
-                                        os.makedirs(str(path) + str(directoryPath))
-                                    except OSError:
-                                        pass
+                                        isInFolderID = self.isFolderIDInPath(item.folder.parentID, folderID)
+
+                                        if isInFolderID:
+                                            directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
+                                            try:
+                                                os.makedirs(str(path) + str(directoryPath))
+                                            except OSError:
+                                                pass
+
+                                if isInFolderID:
+                                    if removeExt and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
+                                        strmFileName = str(path) + '/' + str(directoryPath) +'/'+ str(re.sub(r'\.[^\.]+$',r'', title))
+                                    else:
+                                        strmFileName = str(path) + '/' + str(directoryPath) +'/' + str(title)
 
 
-                                if removeExt and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
-                                    strmFileName = str(path) + '/' + str(directoryPath) +'/'+ str(re.sub(r'\.[^\.]+$',r'', title))
-                                else:
-                                    strmFileName = str(path) + '/' + str(directoryPath) +'/' + str(title)
+                                    skip = False
+                                    extraFiles = []
+                                    if item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
+                                        skip = True
+                                        if helperfiles:
+                                            self.downloadGeneralFile(item.mediaurl.url,strmFileName)
+
+                                    elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+
+                                        extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
+
+                                        if int(item.file.resolution[0]) > 480:
+                                            extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1'])
+                                        if int(item.file.resolution[0]) > 720:
+                                            extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0'])
 
 
-                                skip = False
-                                extraFiles = []
-                                if item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
-                                    skip = True
-                                    if helperfiles:
-                                        self.downloadGeneralFile(item.mediaurl.url,strmFileName)
+                                        strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
+                                        videoResolution = str(item.file.resolution[0])
 
-                                elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+                                    elif resolution and skip0Res:
+                                        skip = True
 
-                                    extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
-
-                                    if int(item.file.resolution[0]) > 480:
-                                        extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1'])
-                                    if int(item.file.resolution[0]) > 720:
-                                        extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0'])
+                                    else:
+                                        strmFileName += '.strm'
 
 
-                                    strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
-                                    videoResolution = str(item.file.resolution[0])
+                                    if original and not skip and (not xbmcvfs.exists(strmFileName) or force):
+                                        strmFile = xbmcvfs.File(strmFileName, "w")
 
-                                elif resolution and skip0Res:
-                                    skip = True
+                                        if not KODI:
+                                            if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
-                                else:
-                                    strmFileName += '.strm'
+                                                if params and plugin_handle.server.hide:
+                                                    base = str(params.group(1))
+                                                    extended = str(params.group(1))
+                                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
+                                                else:
+                                                    url = str(url) + '&original=true'
+
+                                        strmFile.write(url+'\n')
+                                        strmFile.close()
+
+                                    if transcode and not skip:# and (not xbmcvfs.exists(strmFileName) or force):
+
+                                        for x in extraFiles:
+                                            if (not xbmcvfs.exists(x[0]) or force):
+                                                strmFile = xbmcvfs.File(x[0], "w")
+                                                tmpURL = x[1]
+                                                if not KODI:
+                                                    if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+
+                                                        if params and plugin_handle.server.hide:
+                                                            base = str(params.group(1))
+                                                            extended = str(params.group(1))
+                                                            tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                        else:
+                                                            tmpURL = str(tmpURL)
+                                                strmFile.write(tmpURL+'\n')
+                                                strmFile.close()
+                                    if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
+                                        count += 1
 
 
-                                if original and not skip and (not xbmcvfs.exists(strmFileName) or force):
-                                    strmFile = xbmcvfs.File(strmFileName, "w")
-
-                                    if not KODI:
-                                        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
-
-                                            if params and plugin_handle.server.hide:
-                                                base = str(params.group(1))
-                                                extended = str(params.group(1))
-                                                url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
-                                            else:
-                                                url = str(url) + '&original=true'
-
-                                    strmFile.write(url+'\n')
-                                    strmFile.close()
-
-                                if transcode and not skip:# and (not xbmcvfs.exists(strmFileName) or force):
-
-                                    for x in extraFiles:
-                                        if (not xbmcvfs.exists(x[0]) or force):
-                                            strmFile = xbmcvfs.File(x[0], "w")
-                                            tmpURL = x[1]
-                                            if not KODI:
-                                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                                    params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
-
-                                                    if params and plugin_handle.server.hide:
-                                                        base = str(params.group(1))
-                                                        extended = str(params.group(1))
-                                                        tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
-                                                    else:
-                                                        tmpURL = str(tmpURL)
-                                            strmFile.write(tmpURL+'\n')
-                                            strmFile.close()
-                                if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
-                                    count += 1
                             elif catalog:
                                 episode = ''
                                 # nekwebdev contribution
