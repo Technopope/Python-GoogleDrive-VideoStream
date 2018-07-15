@@ -516,7 +516,7 @@ class gdrive(cloudservice):
     #   parameters: prompt for video quality (optional)
     #   returns: list of packages (file, folder)
     ##
-    def getChangeList(self, folderID, contentType=7, nextPageToken='', changeToken=''):
+    def getChangeList(self, folderID, contentType=7, nextPageToken='', changeToken='', isTeamDrive=False):
 
 
         url = ''
@@ -526,7 +526,7 @@ class gdrive(cloudservice):
 
 #            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
 
-        if folderID == 'root':
+        if folderID == 'root' or not isTeamDrive:
             url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=false&maxResults=300"
         else:
             url = url + "?teamDriveId="+str(folderID)+"&includeTeamDriveItems=true&supportsTeamDrives=true&includeDeleted=true&includeSubscribed=false&maxResults=300"
@@ -556,11 +556,12 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except socket.timeout, e:
-                    return ([],nextPageToken,changeToken)
+                    return ([],nextPageToken,changeToken, isTeamDrive)
                 except urllib2.URLError, e:
                   xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
-                  return ([],nextPageToken,changeToken)
-              elif e.code == 404:
+                  return ([],nextPageToken,changeToken, isTeamDrive)
+              elif e.code == 404 and isTeamDrive:
+                isTeamDrive = False
                 xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
                 url = self.API_URL +'changes'
                 url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=false&maxResults=300"
@@ -573,7 +574,7 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except socket.timeout, e:
-                    return ([],nextPageToken,changeToken)
+                    return ([],nextPageToken,changeToken, isTeamDrive)
                 except urllib2.URLError, e:
 
                   if e.code == 403 or e.code == 401:
@@ -582,21 +583,21 @@ class gdrive(cloudservice):
                     try:
                       response = urllib2.urlopen(req)
                     except socket.timeout, e:
-                        return ([],nextPageToken,changeToken)
+                        return ([],nextPageToken,changeToken, isTeamDrive)
                     except urllib2.URLError, e:
                       xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
-                    return ([],nextPageToken,changeToken)
+                    return ([],nextPageToken,changeToken, isTeamDrive)
 
                   xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
-                  return ([],nextPageToken,changeToken)
+                  return ([],nextPageToken,changeToken, isTeamDrive)
               else:
                 xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
-                return ([],nextPageToken,changeToken)
+                return ([],nextPageToken,changeToken, isTeamDrive)
             except urllib2.URLError, e:
                 xbmc.log('getChangeList ' + str(e))
-                return ([],nextPageToken,changeToken)
+                return ([],nextPageToken,changeToken, isTeamDrive)
             except socket.timeout, e:
-                return ([],nextPageToken,changeToken)
+                return ([],nextPageToken,changeToken, isTeamDrive)
 
             response_data = response.read()
             response.close()
@@ -624,18 +625,22 @@ class gdrive(cloudservice):
             for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
                 nextURL = r.group(1)
+                xbmc.log('buildSTRM' + ' nextURL = '+ str(nextURL), xbmc.LOGDEBUG)
 
             # max change ID
             for r in re.finditer('\"largestChangeId\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
                 maxChangeID = r.group(1)
+                xbmc.log('buildSTRM' + ' maxChangeID = '+ str(maxChangeID), xbmc.LOGDEBUG)
 
             ## look for more pages of videos
             for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
                 nextPageToken = r.group(1)
+                xbmc.log('buildSTRM' + ' nextPageToken = '+ str(nextPageToken), xbmc.LOGDEBUG)
 
-            return (mediaFiles, nextPageToken, maxChangeID)
+
+            return (mediaFiles, nextPageToken, maxChangeID, isTeamDrive)
 
             # are there more pages to process?
             #if nextURL == '':
@@ -643,7 +648,7 @@ class gdrive(cloudservice):
             #else:
             #    url = nextURL
 
-        return (mediaFiles, nextPageToken, maxChangeID)
+        return (mediaFiles, nextPageToken, maxChangeID, isTeamDrive)
 
 
 

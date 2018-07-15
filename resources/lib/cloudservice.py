@@ -118,7 +118,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False, folderCache= {}, helperfiles=False, skipPartial=False):
+    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False, folderCache= {}, helperfiles=False, skipPartial=False, isTeamDrive=True):
 
 
         if host is None:
@@ -154,7 +154,7 @@ class cloudservice(object):
         while isContinue:
             if fetchChangeID:
                 xbmc.log("changeToken " + str(changeToken) + "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken), xbmc.LOGDEBUG)
-                (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(folderID,contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
+                (mediaItems, nextPageToken, largestChangeId, isTeamDrive) = self.getChangeList(folderID,contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken, isTeamDrive=isTeamDrive)
                 xbmc.log("changeToken " + str(changeToken) + "largestChangeId " + str(largestChangeId) + " nextPageToken "+ str(nextPageToken), xbmc.LOGDEBUG)
 
 
@@ -181,11 +181,11 @@ class cloudservice(object):
                     if not changeTracking and item.file is None:
                         newcount=0
                         if catalog:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
                         elif fetchChangeID:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path, item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path, item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
                         else:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
                         count += newcount
                     elif item.file is not None:
 
@@ -494,7 +494,7 @@ class cloudservice(object):
                         dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
 
                         #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial)
+                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
 
                     elif index in fileListINodes.keys():
                         xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
