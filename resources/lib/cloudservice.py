@@ -281,6 +281,7 @@ class cloudservice(object):
 
                                         strmFile.write(url+'\n')
                                         strmFile.close()
+                                        count += 1
 
                                     if transcode and not skip:# and (not xbmcvfs.exists(strmFileName) or force):
 
@@ -300,7 +301,8 @@ class cloudservice(object):
                                                             tmpURL = str(tmpURL)
                                                 strmFile.write(tmpURL+'\n')
                                                 strmFile.close()
-                                    if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
+                                                count += 1
+                                    if helperfiles and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
                                         count += 1
 
 
@@ -409,6 +411,7 @@ class cloudservice(object):
                                                         url = str(url) + '&original=true'
                                             strmFile.write(url +'\n')
                                             strmFile.close()
+                                            count += 1
 
                                         if transcode:
                                             for x in extraFiles:
@@ -426,8 +429,9 @@ class cloudservice(object):
                                                             tmpURL = str(tmpURL)
                                                 strmFile.write(tmpURL+'\n')
                                                 strmFile.close()
+                                                count += 1
 
-                                        if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
+                                        if helperfiles and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
                                             count += 1
 
                                 if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER and  spreadsheetFile is not None:
