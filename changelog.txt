@@ -1,3 +1,4 @@
+- correction for folderid when "create scheduled job" -- using incorrectly as team drive id whereas it should default to root 
 - implement: STRM creation - tv shows & catalog - preserve show title #72
 - fix: add fallback to original if there are no transcode links
 - fix: original taking precedence over override #68

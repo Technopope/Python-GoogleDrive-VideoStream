@@ -560,6 +560,24 @@ class gdrive(cloudservice):
                 except urllib2.URLError, e:
                   xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
                   return
+              elif e.code == 404:
+                url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=false&maxResults=300"
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except socket.timeout, e:
+                    return ([],nextPageToken,changeToken)
+                except urllib2.URLError, e:
+                  if e.code == 403 or e.code == 401:
+                    self.refreshToken()
+                    req = urllib2.Request(url, None, self.getHeadersList())
+                    try:
+                      response = urllib2.urlopen(req)
+                    except socket.timeout, e:
+                        return ([],nextPageToken,changeToken)
+                    except urllib2.URLError, e:
+                      xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
+                      return
               else:
                 xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
                 return ([],nextPageToken,changeToken)
