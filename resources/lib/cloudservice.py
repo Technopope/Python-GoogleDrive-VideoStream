@@ -215,7 +215,7 @@ class cloudservice(object):
                             if not catalog:
 
                                 directoryPath = ''
-                                isInFolderID = False
+                                isInFolderID = True
                                 if fetchChangeID:
 
                                     xbmc.log('buildSTRM' + ' item.folder.parentID = '+ item.folder.parentID, xbmc.LOGDEBUG)
@@ -228,6 +228,8 @@ class cloudservice(object):
                                                 os.makedirs(str(path) + str(directoryPath))
                                             except OSError:
                                                 pass
+                                    else:
+                                        isInFolderID = False
 
                                 if isInFolderID:
                                     if removeExt and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
@@ -245,12 +247,12 @@ class cloudservice(object):
 
                                     elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
 
-                                        extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
+                                        extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2&override=true'])
 
                                         if int(item.file.resolution[0]) > 480:
-                                            extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1'])
+                                            extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1&override=true'])
                                         if int(item.file.resolution[0]) > 720:
-                                            extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0'])
+                                            extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0&override=true'])
 
 
                                         strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
@@ -372,12 +374,12 @@ class cloudservice(object):
 
                                     elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
 
-                                        extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
+                                        extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2&override=true'])
 
                                         if int(item.file.resolution[0]) > 480:
-                                            extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1'])
+                                            extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1&override=true'])
                                         if int(item.file.resolution[0]) > 720:
-                                            extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0'])
+                                            extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0&override=true'])
 
 
                                         strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
@@ -1553,11 +1555,11 @@ class cloudservice(object):
 #                    folderurl = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 #                    cm.append(( 'folder', 'XBMC.RunPlugin('+folderurl+')', ))
                 elif (contextType == 'video'):
-                    cm.append(( self.addon.getLocalizedString(30228) + 'SD', 'XBMC.RunPlugin('+url + '&preferred_quality=2'+')', ))
+                    cm.append(( self.addon.getLocalizedString(30228) + 'SD', 'XBMC.RunPlugin('+url + '&preferred_quality=2&override=true'+')', ))
                     if package.file.resolution is not None and int(package.file.resolution[0]) > 480:
-                        cm.append(( self.addon.getLocalizedString(30228) + '720p', 'XBMC.RunPlugin('+url + '&preferred_quality=1'+')', ))
+                        cm.append(( self.addon.getLocalizedString(30228) + '720p', 'XBMC.RunPlugin('+url + '&preferred_quality=1&override=true'+')', ))
                     if package.file.resolution is not None and int(package.file.resolution[0]) > 720:
-                        cm.append(( self.addon.getLocalizedString(30228) + '1080p', 'XBMC.RunPlugin('+url + '&preferred_quality=0'+')', ))
+                        cm.append(( self.addon.getLocalizedString(30228) + '1080p', 'XBMC.RunPlugin('+url + '&preferred_quality=0&override=true'+')', ))
 
 
 

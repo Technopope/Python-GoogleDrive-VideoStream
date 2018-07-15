@@ -1,4 +1,4 @@
-
+- ensure preferred_quality has override=true in menu and STRM creation
 - fix: STRM creation - Change tracking not working in this 1 case #69
 - correction for folderid when "create scheduled job" -- using incorrectly as team drive id whereas it should default to root
 - implement: STRM creation - tv shows & catalog - preserve show title #72
