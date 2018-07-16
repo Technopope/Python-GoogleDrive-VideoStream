@@ -1,3 +1,4 @@
+- added additional logging and exception handling to scheduler executer
 - fix non-catalog "save to STRM"
 - fix for STRM counting
 - ensure preferred_quality has override=true in menu and STRM creation

@@ -100,11 +100,30 @@ def job_scheduler(server, sleepTimer):
                                 contents = urllib2.urlopen(cmd).read()
                             except:
                                 contents  = 'exception'
+                                schedule.log('exception making call to ' + str(cmd))
+
                         else:
                             try:
                                 contents = urllib2.urlopen('http://'+str(cmd)).read()
+                            except urllib2.HTTPError, e:
+                                contents  = 'exception'
+                                schedule.log('exception: ' + str(e.code))
+                            except urllib2.URLError, e:
+                                contents  = 'exception'
+                                schedule.log('exception: ' + str(e.reason))
+                            except httplib.HTTPException, e:
+                                contents  = 'exception'
+                                schedule.log('exception making call to http://' + str(cmd) + ', giving up.')
                             except:
                                 contents = 'exception'
+                                schedule.log('exception making call to http://' + str(cmd) + ', trying https')
+                                try:
+                                    contents = urllib2.urlopen('https://'+str(cmd)).read()
+                                except:
+                                    contents = 'exception'
+                                    schedule.log('exception making call to http://' + str(cmd) + ', trying https')
+
+
                         contents = re.sub('<[^<]+?>', '', contents)
                         schedule.log(contents)
                         results = re.search(r'\(changetoken = ([^\)]+)\)', contents)
