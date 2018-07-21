@@ -527,7 +527,7 @@ class gdrive(cloudservice):
 #            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
 
         if folderID == 'root' or not isTeamDrive:
-            url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=false&maxResults=300"
+            url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=true&maxResults=300"
         else:
             url = url + "?teamDriveId="+str(folderID)+"&includeTeamDriveItems=true&supportsTeamDrives=true&includeDeleted=true&includeSubscribed=false&maxResults=300"
         if (nextPageToken == '' and changeToken != ''):
@@ -564,7 +564,7 @@ class gdrive(cloudservice):
                 isTeamDrive = False
                 xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
                 url = self.API_URL +'changes'
-                url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=false&maxResults=300"
+                url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=true&maxResults=300"
                 if (nextPageToken == '' and changeToken != ''):
                     url = url + '&startChangeId=' + str(changeToken)
                 if (nextPageToken != ''):
