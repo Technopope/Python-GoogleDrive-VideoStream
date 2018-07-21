@@ -1,3 +1,4 @@
+v0.1.26 (2018-07-21)
 - fix for shared folders change tracking -- STRM creation - shared folders do not work with change tracking #74
 - added additional logging and exception handling to scheduler executer
 - fix non-catalog "save to STRM"
