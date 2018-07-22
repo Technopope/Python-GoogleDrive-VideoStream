@@ -118,7 +118,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False, folderCache= {}, helperfiles=False, skipPartial=False, isTeamDrive=True):
+    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False, retainFolders=False,folderCache= {}, helperfiles=False, skipPartial=False, isTeamDrive=True):
 
 
         if host is None:
@@ -128,7 +128,7 @@ class cloudservice(object):
 
         ##xbmc.log("host = " + str(host) + ", PLUGIN_URL = " + str(PLUGIN_URL) + ", self.PLUGIN_URL = " + str(self.PLUGIN_URL), xbmc.LOGDEBUG)
         count = 0
-        if catalog:
+        if catalog and not retainFolders:
             if musicPath is None:
                 musicPath = path + '/music'
             if moviePath is None:
