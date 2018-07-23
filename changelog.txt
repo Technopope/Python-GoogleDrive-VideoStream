@@ -1,3 +1,4 @@
+- fix break in STRM functionality caused by   add additional STRM parameter to maintain folder structure #73
 - implement: add additional STRM parameter to maintain folder structure #73
 v0.1.26 (2018-07-21)
 - fix for shared folders change tracking -- STRM creation - shared folders do not work with change tracking #74

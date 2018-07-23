@@ -212,26 +212,28 @@ class cloudservice(object):
 
                         if (skipPartial or not partialFileReg.search(title)):
                             #if not xbmcvfs.exists(str(path) + '/' + strmFileName):
-                            if not catalog:
 
-                                directoryPath = ''
-                                isInFolderID = True
-                                if fetchChangeID:
+                            directoryPath = ''
+                            isInFolderID = True
+                            if fetchChangeID:
 
-                                    xbmc.log('buildSTRM' + ' item.folder.parentID = '+ item.folder.parentID, xbmc.LOGDEBUG)
-                                    if item.folder.parentID != None:
-                                        isInFolderID = self.isFolderIDInPath(item.folder.parentID, folderID)
+                                xbmc.log('buildSTRM' + ' item.folder.parentID = '+ item.folder.parentID, xbmc.LOGDEBUG)
+                                if item.folder.parentID != None:
+                                    isInFolderID = self.isFolderIDInPath(item.folder.parentID, folderID)
 
-                                        if isInFolderID:
-                                            directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
-                                            try:
-                                                os.makedirs(str(path) + str(directoryPath))
-                                            except OSError:
-                                                pass
-                                    else:
-                                        isInFolderID = False
+                                    if isInFolderID:
+                                        directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
+                                        try:
+                                            os.makedirs(str(path) + str(directoryPath))
+                                        except OSError:
+                                            pass
+                                else:
+                                    isInFolderID = False
 
-                                if isInFolderID:
+                            if isInFolderID:
+
+                                if not catalog:
+
                                     if removeExt and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
                                         strmFileName = str(path) + '/' + str(directoryPath) +'/'+ str(re.sub(r'\.[^\.]+$',r'', title))
                                     else:
@@ -306,141 +308,142 @@ class cloudservice(object):
                                         count += 1
 
 
-                            elif catalog:
-                                episode = ''
-                                # nekwebdev contribution
-                                pathLib = path
+                                elif catalog:
+                                    episode = ''
+                                    # nekwebdev contribution
+                                    pathLib = str(path) + str(directoryPath)
 
-                                filename = str(title)
-                                originalfilename = str(title)
-                                tv = False
-                                tv = item.file.cleantv.match(title)
-                                if not tv:
-                                    tv = item.file.regtv1.match(title)
-                                if not tv:
-                                    tv = item.file.regtv2.match(title)
-                                if not tv:
-                                    tv = item.file.regtv3.match(title)
+                                    filename = str(title)
+                                    originalfilename = str(title)
+                                    tv = False
+                                    tv = item.file.cleantv.match(title)
+                                    if not tv:
+                                        tv = item.file.regtv1.match(title)
+                                    if not tv:
+                                        tv = item.file.regtv2.match(title)
+                                    if not tv:
+                                        tv = item.file.regtv3.match(title)
 
 
-                                if tv:
-                                    show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
-                                    show = show.rstrip("\.")
-                                    if not show:
-                                        show = tv.group(1).replace("\S{2,}\-\S{2,}", " ")
-                                        show = show.rstrip("\-")
-                                    show = show.replace('.', ' ').strip().lower()#((show.strip('.')).strip()).lower()
-                                    season = tv.group(2)
-                                    if len(season) < 2:
-                                        season = '0' + str(season)
-                                    episode = tv.group(3)
-                                    if not retainFolders:
-                                        pathLib = tvPath + '/' + show
-                                        if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                            xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                        pathLib = pathLib +  '/season ' + str(season)
-                                        if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                            xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                    filename = str(show) + ' ' +  'S' + str(season) + 'E' + str(episode)
-                                else:
-                                    movie = item.file.cleanmovie.match(title)
-                                    if not movie:
-                                        movie = item.file.regmovie.match(title)
-                                    if movie:
-                                        title = movie.group(1)
-                                        title = title.replace('.', ' ').strip().lower()#((show.strip('.')).strip()).lower()
-                                        year = movie.group(2)
-
-                                        filename = str(title) + '(' + str(year) + ')'
+                                    if tv:
+                                        show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
+                                        show = show.rstrip("\.")
+                                        if not show:
+                                            show = tv.group(1).replace("\S{2,}\-\S{2,}", " ")
+                                            show = show.rstrip("\-")
+                                        show = show.replace('.', ' ').strip().lower()#((show.strip('.')).strip()).lower()
+                                        season = tv.group(2)
+                                        if len(season) < 2:
+                                            season = '0' + str(season)
+                                        episode = tv.group(3)
                                         if not retainFolders:
-                                            pathLib = moviePath +'/'+str(filename)
-                                            #xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                            xbmcvfs.mkdir(pathLib)
-                                    elif not retainFolders:
-                                        pathLib = videoPath
+                                            pathLib = tvPath + '/' + show
+                                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                            pathLib = pathLib +  '/season ' + str(season)
+                                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
 
-                                skip = False
-                                if pathLib != '':
-
-                                    if removeExt and pathLib == videoPath and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
-                                        strmFileName = str(pathLib) + '/' + str(re.sub(r'\.[^\.]+$',r'', filename))
-                                    elif item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
-                                        strmFileName = str(pathLib) + '/' + str(originalfilename)
-
+                                        filename = str(show) + ' ' +  'S' + str(season) + 'E' + str(episode)
                                     else:
-                                        strmFileName = str(pathLib) + '/' + str(filename)
+                                        movie = item.file.cleanmovie.match(title)
+                                        if not movie:
+                                            movie = item.file.regmovie.match(title)
+                                        if movie:
+                                            title = movie.group(1)
+                                            title = title.replace('.', ' ').strip().lower()#((show.strip('.')).strip()).lower()
+                                            year = movie.group(2)
 
-                                    extraFiles = []
-                                    if item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
-                                        skip = True
-                                        if helperfiles:
-                                            self.downloadGeneralFile(item.mediaurl.url,strmFileName)
+                                            filename = str(title) + '(' + str(year) + ')'
+                                            if not retainFolders:
+                                                pathLib = moviePath +'/'+str(filename)
+                                                #xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                                xbmcvfs.mkdir(pathLib)
+                                        elif not retainFolders:
+                                            pathLib = videoPath
 
-                                    elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+                                    skip = False
+                                    if pathLib != '':
 
-                                        extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2&override=true'])
+                                        if removeExt and pathLib == videoPath and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
+                                            strmFileName = str(pathLib) + '/' + str(re.sub(r'\.[^\.]+$',r'', filename))
+                                        elif item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
+                                            strmFileName = str(pathLib) + '/' + str(originalfilename)
 
-                                        if int(item.file.resolution[0]) > 480:
-                                            extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1&override=true'])
-                                        if int(item.file.resolution[0]) > 720:
-                                            extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0&override=true'])
+                                        else:
+                                            strmFileName = str(pathLib) + '/' + str(filename)
+
+                                        extraFiles = []
+                                        if item.file.type == self.MEDIA_TYPE_VIDEO_HELPER:
+                                            skip = True
+                                            if helperfiles:
+                                                self.downloadGeneralFile(item.mediaurl.url,strmFileName)
+
+                                        elif resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
+
+                                            extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2&override=true'])
+
+                                            if int(item.file.resolution[0]) > 480:
+                                                extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1&override=true'])
+                                            if int(item.file.resolution[0]) > 720:
+                                                extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0&override=true'])
 
 
-                                        strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
-                                        videoResolution = str(item.file.resolution[0])
+                                            strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
+                                            videoResolution = str(item.file.resolution[0])
 
-                                    elif resolution and skip0Res:
-                                        skip = True
-                                    else:
-                                        strmFileName += '.strm'
+                                        elif resolution and skip0Res:
+                                            skip = True
+                                        else:
+                                            strmFileName += '.strm'
 
-                                    if item.file.deleted and xbmcvfs.exists(strmFileName):
-                                        xbmcvfs.delete(filename)
-                                    elif not skip and not item.file.deleted and (not xbmcvfs.exists(strmFileName) or force):
+                                        if item.file.deleted and xbmcvfs.exists(strmFileName):
+                                            xbmcvfs.delete(filename)
+                                        elif not skip and not item.file.deleted and (not xbmcvfs.exists(strmFileName) or force):
 
-                                        if original:
-                                            strmFile = xbmcvfs.File(strmFileName, "w")
+                                            if original:
+                                                strmFile = xbmcvfs.File(strmFileName, "w")
 
-                                            if not KODI:
-                                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                                    params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
-
-                                                    if params and plugin_handle.server.hide:
-                                                        base = str(params.group(1))
-                                                        extended = str(params.group(1))
-                                                        url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
-                                                    else:
-                                                        url = str(url) + '&original=true'
-                                            strmFile.write(url +'\n')
-                                            strmFile.close()
-                                            count += 1
-
-                                        if transcode:
-                                            for x in extraFiles:
-                                                strmFile = xbmcvfs.File(x[0], "w")
-                                                tmpURL = x[1]
                                                 if not KODI:
                                                     if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+                                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
                                                         if params and plugin_handle.server.hide:
                                                             base = str(params.group(1))
                                                             extended = str(params.group(1))
-                                                            tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
                                                         else:
-                                                            tmpURL = str(tmpURL)
-                                                strmFile.write(tmpURL+'\n')
+                                                            url = str(url) + '&original=true'
+                                                strmFile.write(url +'\n')
                                                 strmFile.close()
                                                 count += 1
 
-                                        if helperfiles and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
-                                            count += 1
+                                            if transcode:
+                                                for x in extraFiles:
+                                                    strmFile = xbmcvfs.File(x[0], "w")
+                                                    tmpURL = x[1]
+                                                    if not KODI:
+                                                        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
 
-                                if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER and  spreadsheetFile is not None:
-                                    spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
+                                                            if params and plugin_handle.server.hide:
+                                                                base = str(params.group(1))
+                                                                extended = str(params.group(1))
+                                                                tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                            else:
+                                                                tmpURL = str(tmpURL)
+                                                    strmFile.write(tmpURL+'\n')
+                                                    strmFile.close()
+                                                    count += 1
 
-                                if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER and LOGGING is not None:
-                                    print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(videoResolution)+'\t'+str(item.file.checksum)
+                                            if helperfiles and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
+                                                count += 1
+
+                                    if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER and  spreadsheetFile is not None:
+                                        spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
+
+                                    if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER and LOGGING is not None:
+                                        print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(videoResolution)+'\t'+str(item.file.checksum)
 
 
             elif mediaItems and encfs:
