@@ -2164,10 +2164,12 @@ class gdrive(cloudservice):
 
     def getSubFolderPath(self,folderID, folderCache= {}):
 
-        xbmc.log('getSubFolderPath' + ' folderid = '+ folderID, xbmc.LOGDEBUG)
 
         if folderID in folderCache.keys():
-            return self.getSubFolderPath(folderCache[folderID][1]) + '/'  + str(folderCache[folderID][0])
+            xbmc.log('getSubFolderPath' + ' (cache hit) folderid = '+ folderID, xbmc.LOGDEBUG)
+            return self.getSubFolderPath(folderCache[folderID][1], folderCache=folderCache) + '/'  + str(folderCache[folderID][0])
+        else:
+            xbmc.log('getSubFolderPath' + ' (query) folderid = '+ folderID, xbmc.LOGDEBUG)
 
 
         url = 'https://www.googleapis.com/drive/v2/files/'+str(folderID)+'?includeTeamDriveItems=true&supportsTeamDrives=true&q=trashed%3Dfalse&fields=title%2Cparents';
@@ -2205,12 +2207,16 @@ class gdrive(cloudservice):
         return '';
 
 
-    def isFolderIDInPath(self,folderID, targetFolderID):
-
-        xbmc.log('isFolderIDInPath' + ' folderid = '+ folderID, xbmc.LOGDEBUG)
+    def isFolderIDInPath(self, folderID, targetFolderID, folderCache={}):
 
         if folderID == targetFolderID:
+            xbmc.log('isFolderIDInPath' + ' (equal) folderid = '+ folderID, xbmc.LOGDEBUG)
             return True
+        elif folderID in folderCache.keys():
+            xbmc.log('isFolderIDInPath' + ' (cache hit) folderid = '+ folderID, xbmc.LOGDEBUG)
+            return self.isFolderIDInPath(folderCache[folderID][1], targetFolderID)
+        else:
+            xbmc.log('isFolderIDInPath' + ' (query) folderid = '+ folderID, xbmc.LOGDEBUG)
 
         url = 'https://www.googleapis.com/drive/v2/files/'+str(folderID)+'?includeTeamDriveItems=true&supportsTeamDrives=true&q=trashed%3Dfalse&fields=title%2Cparents';
 

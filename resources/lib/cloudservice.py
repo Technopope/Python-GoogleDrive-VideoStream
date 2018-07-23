@@ -219,7 +219,9 @@ class cloudservice(object):
 
                                 xbmc.log('buildSTRM' + ' item.folder.parentID = '+ item.folder.parentID, xbmc.LOGDEBUG)
                                 if item.folder.parentID != None:
-                                    isInFolderID = self.isFolderIDInPath(item.folder.parentID, folderID)
+
+                                    if not isTeamDrive and folderID != 'root':
+                                        isInFolderID = self.isFolderIDInPath(item.folder.parentID, folderID)
 
                                     if isInFolderID:
                                         directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)

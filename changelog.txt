@@ -1,3 +1,5 @@
+- STRM creation optimization fixes tested
+- STRM creation optimization -- no isFolderIDInPath checks for root or teamdrive root
 - STRM creation support specific folders on team drives
 - fix break in STRM functionality caused by   add additional STRM parameter to maintain folder structure #73
 - implement: add additional STRM parameter to maintain folder structure #73
