@@ -226,7 +226,7 @@ class cloudservice(object):
                                     if not isTeamDrive and folderID != 'root':
                                         isInFolderID = self.isFolderIDInPath(item.folder.parentID, folderID, folderCache=folderCache)
 
-                                    if isInFolderID:
+                                    if isInFolderID and (not catalog or (catalog and retainFolders)):
                                         directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
                                         try:
                                             os.makedirs(str(path) + str(directoryPath))
