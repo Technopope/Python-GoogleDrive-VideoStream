@@ -1,3 +1,4 @@
+- add a force run task to + in scheduler
 - STRM creation optimization fix for catalog (and retainFolders = false)
 - testing: STRM creation - files with '/' in the name cause error writing to disk #78
 - STRM creation optimization fixes tested

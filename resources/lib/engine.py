@@ -119,6 +119,7 @@ class contentengine(object):
 
                 cm.append(( self.addon.getLocalizedString(30227), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete_task&job='+str(job)+')' ))
                 cm.append(( self.addon.getLocalizedString(30232), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=reset_task&job='+str(job)+')' ))
+                cm.append(( self.addon.getLocalizedString(30233), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=force_task&job='+str(job)+')' ))
 
                 listitem.addContextMenuItems(cm, True)
 
@@ -143,6 +144,7 @@ class contentengine(object):
 
                 cm.append(( self.addon.getLocalizedString(30227), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete_task&job='+str(job)+')' ))
                 cm.append(( self.addon.getLocalizedString(30232), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=reset_task&job='+str(job)+')' ))
+                cm.append(( self.addon.getLocalizedString(30233), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=force_task&job='+str(job)+')' ))
 
                 listitem.addContextMenuItems(cm, True)
 
@@ -751,6 +753,12 @@ class contentengine(object):
 
             if job is not None:
                 addon.setSetting(job + '_status', '0')
+
+        elif mode == 'force_task':
+            job = settingsModule.getParameter('job',None)
+
+            if job is not None:
+                addon.setSetting(job + '_runtime', '0')
 
         elif mode == 'run_task':
             job = settingsModule.getParameter('job',None)

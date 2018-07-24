@@ -76,6 +76,7 @@
 	<string id="30230">Frequency to run the scheduled task (in minutes)?</string>
     <string id="30231">Create scheduled task for saving STRM</string>
     <string id="30232">Reset job</string>
+    <string id="30233">Force run job</string>
 
     <string id="30043">Options</string>
 
