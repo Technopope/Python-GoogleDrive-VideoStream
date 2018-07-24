@@ -2201,7 +2201,7 @@ class gdrive(cloudservice):
             folderName = r2.group(1)
             parentID = r2.group(2)
             folderCache[str(folderID)] =  (folderName, parentID)
-            return str(self.getSubFolderPath(parentID,folderCache)) + '/' + str(folderName)
+            return str(self.getSubFolderPath(parentID,folderCache=folderCache)) + '/' + str(folderName)
 
 
         return '';
@@ -2214,7 +2214,7 @@ class gdrive(cloudservice):
             return True
         elif folderID in folderCache.keys():
             xbmc.log('isFolderIDInPath' + ' (cache hit) folderid = '+ folderID, xbmc.LOGDEBUG)
-            return self.isFolderIDInPath(folderCache[folderID][1], targetFolderID)
+            return self.isFolderIDInPath(folderCache[folderID][1], targetFolderID, folderCache=folderCache)
         else:
             xbmc.log('isFolderIDInPath' + ' (query) folderid = '+ folderID, xbmc.LOGDEBUG)
 
@@ -2248,7 +2248,7 @@ class gdrive(cloudservice):
             if targetFolderID == parentID:
                 return True
             else:
-                return self.isFolderIDInPath(parentID, targetFolderID)
+                return self.isFolderIDInPath(parentID, targetFolderID, folderCache=folderCache)
 
 
         return False;

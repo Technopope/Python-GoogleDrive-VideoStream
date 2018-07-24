@@ -22,6 +22,8 @@ import re
 import urllib, urllib2
 import sys
 import os
+import string
+
 
 PLUGIN_URL = sys.argv[0]
 
@@ -200,7 +202,8 @@ class cloudservice(object):
 
 
                     if url != 0:
-                        title = item.file.title
+                        title = string.replace(item.file.title,'/', '',100)
+
                         year = ''
                         season = ''
                         episode = ''
@@ -221,7 +224,7 @@ class cloudservice(object):
                                 if item.folder.parentID != None:
 
                                     if not isTeamDrive and folderID != 'root':
-                                        isInFolderID = self.isFolderIDInPath(item.folder.parentID, folderID)
+                                        isInFolderID = self.isFolderIDInPath(item.folder.parentID, folderID, folderCache=folderCache)
 
                                     if isInFolderID:
                                         directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)

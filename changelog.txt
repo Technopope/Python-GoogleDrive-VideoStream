@@ -1,3 +1,4 @@
+- testing: STRM creation - files with '/' in the name cause error writing to disk #78
 - STRM creation optimization fixes tested
 - STRM creation optimization -- no isFolderIDInPath checks for root or teamdrive root
 - STRM creation support specific folders on team drives
