@@ -2167,7 +2167,7 @@ class gdrive(cloudservice):
 
         if folderID in folderCache.keys():
             xbmc.log('getSubFolderPath' + ' (cache hit) folderid = '+ folderID, xbmc.LOGDEBUG)
-            return self.getSubFolderPath(folderCache[folderID][1], folderCache=folderCache) + '/'  + str(folderCache[folderID][0])
+            return str(self.getSubFolderPath(folderCache[folderID][1], folderCache=folderCache)) + '/'  + str(folderCache[folderID][0])
         else:
             xbmc.log('getSubFolderPath' + ' (query) folderid = '+ folderID, xbmc.LOGDEBUG)
 
@@ -2187,10 +2187,10 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
               xbmc.log('getSubFolderPath'+str(e))
-              return
+              return ''
           else:
             xbmc.log('getSubFolderPath'+str(e))
-            return
+            return ''
 
         response_data = response.read()
         response.close()
@@ -2203,8 +2203,7 @@ class gdrive(cloudservice):
             folderCache[str(folderID)] =  (folderName, parentID)
             return str(self.getSubFolderPath(parentID,folderCache=folderCache)) + '/' + str(folderName)
 
-
-        return '';
+        return ''
 
 
     def isFolderIDInPath(self, folderID, targetFolderID, folderCache={}):
