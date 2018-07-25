@@ -2256,5 +2256,5 @@ class gdrive(cloudservice):
             else:
                 return self.isFolderIDInPath(parentID, targetFolderID, folderCache=folderCache)
 
-        folderCache[str(folderID)] =  (None, None)
+        folderCache[str(folderID)] =  ('', None)
         return False;
