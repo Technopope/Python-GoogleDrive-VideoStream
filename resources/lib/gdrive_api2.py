@@ -2205,6 +2205,7 @@ class gdrive(cloudservice):
             folderCache[str(folderID)] =  (folderName, parentID)
             return str(self.getSubFolderPath(parentID,folderCache=folderCache)) + '/' + str(folderName)
 
+        folderCache[str(folderID)] =  ('', None)
         return ''
 
 
