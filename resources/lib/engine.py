@@ -725,9 +725,9 @@ class contentengine(object):
                     elif task[tasks.TASK_STATUS] == str(tasks.TYPE_RUNNING) and task[tasks.TASK_TYPE] in ['2','1']:
                         status += 'every '+str(task[tasks.TASK_FREQUENCY])+' mins looking for changes -- running'
                     elif task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] == '0' and task[tasks.TASK_RUNTIME] == '0':
-                        status += 'one time -- never ran'
+                        status += 'one time -- starting shortly'
                     elif task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] in ['2','1'] and task[tasks.TASK_RUNTIME] == '0':
-                        status += 'every '+str(task[tasks.TASK_FREQUENCY])+' mins looking for changes -- never ran'
+                        status += 'every '+str(task[tasks.TASK_FREQUENCY])+' mins looking for changes -- starting shortly'
                     #elif task[4] == 0 and task[7] == 0  and task[6] == 1:
                     #    status += 'one time -- never ran'
                     else:

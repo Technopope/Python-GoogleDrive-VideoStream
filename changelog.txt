@@ -1,3 +1,4 @@
+- change "never ran" to "starting shortly"
 - finalized speed optimations for STRM creation
 - updates to caching for STRM creation optimizations
 - add a force run task to + in scheduler
