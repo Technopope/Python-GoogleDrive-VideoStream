@@ -2165,7 +2165,7 @@ class gdrive(cloudservice):
     def getSubFolderPath(self,folderID, folderCache= {}):
 
 
-        if folderID in folderCache.keys():
+        if folderID in folderCache.keys() and folderCache[folderID][0] != None:
             xbmc.log('getSubFolderPath' + ' (cache hit) folderid = '+ folderID, xbmc.LOGDEBUG)
             return str(self.getSubFolderPath(folderCache[folderID][1], folderCache=folderCache)) + '/'  + str(folderCache[folderID][0])
         else:
@@ -2232,10 +2232,10 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
               xbmc.log('isFolderIDInPath'+str(e))
-              return
+              return False
           else:
             xbmc.log('isFolderIDInPath'+str(e))
-            return
+            return False
 
         response_data = response.read()
         response.close()
@@ -2244,6 +2244,8 @@ class gdrive(cloudservice):
         # parsing page for folders
         for r2 in re.finditer('\"title\"\:\s+\"[^\"]+\".*?\"parents\"\:\s+\[\s+[^\}]+\"id\"\:\s+\"([^\"]+)\"' ,response_data, re.DOTALL):
             parentID = r2.group(1)
+            folderCache[str(folderID)] =  (None, parentID)
+
             if targetFolderID == parentID:
                 return True
             else:
