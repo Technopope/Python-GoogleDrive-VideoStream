@@ -383,10 +383,11 @@ class gdrive(cloudservice):
     #   parameters: prompt for video quality (optional), cache type (optional)
     #   returns: list of videos
     ##
-    def getMediaList(self, folderName=False, title=False, contentType=7):
+    def getMediaList(self, folderName=False, title=False, contentType=7, teamdrive=''):
 
         # retrieve all items
         url = self.API_URL +'files/?includeTeamDriveItems=true&supportsTeamDrives=true&'
+
 
         # show all videos
         if folderName=='VIDEO':
@@ -438,6 +439,10 @@ class gdrive(cloudservice):
         # contribution by dabinn
         # filter out trashed items
         url = url + "+and+trashed%3dfalse"
+
+        if teamdrive != '':
+            url = url + "&teamDriveId=" + str(teamdrive)
+
 
         mediaFiles = []
         while True:

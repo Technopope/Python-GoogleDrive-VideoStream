@@ -608,7 +608,10 @@ class cloudservice(object):
         if encfs:
             values = {'instance': self.instanceName, 'encfs': 'true', 'folder': folder.id, 'content_type': contextType, 'dpath': dpath, 'epath':epath}
         elif folder.id != '':
-            values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType, 'epath':epath}
+            if folder.isTeamDrive:
+                values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType, 'epath':epath, 'teamdrive': folder.id}
+            else:
+                values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType, 'epath':epath}
         elif folder.title != '':
             values = {'instance': self.instanceName, 'foldername': folder.title, 'content_type': contextType, 'epath':epath}
 

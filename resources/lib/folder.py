@@ -27,7 +27,7 @@ class folder:
 
     ##
     ##
-    def __init__(self, id, title, fanart='', thumb='', isRoot=False, parentID=None):
+    def __init__(self, id, title, fanart='', thumb='', isRoot=False, parentID=None, isTeamDrive=False):
         self.id = id
         self.title = title
         self.fanart = fanart
@@ -35,6 +35,7 @@ class folder:
         self.displaytitle = title
         self.isRoot = isRoot
         self.parentID = parentID
+        self.isTeamDrive = isTeamDrive
 
     def displayTitle(self):
         return urllib.unquote(self.displaytitle)

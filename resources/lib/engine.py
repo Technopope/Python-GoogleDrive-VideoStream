@@ -1469,8 +1469,16 @@ class contentengine(object):
         #dump a list of videos available to play
         elif mode == 'main' or mode == 'index':
 
+
             folderID = settingsModule.getParameter('folder', False)
             folderName = settingsModule.getParameter('foldername', False)
+            teamDriveID = settingsModule.getParameter('teamdrive', '')
+
+            if teamDriveID != '':
+                if KODI:
+                    self.addMenu(self.PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&teamdrive='+str(teamDriveID) + '&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+                else:
+                    xbmcgui.Dialog().inputText('title', 'search', self.PLUGIN_URL+'?', 'mode=search&instance='+str(service.instanceName)+'&content_type='+contextType + '&teamdrive='+str(teamDriveID) )
 
             #ensure that folder view playback
             if contextType == '':
@@ -1510,15 +1518,15 @@ class contentengine(object):
                     if teamdrives is not None:
                         for drive in teamdrives:
                             #self.addMenu(self.PLUGIN_URL+'?mode=index&folder='+str(drive.id)+'&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']')
-                            service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True), contextType=contextType, encfs=False )
+                            service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True, isTeamDrive=True), contextType=contextType, encfs=False )
 
                             #folder.folder(folderID,'') ***
 
 
                 if KODI:
-                    self.addMenu(self.PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+                    self.addMenu(self.PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&teamdrive='+str(teamDriveID) + '&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
                 else:
-                    xbmcgui.Dialog().inputText('title', 'search', self.PLUGIN_URL+'?', 'mode=search&instance='+str(service.instanceName)+'&content_type='+contextType)
+                    xbmcgui.Dialog().inputText('title', 'search', self.PLUGIN_URL+'?', 'mode=search&instance='+str(service.instanceName)+'&content_type='+contextType + '&teamdrive='+str(teamDriveID) )
                 if constants.CONST.testing_features:
                     self.addMenu(self.PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'['+addon.getLocalizedString(30212)+']')
 
@@ -2388,6 +2396,7 @@ class contentengine(object):
             title = settingsModule.getParameter('title') #file title
             filename = settingsModule.getParameter('filename') #file ID
             folderID = settingsModule.getParameter('folder') #folder ID
+            teamDriveID = settingsModule.getParameter('teamdrive', '')
 
 
             if isCheckOnly:
@@ -2798,7 +2807,7 @@ class contentengine(object):
                             xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
                             title = 'test'
 
-                    mediaItems = service.getMediaList(title=title, contentType=contentType)
+                    mediaItems = service.getMediaList(title=title, contentType=contentType, teamdrive=teamDriveID)
                     resolvedPlayback = False
                     startPlayback = False
 
@@ -2839,7 +2848,7 @@ class contentengine(object):
                                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
                                 title = 'test'
 
-                        mediaItems = service.getMediaList(title=title, contentType=contentType)
+                        mediaItems = service.getMediaList(title=title, contentType=contentType, teamdrive=teamDriveID)
                         resolvedPlayback = False
                         startPlayback = False
 
