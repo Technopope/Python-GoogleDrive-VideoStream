@@ -386,27 +386,29 @@ class gdrive(cloudservice):
     def getMediaList(self, folderName=False, title=False, contentType=7, teamdrive=''):
 
         # retrieve all items
-        url = self.API_URL +'files/?includeTeamDriveItems=true&supportsTeamDrives=true&'
+        url = self.API_URL +'files/?includeTeamDriveItems=true&supportsTeamDrives=true'
 
+        if teamdrive != '':
+            url = url + "&corpora=teamDrive&teamDriveId=" + str(teamdrive)
 
         # show all videos
         if folderName=='VIDEO':
-            url = url + "q=mimeType+contains+'video'"
+            url = url + "&q=mimeType+contains+'video'"
         # show all music
         elif folderName=='MUSIC':
-            url = url + "q=mimeType+contains+'audio'"
+            url = url + "&q=mimeType+contains+'audio'"
         # show all music and video
         elif folderName=='VIDEOMUSIC':
-            url = url + "q=mimeType+contains+'audio'+or+mimeType+contains+'video'"
+            url = url + "&q=mimeType+contains+'audio'+or+mimeType+contains+'video'"
         # show all photos and music
         elif folderName=='PHOTOMUSIC':
-            url = url + "q=mimeType+contains+'image'+or+mimeType+contains+'music'"
+            url = url + "&q=mimeType+contains+'image'+or+mimeType+contains+'music'"
         # show all photos
         elif folderName=='PHOTO':
-            url = url + "q=mimeType+contains+'image'"
+            url = url + "&q=mimeType+contains+'image'"
         # show all music, photos and video
         elif folderName=='ALL':
-            url = url + "q=mimeType+contains+'audio'+or+mimeType+contains+'video'+or+mimeType+contains+'image'"
+            url = url + "&q=mimeType+contains+'audio'+or+mimeType+contains+'video'+or+mimeType+contains+'image'"
 
         # search for title
         elif title != False or folderName == 'SAVED SEARCH':
@@ -418,31 +420,30 @@ class gdrive(cloudservice):
             #encodedTitle = re.sub('(', '\\\(', encodedTitle)
             #encodedTitle = re.sub(')', '\\\)', encodedTitle)
             #encodedTitle = re.sub('$', '\\\$', encodedTitle)
-            url = url + "q=title+contains+'" + str(encodedTitle) + "'" + "+and+not+title+contains+'SAVED+SEARCH'"
+            url = url + "&q=title+contains+'" + str(encodedTitle) + "'" + "+and+not+title+contains+'SAVED+SEARCH'"
 
         # show all starred items
         elif folderName == 'STARRED-FILES' or folderName == 'STARRED-FILESFOLDERS' or folderName == 'STARRED-FOLDERS':
-            url = url + "q=starred%3dtrue"
+            url = url + "&q=starred%3dtrue"
         # show all shared items
         elif folderName == 'SHARED':
-            url = url + "q=sharedWithMe%3dtrue"
+            url = url + "&q=sharedWithMe%3dtrue"
 
         # default / show root folder
         elif folderName == '' or folderName == 'me' or folderName == 'root':
             folderName = self.getRootID()
-            url = url + "q='"+str(folderName)+"'+in+parents"
+            url = url + "&q='"+str(folderName)+"'+in+parents"
 
         # retrieve folder items
         else:
-            url = url + "q='"+str(folderName)+"'+in+parents"
+            url = url + "&q='"+str(folderName)+"'+in+parents"
 
         # contribution by dabinn
         # filter out trashed items
         url = url + "+and+trashed%3dfalse"
 
-        if teamdrive != '':
-            url = url + "&teamDriveId=" + str(teamdrive)
 
+        xbmc.log("getMediaList URL = "+ str(url), xbmc.LOGDEBUG)
 
         mediaFiles = []
         while True:
@@ -470,6 +471,7 @@ class gdrive(cloudservice):
 
             response_data = response.read()
             response.close()
+
 
             # parsing page for videos
             # video-entry
@@ -694,6 +696,7 @@ class gdrive(cloudservice):
 
         url = url + "?includeTeamDriveItems=true&supportsTeamDrives=true&q='"+str(folderName)+"'+in+parents"
 
+
         mediaFiles = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
@@ -708,10 +711,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log('getMediaList '+str(e))
+                  xbmc.log('scanMediaList '+str(e))
                   return
               else:
-                xbmc.log('getMediaList '+str(e))
+                xbmc.log('scanMediaList '+str(e))
                 return
 
             response_data = response.read()
@@ -2112,10 +2115,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log('getMediaList'+str(e))
+                  xbmc.log('getSubFolderID'+str(e))
                   return
               else:
-                xbmc.log('getMediaList'+str(e))
+                xbmc.log('getSubFolderID'+str(e))
                 return
 
             response_data = response.read()
