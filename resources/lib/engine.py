@@ -963,11 +963,12 @@ class contentengine(object):
                 else:
                     if folderID == 'root':
                         xbmcgui.Dialog().hiddenField('isteamdrive',False)
-                    else:
-                        xbmcgui.Dialog().hiddenField('isteamdrive',True)
+                        xbmcgui.Dialog().hiddenField('issharedfolder',False)
+#                    else:
+#                        xbmcgui.Dialog().hiddenField('isteamdrive',True)
 
 
-                    xbmcgui.Dialog().hiddenField('isteamdrive',False)
+ #                   xbmcgui.Dialog().hiddenField('isteamdrive',False)
 
 
                     xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
@@ -1485,6 +1486,8 @@ class contentengine(object):
             folderID = settingsModule.getParameter('folder', False)
             folderName = settingsModule.getParameter('foldername', False)
             teamDriveID = settingsModule.getParameter('teamdrive', '')
+            isTeamDrive = settingsModule.getParameter('isteamdrive', False)
+            isSharedFolder = settingsModule.getParameter('issharedfolder', False)
 
             if teamDriveID != '':
                 if KODI:
@@ -1530,7 +1533,7 @@ class contentengine(object):
                     if teamdrives is not None:
                         for drive in teamdrives:
                             #self.addMenu(self.PLUGIN_URL+'?mode=index&folder='+str(drive.id)+'&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']')
-                            service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True, isTeamDrive=True), contextType=contextType, encfs=False )
+                            service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True, isTeamDrive=True), contextType=contextType, encfs=False, isTeamDrive=True )
 
                             #folder.folder(folderID,'') ***
 
@@ -1611,7 +1614,7 @@ class contentengine(object):
                             if item.file is None:
                                 try:
                                     item.folder.displaytitle =  encrypt.decryptString(str(item.folder.title))
-                                    service.addDirectory(item.folder, contextType=contextType, encfs=True )
+                                    service.addDirectory(item.folder, contextType=contextType, encfs=True, isTeamDrive=isTeamDrive )
                                 except:
                                     item.folder.displaytitle = str(item.folder.title)
                             else:
@@ -1696,7 +1699,7 @@ class contentengine(object):
             #                    dirTitle = dir + ' [' +dirListINodes[index].title+ ']'
                                 encryptedDir = dirListINodes[index].title
                                 dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
-                                service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
+                                service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/',  isTeamDrive=isTeamDrive )
                             #we found a file
                             elif index in fileListINodes.keys():
                                 xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
@@ -1738,7 +1741,7 @@ class contentengine(object):
                         for item in sorted(mediaItems):
 
                                 if item.file is None:
-                                    service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/')
+                                    service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/',  isTeamDrive=isTeamDrive)
                                 else:
                                     service.addMediaFile(item, contextType=contextType)
 

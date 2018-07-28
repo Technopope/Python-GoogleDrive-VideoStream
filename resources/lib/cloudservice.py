@@ -604,14 +604,16 @@ class cloudservice(object):
     #   parameters: folder id, context type, whether the directory is encfs, encfs:decryption path, encfs:encryption path
     #   returns: fully qualified url
     ##
-    def getDirectoryCall(self, folder, contextType='video', encfs=False, dpath='', epath=''):
+    def getDirectoryCall(self, folder, contextType='video', encfs=False, dpath='', epath='', isTeamDrive=False, isSharedFolder=False):
         if encfs:
             values = {'instance': self.instanceName, 'encfs': 'true', 'folder': folder.id, 'content_type': contextType, 'dpath': dpath, 'epath':epath}
         elif folder.id != '':
             if folder.isTeamDrive:
-                values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType, 'epath':epath, 'teamdrive': folder.id}
+                values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType, 'epath':epath, 'teamdrive': folder.id, 'isteamdrive':isTeamDrive, 'issharedfolder':isSharedFolder}
             else:
-                values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType, 'epath':epath}
+                values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType, 'epath':epath, 'isteamdrive':isTeamDrive, 'issharedfolder':isSharedFolder}
+
+
         elif folder.title != '':
             values = {'instance': self.instanceName, 'foldername': folder.title, 'content_type': contextType, 'epath':epath}
 
@@ -1230,7 +1232,7 @@ class cloudservice(object):
     # Add a directory to a directory listing screen
     #   parameters: folder object, context type, local path (optional), whether folder is encfs, encfs:decryption path, encfs:encryption path
     ##
-    def addDirectory(self, folder, contextType='video', localPath='', encfs=False, dpath='', epath=''):
+    def addDirectory(self, folder, contextType='video', localPath='', encfs=False, dpath='', epath='', isTeamDrive = False, isSharedFolder=False):
 
         fanart = self.addon.getAddonInfo('path') + '/fanart.jpg'
 
@@ -1387,7 +1389,7 @@ class cloudservice(object):
                 listitem.addContextMenuItems(cm, False)
                 listitem.setProperty('fanart_image',  folder.fanart)
 
-                xbmcplugin.addDirectoryItem(self.plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs, dpath=dpath, epath=epath), listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs, dpath=dpath, epath=epath, isTeamDrive=isTeamDrive, isSharedFolder=isSharedFolder), listitem,
                                 isFolder=True, totalItems=0)
 
 
