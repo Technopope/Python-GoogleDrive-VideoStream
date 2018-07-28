@@ -91,6 +91,11 @@ class Dialog(object):
         xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output + str(label1) + str(optionalText) +' <input type="text" name="'+str(variable)+'" value="'+str(default)+'"/> '+str(format)+'<br/>'
         return
 
+    def hiddenField(self, variable, value):
+
+        xbmcplugin.outputBuffer.output = xbmcplugin.outputBuffer.output +  '<input type="hidden" name="'+str(variable)+'" value="'+str(value)+'" />' +'<br/>'
+        return
+
     def selectField(self, label1, variable, list, default='', isOptional=False,format=''):
         optionalText = ''
         if isOptional:

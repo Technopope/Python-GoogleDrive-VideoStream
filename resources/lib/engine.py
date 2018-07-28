@@ -812,6 +812,9 @@ class contentengine(object):
             helperfiles = settingsModule.getParameter('helperfiles', False)
             append = settingsModule.getParameter('append', '')
             skipPartial = settingsModule.getParameter('skippartial', False)
+            isTeamDrive = settingsModule.getParameter('isteamdrive', False)
+            isSharedFolder = settingsModule.getParameter('issharedfolder', False)
+
             if append != '':
                 append += ' '
 
@@ -958,6 +961,15 @@ class contentengine(object):
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
 
                 else:
+                    if folderID == 'root':
+                        xbmcgui.Dialog().hiddenField('isteamdrive',False)
+                    else:
+                        xbmcgui.Dialog().hiddenField('isteamdrive',True)
+
+
+                    xbmcgui.Dialog().hiddenField('isteamdrive',False)
+
+
                     xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[2,'full sync then ongoing tracking'],[1,'start change tracking'],[0,'full syncs only']])
 
