@@ -220,7 +220,7 @@ class cloudservice(object):
                             isInFolderID = True
                             if fetchChangeID:
 
-                                xbmc.log('buildSTRM' + ' item.folder.parentID = '+ item.folder.parentID, xbmc.LOGDEBUG)
+                                xbmc.log('buildSTRM' + ' item.folder.parentID = '+ str(item.folder.parentID), xbmc.LOGDEBUG)
                                 if item.folder.parentID != None:
 
                                     if not isTeamDrive and folderID != 'root':
