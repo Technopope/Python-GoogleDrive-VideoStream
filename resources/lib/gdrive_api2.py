@@ -367,17 +367,27 @@ class gdrive(cloudservice):
 
             import time
             import jwt
+            from jwt.contrib.algorithms.pycrypto import RSAAlgorithm
+            try:
+                jwt.register_algorithm('RS256', RSAAlgorithm(RSAAlgorithm.SHA256))
+            except:
+                pass
             currentTime = time.time()
 
 
-            xbmc.log('iss '+ str(serviceAccount[0]) + ' iat ' + str(currentTime) + str(serviceAccount[1]))
+#            encoded = jwt.encode({'iss': serviceAccount[0], 'scope':'https://www.googleapis.com/auth/drive', 'aud':'https://accounts.google.com/o/oauth2/token', 'exp':currentTime + 3600, 'iat':currentTime}, serviceAccount[1], algorithm='RS256')
 
-            encoded = ''#jwt.encode({'iss': serviceAccount[0], 'scope':'https://www.googleapis.com/auth/drive', 'aud':'https://accounts.google.com/o/oauth2/token', 'exp':currentTime + 3600, 'iat':currentTime}, serviceAccount[1], algorithm='RS256')
+#            url = 'https://accounts.google.com/o/oauth2/token'
+#            header = { 'User-Agent' : self.user_agent }#, 'Content-Type': 'application/x-www-form-urlencoded'}
+            serviceAccount[1] = serviceAccount[1].replace(r'\n', '\n')
 
+
+#            req = urllib2.Request(url, 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + str(encoded), header)
+            #encoded = jwt.encode({'iss': serviceAccount[0], 'scope':'https://www.googleapis.com/auth/drive', 'aud':'https://accounts.google.com/o/oauth2/token', 'exp':currentTime + 3600, 'iat':currentTime}, variable, algorithm='RS256')
+            encoded = jwt.encode({'iss': str(serviceAccount[0]), 'scope':'https://www.googleapis.com/auth/drive', 'aud':'https://accounts.google.com/o/oauth2/token', 'exp':currentTime + 3600, 'iat':currentTime}, str(serviceAccount[1]), algorithm='RS256')
+            post = 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + str(encoded)
             url = 'https://accounts.google.com/o/oauth2/token'
-            header = { 'User-Agent' : self.user_agent }#, 'Content-Type': 'application/x-www-form-urlencoded'}
-
-            req = urllib2.Request(url, 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + str(encoded), header)
+            req = urllib2.Request(url, post, { 'User-Agent' : '' })
 
 
             # try login
@@ -400,6 +410,7 @@ class gdrive(cloudservice):
             for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' ,
                              response_data, re.DOTALL):
                 accessToken = r.group(1)
+                xbmc.log('refresh service token '+ str(accessToken))
                 self.authorization.setToken('auth_access_token',accessToken)
                 self.updateAuthorization(self.addon)
 
@@ -1935,13 +1946,14 @@ class gdrive(cloudservice):
                 xbmc.log("download quota check- error " + str(e), xbmc.LOGDEBUG)
                 if e.code == 403:
 
-                      if self.refreshServiceToken(fetchNext=True):
+                      retry = True
+                      while retry and self.refreshServiceToken(fetchNext=True):
                         req = urllib2.Request(url, None, self.getHeadersList())
                         try:
                             response = urllib2.urlopen(req)
+                            retry = False
                         except urllib2.URLError, e:
                             xbmc.log('getPlaybackCall still error reached '+str(e))
-                            return
 
 
         xbmc.log("getPlaybackCall - returning", xbmc.LOGDEBUG)

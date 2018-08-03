@@ -1,3 +1,4 @@
+- preliminary working: add support for service accounts #35
 - started work on : add support for service accounts #35
 - implemented: add search functionality to team drives #83
 - started work on add search functionality to team drives #83

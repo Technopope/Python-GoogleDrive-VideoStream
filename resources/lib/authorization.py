@@ -49,7 +49,6 @@ class authorization:
                             iss = results.group(1)
                 if iss != None and secret != None:
                     self.serviceaccounts.append([iss, secret])
-                    print "added " + iss + secret + "\n"
 
 
     ##
@@ -63,6 +62,7 @@ class authorization:
                 self.currentserviceaccount = self.currentserviceaccount + 1
             return self.serviceaccounts[self.currentserviceaccount]
         elif self.currentserviceaccount == len(self.serviceaccounts) - 1:
+            return None
             if fetchNext:
                 self.currentserviceaccount = 0
             return self.serviceaccounts[self.currentserviceaccount]
