@@ -1583,6 +1583,29 @@ class gdrive(cloudservice):
         if pquality == 3:
             docid = package.file.id
 
+            if 1:
+                xbmc.log("download quota check", xbmc.LOGDEBUG)
+                #check token
+                url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                req = urllib2.Request(url, None, self.getHeadersList())
+                xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
+                # if action fails, validate login
+                try:
+                     response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log("download quota check- error " + str(e), xbmc.LOGDEBUG)
+                    if e.code == 403:
+
+                          retry = True
+                          while retry and self.refreshServiceToken(fetchNext=True):
+                            req = urllib2.Request(url, None, self.getHeadersList())
+                            try:
+                                response = urllib2.urlopen(req)
+                                retry = False
+                            except urllib2.URLError, e:
+                                xbmc.log('getPlaybackCall still error reached '+str(e))
+
+
             xbmc.log('getPlaybackCall - forcing to original')
             # new method of fetching original stream -- using alt=media
             url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
@@ -1922,6 +1945,30 @@ class gdrive(cloudservice):
         # if there are no transcode links, add at least the original quality
         if len(mediaURLs) == 0:
             docid = package.file.id
+
+
+            if 1:
+                xbmc.log("download quota check", xbmc.LOGDEBUG)
+                #check token
+                url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                req = urllib2.Request(url, None, self.getHeadersList())
+                xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
+                # if action fails, validate login
+                try:
+                     response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log("download quota check- error " + str(e), xbmc.LOGDEBUG)
+                    if e.code == 403:
+
+                          retry = True
+                          while retry and self.refreshServiceToken(fetchNext=True):
+                            req = urllib2.Request(url, None, self.getHeadersList())
+                            try:
+                                response = urllib2.urlopen(req)
+                                retry = False
+                            except urllib2.URLError, e:
+                                xbmc.log('getPlaybackCall still error reached '+str(e))
+
 
             xbmc.log('getPlaybackCall - forcing to original')
             # new method of fetching original stream -- using alt=media

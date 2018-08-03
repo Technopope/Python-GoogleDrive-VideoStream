@@ -767,7 +767,7 @@ class webGUI(BaseHTTPRequestHandler):
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
                             if e.code == 403 or e.code == 401:
-                                xbmc.log("STILL ERROR"+str(e.code))
+                                xbmc.log("STILL ERROR " +url +str(e.code))
                                 return
                             else:
                                 return
@@ -779,7 +779,7 @@ class webGUI(BaseHTTPRequestHandler):
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
                             if e.code == 403 or e.code == 401:
-                                xbmc.log("STILL ERROR"+str(e.code))
+                                xbmc.log("STILL ERROR " +url +str(e.code))
                                 return
                             else:
                                 return
@@ -906,7 +906,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    xbmc.log("STILL ERROR"+str(e.code))
+                    xbmc.log("STILL ERROR 111 " +url +str(e.code))
                     return
                 else:
                     return
@@ -1084,7 +1084,7 @@ class webGUI(BaseHTTPRequestHandler):
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    xbmc.log("STILL ERROR"+str(e.code))
+                    xbmc.log("STILL ERROR " +url +str(e.code))
                     return
                 else:
                     return
@@ -1101,7 +1101,7 @@ class webGUI(BaseHTTPRequestHandler):
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
                         if e.code == 403 or e.code == 401:
-                            xbmc.log("STILL ERROR"+str(e.code))
+                            xbmc.log("STILL ERROR " +url +str(e.code))
                             return
                         else:
                             return
