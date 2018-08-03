@@ -372,7 +372,7 @@ class gdrive(cloudservice):
 
             xbmc.log('iss '+ str(serviceAccount[0]) + ' iat ' + str(currentTime) + str(serviceAccount[1]))
 
-            encoded = jwt.encode({'iss': serviceAccount[0], 'scope':'https://www.googleapis.com/auth/drive', 'aud':'https://accounts.google.com/o/oauth2/token', 'exp':currentTime + 3600, 'iat':currentTime}, serviceAccount[1], algorithm='RS256')
+            encoded = ''#jwt.encode({'iss': serviceAccount[0], 'scope':'https://www.googleapis.com/auth/drive', 'aud':'https://accounts.google.com/o/oauth2/token', 'exp':currentTime + 3600, 'iat':currentTime}, serviceAccount[1], algorithm='RS256')
 
             url = 'https://accounts.google.com/o/oauth2/token'
             header = { 'User-Agent' : self.user_agent }#, 'Content-Type': 'application/x-www-form-urlencoded'}
