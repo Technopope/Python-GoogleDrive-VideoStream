@@ -112,7 +112,7 @@ class gdrive(cloudservice):
 
         listOfServiceAccounts = self.getInstanceSetting('service_accounts', None)
         if listOfServiceAccounts != None:
-            self.authorization = authorization.authorization(username, listOfServiceAccounts=listOfServiceAccounts)
+            self.authorization = authorization.authorization(username, serviceaccounts=listOfServiceAccounts)
         else:
             self.authorization = authorization.authorization(username)
 
