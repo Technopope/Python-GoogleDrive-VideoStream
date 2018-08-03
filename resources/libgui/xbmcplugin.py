@@ -108,13 +108,14 @@ class setResolvedUrl(object):
             if not plugin_handle.override and not encrypted and (plugin_handle.server.addon.getSetting('passthrough')) == 'true':
                 auth = auth.replace("Bearer+",'')
                 playbackURL = url + '&access_token='+auth
+
             elif encrypted:
                 playbackURL = '/play?count=' + str(len(playbackBuffer.playback)-1) + '&encrypted=true'
 
             else:
                 playbackURL = '/play?count=' + str(len(playbackBuffer.playback)-1)
             plugin_handle.send_header('Location', playbackURL)
-            xbmc.log("resolving to URL = " + playbackURL, xbmc.LOGDEBUG)
+            xbmc.log("setResolvedUrl - resolving to URL = " + playbackURL, xbmc.LOGDEBUG)
             plugin_handle.end_headers()
 
 

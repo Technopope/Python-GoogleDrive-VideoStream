@@ -2886,6 +2886,7 @@ class contentengine(object):
 
                             item = xbmcgui.ListItem(path=playbackPath+'|' + service.getHeadersEncoded())
                             item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
+
                             xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
 
                 # playback of entire folder?
@@ -3187,6 +3188,8 @@ class contentengine(object):
                             else:
                                 # regular playback
                                 item.setPath(mediaURL.url)
+                                xbmc.log("regular playback 101", xbmc.LOGDEBUG)
+
                                 xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
 
 

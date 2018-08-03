@@ -1568,6 +1568,7 @@ class gdrive(cloudservice):
         except :
             pquality=3
 
+
         if pquality == 3:
             docid = package.file.id
 
@@ -1919,6 +1920,31 @@ class gdrive(cloudservice):
             return (mediaURLs, package)
 
 
+
+
+        if 1:
+            xbmc.log("download quota check", xbmc.LOGDEBUG)
+            #check token
+            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            req = urllib2.Request(url, None, self.getHeadersList())
+            xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
+            # if action fails, validate login
+            try:
+                 response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log("download quota check- error " + str(e), xbmc.LOGDEBUG)
+                if e.code == 403:
+
+                      if self.refreshServiceToken(fetchNext=True):
+                        req = urllib2.Request(url, None, self.getHeadersList())
+                        try:
+                            response = urllib2.urlopen(req)
+                        except urllib2.URLError, e:
+                            xbmc.log('getPlaybackCall still error reached '+str(e))
+                            return
+
+
+        xbmc.log("getPlaybackCall - returning", xbmc.LOGDEBUG)
         return (mediaURLs, package)
 
 
