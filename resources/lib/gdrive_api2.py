@@ -108,7 +108,14 @@ class gdrive(cloudservice):
             #username = self.getInstanceSetting(str(instanceName) + '_username')
         except:
             username = ''
-        self.authorization = authorization.authorization(username)
+
+
+        listOfServiceAccounts = self.getInstanceSetting('service_accounts', None)
+        if listOfServiceAccounts != None:
+            self.authorization = authorization.authorization(username, listOfServiceAccounts=listOfServiceAccounts)
+        else:
+            self.authorization = authorization.authorization(username)
+
 
 
         self.cookiejar = cookielib.CookieJar()
@@ -124,8 +131,6 @@ class gdrive(cloudservice):
 
         #***
         self.cache = cache.cache()
-
-
 
 
         self.cloudResume = self.getInstanceSetting('resumepoint')
@@ -276,6 +281,11 @@ class gdrive(cloudservice):
     ##
     def refreshToken(self):
 
+            if self.authorization.currentserviceaccount != None and self.authorization.currentserviceaccount > -1:
+                self.refreshServiceToken()
+                return
+
+
             header = { 'User-Agent' : self.user_agent }
 
             if (self.type ==2):
@@ -339,6 +349,68 @@ class gdrive(cloudservice):
                 xbmc.log(errorMessage)
 
             return
+
+
+
+    ##
+    # refresh OAUTH2 access given refresh token
+    #   parameters: none
+    #   returns: none
+    ##
+    def refreshServiceToken(self, fetchNext=False):
+
+
+            serviceAccount = self.authorization.getServiceAccount(fetchNext=fetchNext)
+            if serviceAccount == None:
+                return False
+
+
+            import time
+            import jwt
+            currentTime = time.time()
+
+
+            encoded = jwt.encode({'iss': serviceAccount[0], 'scope':'https://www.googleapis.com/auth/drive', 'aud':'https://accounts.google.com/o/oauth2/token', 'exp':currentTime + 3600, 'iat':currentTime}, serviceAccount[1], algorithm='RS256')
+
+            header = { 'User-Agent' : self.user_agent }
+
+            url = 'https://accounts.google.com/o/oauth2/token'
+            header = { 'User-Agent' : self.user_agent , 'Content-Type': 'application/x-www-form-urlencoded'}
+
+            req = urllib2.Request(url, 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + str(encoded), header)
+
+
+            # try login
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403:
+                    #login issue
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(e)
+                else:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(e)
+                return False
+
+            response_data = response.read()
+            response.close()
+
+            # retrieve authorization token
+            for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' ,
+                             response_data, re.DOTALL):
+                accessToken = r.group(1)
+                self.authorization.setToken('auth_access_token',accessToken)
+                self.updateAuthorization(self.addon)
+
+            for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
+                             response_data, re.DOTALL):
+                errorMessage = r.group(1)
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
+                xbmc.log(errorMessage)
+
+            return True
+
 
     ##
     # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token
@@ -459,6 +531,14 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
+                  if e.code == 403:
+                      if self.refreshServiceToken():
+                        req = urllib2.Request(url, None, self.getHeadersList())
+                        try:
+                            response = urllib2.urlopen(req)
+                        except urllib2.URLError, e:
+                            xbmc.log('getMediaList ' + str(e))
+                            return
                   xbmc.log('getMediaList ' + str(e))
                   return
               else:
@@ -1354,6 +1434,15 @@ class gdrive(cloudservice):
                     try:
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
+                        if e.code == 403:
+                          if self.refreshServiceToken():
+                            req = urllib2.Request(url, None, self.getHeadersList())
+                            try:
+                                response = urllib2.urlopen(req)
+                            except urllib2.URLError, e:
+                                xbmc.log('getDownloadURL ' + str(e))
+                                return
+
                         xbmc.log('getDownloadURL '+str(e))
                         return
                 else:
@@ -1522,6 +1611,15 @@ class gdrive(cloudservice):
                     try:
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
+                        if e.code == 403:
+                          if self.refreshServiceToken():
+                            req = urllib2.Request(url, None, self.getHeadersList())
+                            try:
+                                response = urllib2.urlopen(req)
+                            except urllib2.URLError, e:
+                                xbmc.log('getPlaybackCall-0 ' + str(e))
+                                return
+
                         xbmc.log('getPlaybackCall-0 '+str(e))
                         return
                 else:
@@ -1566,6 +1664,14 @@ class gdrive(cloudservice):
                         try:
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
+                            if e.code == 403:
+                              if self.refreshServiceToken():
+                                req = urllib2.Request(url, None, self.getHeadersList())
+                                try:
+                                    response = urllib2.urlopen(req)
+                                except urllib2.URLError, e:
+                                    xbmc.log('getPlaybackCall-1 ' + str(e))
+                                    return
                             xbmc.log('getPlaybackCall-1'+str(e))
                             return
                     else:
@@ -1613,6 +1719,14 @@ class gdrive(cloudservice):
                      try:
                          response = urllib2.urlopen(req)
                      except urllib2.URLError, e:
+                         if e.code == 403:
+                          if self.refreshServiceToken():
+                            req = urllib2.Request(url, None, self.getHeadersList())
+                            try:
+                                response = urllib2.urlopen(req)
+                            except urllib2.URLError, e:
+                                xbmc.log('getPlaybackCall-2 ' + str(e))
+                                return
                          xbmc.log('getPlaybackCall-2'+str(e))
                          return
                  else:
@@ -1656,6 +1770,14 @@ class gdrive(cloudservice):
                         try:
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
+                            if e.code == 403:
+                              if self.refreshServiceToken():
+                                req = urllib2.Request(url, None, self.getHeadersList())
+                                try:
+                                    response = urllib2.urlopen(req)
+                                except urllib2.URLError, e:
+                                    xbmc.log('getPlaybackCall-3 ' + str(e))
+                                    return
                             xbmc.log('getPlaybackCall-3'+str(e))
                             return
                     else:
@@ -1899,6 +2021,14 @@ class gdrive(cloudservice):
               try:
                 response = urllib2.urlopen(req)
               except urllib2.URLError, e:
+                if e.code == 403:
+                  if self.refreshServiceToken():
+                    req = urllib2.Request(url, None, self.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        xbmc.log('getPublicStream' + str(e))
+                        return
                 xbmc.log('getPublicStream '+str(e))
                 return
             else:

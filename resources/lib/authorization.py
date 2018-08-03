@@ -26,10 +26,41 @@ class authorization:
 
     ##
     ##
-    def __init__(self,username):
+    def __init__(self,username, serviceaccounts=None):
         self.auth = {}
         self.username = username
         self.isUpdated = False
+        self.serviceaccounts = []
+        self.currentserviceaccount = None
+        if serviceaccounts != None:
+            self.currentserviceaccount = -1
+            for account in serviceaccounts.split(","):
+                iss = None
+                secret = None
+                with open(account, "r") as ins:
+                    for line in ins:
+                        results = re.search(r'"private_key": "([^\"]+)"', str(line))
+                        if results:
+                            secret = results.group(1)
+                        results = re.search(r'"client_email": "([^\"]+)"', str(line))
+                        if results:
+                            iss = results.group(1)
+                if iss != None and secret != None:
+                    self.serviceaccounts.append([iss, secret])
+
+
+    ##
+    # retrieve the next service account
+    ##
+    def getServiceAccount(self, fetchNext=False):
+        if self.currentserviceaccount == None:
+            return None
+        elif self.currentserviceaccount < len(self.serviceaccounts) - 1:
+            if fetchNext:
+                self.currentserviceaccount = self.currentserviceaccount + 1
+            return self.serviceaccounts[self.currentserviceaccount]
+
+
 
     ##
     # Set the token of name with value provided.

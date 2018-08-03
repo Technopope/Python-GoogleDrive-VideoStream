@@ -726,6 +726,14 @@ class cloudservice(object):
                   response = urllib2.urlopen(req)
 
               except urllib2.URLError, e:
+                if e.code == 403:
+                  if self.refreshServiceToken():
+                    req = urllib2.Request(url, None, self.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        xbmc.log('downloadMediaFile' + str(e))
+                        return
                 xbmc.log(self.addon.getAddonInfo('name') + ': downloadMediaFile ' + str(e), xbmc.LOGERROR)
                 return
 
