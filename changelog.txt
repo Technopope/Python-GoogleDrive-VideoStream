@@ -1,3 +1,4 @@
+- add missing handler for LOGERROR
 v0.1.27 (2018-08-04)
 - handle situation where passthrough=false: add support for service accounts #35
 - preliminary working: add support for service accounts #35

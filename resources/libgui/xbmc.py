@@ -89,6 +89,7 @@ class LOGNOTICE(object):
         return
 
 LOGDEBUG = 1
+LOGERROR = 2
 
 class xbmc:
     # CloudService v0.3.0
