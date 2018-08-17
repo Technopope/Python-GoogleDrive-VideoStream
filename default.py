@@ -22,6 +22,7 @@
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from resources.libgui import webgui
 import urllib, urllib2
+import httplib
 from SocketServer import ThreadingMixIn
 import threading
 import sys
