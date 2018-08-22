@@ -1,3 +1,5 @@
+v0.1.28 (2018-08-21)
+- wrap exception around dbm sync
 - add missing handler for httplib
 - add missing handler for LOGERROR
 v0.1.27 (2018-08-04)

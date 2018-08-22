@@ -123,7 +123,10 @@ class settingsdbm:
             self.isReadOnly = False
 
         if forceSync:
-            self.dbm.sync()
+            try:
+                self.dbm.sync()
+            except:
+                pass
 
         self.dbm[key] = value
         #self.dbm.sync()

@@ -100,7 +100,10 @@ class xbmcaddon:
         self.dbm.close()
         self.dbm = anydbm.open(self.dbmfile,'w')
         self.dbm[key] = value
-        self.dbm.sync()
+        try:
+            self.dbm.sync()
+        except:
+            pass
         self.dbm.close()
         #self.dbm = anydbm.open(self.dbmfile,'r')
         return
