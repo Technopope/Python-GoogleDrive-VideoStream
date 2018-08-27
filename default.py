@@ -163,6 +163,13 @@ if __name__ == '__main__':
     except:
         sslcert = None
 
+    try:
+        import faulthandler
+        faulthandler.enable()
+        print('Faulthandler enabled')
+    except Exception:
+        print('Could not enable faulthandler')
+
     #try:
     server = webgui.WebGUIServer(('',  port), webgui.webGUI)
     if sslcert is not None:
