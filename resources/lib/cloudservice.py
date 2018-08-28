@@ -171,8 +171,13 @@ class cloudservice(object):
                     #self.addon.setSetting(self.instanceName +'_'+str(folderID)+'_changetoken', str(largestChangeId))
 
             else:
-                mediaItems = self.getMediaList(folderID,contentType=contentType)
-                isContinue = False
+                if isTeamDrive:
+                    mediaItems = self.getMediaList(folderID,contentType=contentType, teamdrive=folderID)
+                    isContinue = False
+
+                else:
+                    mediaItems = self.getMediaList(folderID,contentType=contentType)
+                    isContinue = False
 
 
             partialFileReg = re.compile('\.\d+\.[^\.]+$')
