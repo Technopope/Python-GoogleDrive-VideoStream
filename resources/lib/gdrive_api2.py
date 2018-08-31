@@ -1584,7 +1584,7 @@ class gdrive(cloudservice):
             docid = package.file.id
 
             if 1:
-                xbmc.log("download quota check", xbmc.LOGDEBUG)
+                xbmc.log("download quota check 4", xbmc.LOGDEBUG)
                 #check token
                 url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
                 req = urllib2.Request(url, None, self.getHeadersList())
@@ -1703,7 +1703,7 @@ class gdrive(cloudservice):
 
 
                 if 1:
-                    xbmc.log("download quota check", xbmc.LOGDEBUG)
+                    xbmc.log("download quota check 1", xbmc.LOGDEBUG)
                     #check token
                     url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
                     req = urllib2.Request(url, None, self.getHeadersList())
@@ -1760,6 +1760,54 @@ class gdrive(cloudservice):
         else:
             docid = package.file.id
 
+            if 1:
+                xbmc.log("download quota check 2", xbmc.LOGDEBUG)
+                #check token
+                url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                req = urllib2.Request(url, None, self.getHeadersList())
+                xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
+                # if action fails, validate login
+                try:
+                     response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log("download quota check- error " + str(e), xbmc.LOGDEBUG)
+                    if e.code == 403:
+                        if fileIDList is not None:
+                            retry = True
+                            for item in MD5List[fileIDList[docid]]:
+                                if retry and item != docid:
+                                    url = self.API_URL +'files/' + str(item) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                                    req = urllib2.Request(url, None, self.getHeadersList())
+                                    xbmc.log('getPlaybackCall try another file ' + str(item))
+                                    xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
+                                    try:
+                                        response = urllib2.urlopen(req)
+                                        retry = False
+                                        docid = item
+                                    except urllib2.URLError, e:
+                                        xbmc.log('getPlaybackCall still error reached '+str(e))
+                            while retry and self.refreshServiceToken(fetchNext=True):
+                                for item in MD5List[fileIDList[docid]]:
+                                    if retry:
+                                        url = self.API_URL +'files/' + str(item) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                                        req = urllib2.Request(url, None, self.getHeadersList())
+                                        xbmc.log('getPlaybackCall try another file ' + str(item))
+                                        xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
+                                        try:
+                                            response = urllib2.urlopen(req)
+                                            retry = False
+                                            docid = item
+                                        except urllib2.URLError, e:
+                                            xbmc.log('getPlaybackCall still error reached '+str(e))
+                        else:
+                          retry = True
+                          while retry and self.refreshServiceToken(fetchNext=True):
+                            req = urllib2.Request(url, None, self.getHeadersList())
+                            try:
+                                response = urllib2.urlopen(req)
+                                retry = False
+                            except urllib2.URLError, e:
+                                xbmc.log('getPlaybackCall still error reached '+str(e))
             if not override:
                 # new method of fetching original stream -- using alt=media
                 url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
@@ -2033,7 +2081,7 @@ class gdrive(cloudservice):
 
 
             if 1:
-                xbmc.log("download quota check", xbmc.LOGDEBUG)
+                xbmc.log("download quota check 3", xbmc.LOGDEBUG)
                 #check token
                 url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
                 req = urllib2.Request(url, None, self.getHeadersList())
