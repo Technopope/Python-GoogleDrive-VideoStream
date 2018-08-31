@@ -70,8 +70,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.logins = {}
         self.embyUserList['127.0.0.1'] = True
         self.embyUserList[str(self.get_ip_address())] = True
-        self.fileIDList = {}
-        self.MD5List = {}
+        self.fileIDList = None
+        self.MD5List = None
 
     # set port
     def setPort(self, port):
@@ -141,7 +141,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         xbmc.openLog(self.dbm.getSetting('logfile', None), debug=self.dbm.getBoolSetting('debug', False))
 
 
-        if 1:#try:
+        if self.fileIDList is None:#try:
             hashfiles = self.dbm.getSetting('md5files')
             xbmc.log('hashfiles ' + hashfiles)
 
