@@ -141,7 +141,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         xbmc.openLog(self.dbm.getSetting('logfile', None), debug=self.dbm.getBoolSetting('debug', False))
 
 
-        try:
+        if 1:#try:
             hashfiles = self.dbm.getSetting('md5files')
             xbmc.log('hashfiles ' + hashfiles)
 
@@ -169,7 +169,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                     f.close()
                     i = i + 1
                     xbmc.log('loop')
-        except: pass
+        #except: pass
 
 
 
