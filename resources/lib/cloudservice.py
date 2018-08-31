@@ -453,7 +453,7 @@ class cloudservice(object):
                                         spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
                                     if item.file.type != self.MEDIA_TYPE_VIDEO_HELPER and LOGGING is not None:
-                                        print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(videoResolution)+'\t'+str(item.file.checksum)
+                                        print >>LOGGING, str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(show) + '\t' + str(season)+'\t'+str(episode)+'\t'+str(title) + '\t'+str(year)+'\t'+str(videoResolution)+'\t'+str(item.file.checksum)+'\t'+str(item.file.size)
 
 
             elif mediaItems and encfs:

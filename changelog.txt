@@ -1,3 +1,5 @@
+- add filesize to STRM log
+- change write to append to STRM log
 - add faulthandler support
 v0.1.28 (2018-08-21)
 - wrap exception around dbm sync
