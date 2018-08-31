@@ -143,6 +143,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
         try:
             hashfiles = self.dbm.getSetting('md5files')
+            xbmc.log('hashfiles ' + hashfiles)
 
             if hashfiles != None:
                 self.fileIDList = {}
