@@ -1605,8 +1605,8 @@ class gdrive(cloudservice):
                                     xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
                                     try:
                                         response = urllib2.urlopen(req)
+                                        docid = str(item)
                                         retry = False
-                                        docid = item
                                     except urllib2.URLError, e:
                                         xbmc.log('getPlaybackCall still error reached '+str(e))
                             while retry and self.refreshServiceToken(fetchNext=True):
@@ -1618,8 +1618,8 @@ class gdrive(cloudservice):
                                         xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
                                         try:
                                             response = urllib2.urlopen(req)
+                                            docid = str(item)
                                             retry = False
-                                            docid = item
                                         except urllib2.URLError, e:
                                             xbmc.log('getPlaybackCall still error reached '+str(e))
 
@@ -1724,8 +1724,8 @@ class gdrive(cloudservice):
                                         xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
                                         try:
                                             response = urllib2.urlopen(req)
+                                            docid = str(item)
                                             retry = False
-                                            docid = item
                                         except urllib2.URLError, e:
                                             xbmc.log('getPlaybackCall still error reached '+str(e))
                                 while retry and self.refreshServiceToken(fetchNext=True):
@@ -1737,8 +1737,8 @@ class gdrive(cloudservice):
                                             xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
                                             try:
                                                 response = urllib2.urlopen(req)
+                                                docid = str(item)
                                                 retry = False
-                                                docid = item
                                             except urllib2.URLError, e:
                                                 xbmc.log('getPlaybackCall still error reached '+str(e))
                             else:
@@ -1769,7 +1769,6 @@ class gdrive(cloudservice):
                 # if action fails, validate login
                 try:
                      response = urllib2.urlopen(req)
-                     docid = '1zAgAiDdYIMvhi0H_hnGFU0-lMxEH_7sQ'
                 except urllib2.URLError, e:
                     xbmc.log("download quota check- error " + str(e), xbmc.LOGDEBUG)
                     if e.code == 403:
@@ -1783,8 +1782,8 @@ class gdrive(cloudservice):
                                     xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
                                     try:
                                         response = urllib2.urlopen(req)
+                                        docid = str(item)
                                         retry = False
-                                        docid = item
                                     except urllib2.URLError, e:
                                         xbmc.log('getPlaybackCall still error reached '+str(e))
                             while retry and self.refreshServiceToken(fetchNext=True):
@@ -1796,8 +1795,8 @@ class gdrive(cloudservice):
                                         xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
                                         try:
                                             response = urllib2.urlopen(req)
+                                            docid = str(item)
                                             retry = False
-                                            docid = item
                                         except urllib2.URLError, e:
                                             xbmc.log('getPlaybackCall still error reached '+str(e))
                         else:
@@ -2103,8 +2102,8 @@ class gdrive(cloudservice):
                                     xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
                                     try:
                                         response = urllib2.urlopen(req)
+                                        docid = str(item)
                                         retry = False
-                                        docid = item
                                     except urllib2.URLError, e:
                                         xbmc.log('getPlaybackCall still error reached '+str(e))
                             while retry and self.refreshServiceToken(fetchNext=True):
@@ -2116,8 +2115,8 @@ class gdrive(cloudservice):
                                         xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
                                         try:
                                             response = urllib2.urlopen(req)
+                                            docid = str(item)
                                             retry = False
-                                            docid = item
                                         except urllib2.URLError, e:
                                             xbmc.log('getPlaybackCall still error reached '+str(e))
                         else:
