@@ -150,7 +150,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                 self.MD5List = {}
 
                 for file in hashfiles.split(","):
-                    print "FILE =" + strm(file)
+                    xbmc.log('FILE = ' + str(file))
                     f = open(file, "r")
                     for line in f:
 
