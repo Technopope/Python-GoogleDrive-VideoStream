@@ -1599,7 +1599,7 @@ class gdrive(cloudservice):
                             retry = True
                             for item in MD5List[fileIDList[docid]]:
                                 if retry and item != docid:
-                                    url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                                    url = self.API_URL +'files/' + str(item) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
                                     req = urllib2.Request(url, None, self.getHeadersList())
                                     xbmc.log('getPlaybackCall try another file ' + str(item))
                                     xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
@@ -1611,7 +1611,7 @@ class gdrive(cloudservice):
                             while retry and self.refreshServiceToken(fetchNext=True):
                                 for item in MD5List[fileIDList[docid]]:
                                     if retry:
-                                        url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                                        url = self.API_URL +'files/' + str(item) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
                                         req = urllib2.Request(url, None, self.getHeadersList())
                                         xbmc.log('getPlaybackCall try another file ' + str(item))
                                         xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
@@ -1991,7 +1991,7 @@ class gdrive(cloudservice):
                             retry = True
                             for item in MD5List[fileIDList[docid]]:
                                 if retry and item != docid:
-                                    url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                                    url = self.API_URL +'files/' + str(item) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
                                     req = urllib2.Request(url, None, self.getHeadersList())
                                     xbmc.log('getPlaybackCall try another file ' + str(item))
                                     xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
@@ -2003,7 +2003,7 @@ class gdrive(cloudservice):
                             while retry and self.refreshServiceToken(fetchNext=True):
                                 for item in MD5List[fileIDList[docid]]:
                                     if retry:
-                                        url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                                        url = self.API_URL +'files/' + str(item) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
                                         req = urllib2.Request(url, None, self.getHeadersList())
                                         xbmc.log('getPlaybackCall try another file ' + str(item))
                                         xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
@@ -2049,7 +2049,7 @@ class gdrive(cloudservice):
                         retry = True
                         for item in MD5List[fileIDList[docid]]:
                             if retry and item != docid:
-                                url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                                url = self.API_URL +'files/' + str(item) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
                                 req = urllib2.Request(url, None, self.getHeadersList())
                                 xbmc.log('getPlaybackCall try another file ' + str(item))
                                 xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
@@ -2061,7 +2061,7 @@ class gdrive(cloudservice):
                         while retry and self.refreshServiceToken(fetchNext=True):
                             for item in MD5List[fileIDList[docid]]:
                                 if retry:
-                                    url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+                                    url = self.API_URL +'files/' + str(item) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
                                     req = urllib2.Request(url, None, self.getHeadersList())
                                     xbmc.log('getPlaybackCall try another file ' + str(item))
                                     xbmc.log("URL = " + str(url), xbmc.LOGDEBUG)
