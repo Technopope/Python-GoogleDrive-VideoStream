@@ -70,6 +70,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.logins = {}
         self.embyUserList['127.0.0.1'] = True
         self.embyUserList[str(self.get_ip_address())] = True
+        self.fileIDList = {}
+        self.MD5List = {}
 
     # set port
     def setPort(self, port):
@@ -137,6 +139,37 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         except: pass
 
         xbmc.openLog(self.dbm.getSetting('logfile', None), debug=self.dbm.getBoolSetting('debug', False))
+
+
+        try:
+            hashfiles = self.dbm.getSetting('md5files')
+
+            if hashfiles != None:
+                self.fileIDList = {}
+                self.MD5List = {}
+
+                for file in hashfiles.split(","):
+                    print "FILE =" + strm(file)
+                    f = open(file, "r")
+                    for line in f:
+
+                        entry = re.search(r'^[^\t]*\t[^\t]*\t([^\t]*)\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t([^\t]*)\n', str(line))
+
+                        if entry:
+                            id = str(entry.group(1))
+                            hash = str(entry.group(2))
+                            self.fileIDList[id] = hash
+                            #print "hash = " + str(hash) + ' id = ' + str(id)
+                            if hash not in self.MD5List.keys():
+                                self.MD5List[hash] = []
+                                self.MD5List[hash].append(id)
+                            else:
+                                self.MD5List[hash].append(id)
+                    f.close()
+                    i = i + 1
+                    print "loop"
+        except: pass
+
 
 
     def file_len(fname):
@@ -439,7 +472,7 @@ class webGUI(BaseHTTPRequestHandler):
                     self.server.addon.setSetting(instanceName + '_auth_refresh_token', str(refreshToken))
 
                     mediaEngine = engine.contentengine()
-                    mediaEngine.run(self,  DBM=self.server.dbm, addon=self.server.addon, host=host)
+                    mediaEngine.run(self,  DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
 
 
                 for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
@@ -472,7 +505,7 @@ class webGUI(BaseHTTPRequestHandler):
                     self.send_header('Set-Cookie', 'login='+str(loginSession))
                     self.server.logins[loginSession] = 1
                     mediaEngine = engine.contentengine()
-                    mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host)
+                    mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
                 else:
                     self.send_response(200)
                     self.end_headers()
@@ -480,7 +513,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             else:
                 mediaEngine = engine.contentengine()
-                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host)
+                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
 
 
     def do_HEAD(self):
@@ -594,7 +627,7 @@ class webGUI(BaseHTTPRequestHandler):
                 query = str(results.group(1))
 
             mediaEngine = engine.contentengine()
-            mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
+            mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
             return
 
 
@@ -690,7 +723,7 @@ class webGUI(BaseHTTPRequestHandler):
                 self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
             else:
                 mediaEngine = engine.contentengine()
-                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host)
+                mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
 
             #self.server.ready = False
             return
@@ -1235,7 +1268,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
             mediaEngine = engine.contentengine()
-            mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host)
+            mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
             return
 
 

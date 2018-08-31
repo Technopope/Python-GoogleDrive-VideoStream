@@ -1,3 +1,4 @@
+- add file swapping support (using md5 hash - md5files)
 - add filesize to STRM log
 - change write to append to STRM log
 - add faulthandler support
