@@ -167,7 +167,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                                 self.MD5List[hash].append(id)
                     f.close()
                     i = i + 1
-                    print "loop"
+                    xbmc.log('loop')
         except: pass
 
 
