@@ -120,7 +120,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False, retainFolders=False,folderCache= {}, helperfiles=False, skipPartial=False, isTeamDrive=True):
+    def buildSTRM(self, plugin_handle, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None, changeTracking=False, fetchChangeID=False, resolution=False, host=None, force=False, LOGGING=None, changeToken='', skip0Res=False, original=True, transcode=True, append='', removeExt=False, folderCache= {}, helperfiles=False, skipPartial=False, isTeamDrive=True):
 
 
         if host is None:
@@ -130,7 +130,7 @@ class cloudservice(object):
 
         ##xbmc.log("host = " + str(host) + ", PLUGIN_URL = " + str(PLUGIN_URL) + ", self.PLUGIN_URL = " + str(self.PLUGIN_URL), xbmc.LOGDEBUG)
         count = 0
-        if catalog and not retainFolders:
+        if catalog:
             if musicPath is None:
                 musicPath = path + '/music'
             if moviePath is None:
@@ -188,11 +188,11 @@ class cloudservice(object):
                     if not changeTracking and item.file is None:
                         newcount=0
                         if catalog:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt, retainFolders=retainFolders, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
                         elif fetchChangeID:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path, item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, retainFolders=retainFolders, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path, item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
                         else:
-                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, retainFolders=retainFolders, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
+                            (newcount,nothing) = self.buildSTRM(plugin_handle,path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res,original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
                         count += newcount
                     elif item.file is not None:
 
@@ -231,7 +231,7 @@ class cloudservice(object):
                                     if not isTeamDrive and folderID != 'root':
                                         isInFolderID = self.isFolderIDInPath(item.folder.parentID, folderID, folderCache=folderCache)
 
-                                    if isInFolderID and ((not catalog) or (catalog and retainFolders)):
+                                    if isInFolderID and not catalog:
                                         directoryPath = self.getSubFolderPath(item.folder.parentID, folderCache=folderCache)
                                         try:
                                             os.makedirs(str(path) + str(directoryPath))
@@ -346,13 +346,12 @@ class cloudservice(object):
                                         if len(season) < 2:
                                             season = '0' + str(season)
                                         episode = tv.group(3)
-                                        if not retainFolders:
-                                            pathLib = tvPath + '/' + show
-                                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                            pathLib = pathLib +  '/season ' + str(season)
-                                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                        pathLib = tvPath + '/' + show
+                                        if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                            xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                        pathLib = pathLib +  '/season ' + str(season)
+                                        if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                            xbmcvfs.mkdir(xbmc.translatePath(pathLib))
 
                                         filename = str(show) + ' ' +  'S' + str(season) + 'E' + str(episode)
                                     else:
@@ -365,11 +364,10 @@ class cloudservice(object):
                                             year = movie.group(2)
 
                                             filename = str(title) + '(' + str(year) + ')'
-                                            if not retainFolders:
-                                                pathLib = moviePath +'/'+str(filename)
-                                                #xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                                xbmcvfs.mkdir(pathLib)
-                                        elif not retainFolders:
+                                            pathLib = moviePath +'/'+str(filename)
+                                            #xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                            xbmcvfs.mkdir(pathLib)
+                                        else:
                                             pathLib = videoPath
 
                                     skip = False
@@ -515,7 +513,7 @@ class cloudservice(object):
                         dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
 
                         #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode,  append=append, removeExt=removeExt, retainFolders=retainFolders, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
+                        self.buildSTRM(plugin_handle,path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile,changeTracking=changeTracking, resolution=resolution, LOGGING=LOGGING, host=host, skip0Res=skip0Res, original=original, transcode=transcode,  append=append, removeExt=removeExt, folderCache=folderCache, helperfiles=helperfiles, skipPartial=skipPartial, isTeamDrive=isTeamDrive)
 
                     elif index in fileListINodes.keys():
                         xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
