@@ -1,3 +1,4 @@
+- fix for when not using hashfiles
 - remove retain folders parameter from STRM creation
 - add file swapping support (using md5 hash - md5files)
 - add filesize to STRM log
