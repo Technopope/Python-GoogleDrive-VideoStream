@@ -1009,7 +1009,7 @@ class contentengine(object):
                         if frequency is not None and type is not None:
                             xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&frequency='+str(frequency)+'&type='+str(type)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                         elif folderID == '' :
-                            xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&retain_folders=false&remove_ext=false&resolution=false&append=&skip=false&original=true&transcode=false&catalog=false&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                            xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&remove_ext=false&resolution=false&append=&skip=false&original=true&transcode=false&catalog=false&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                         else:
                             xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                         xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', settingsModule.getSetting('strm_path',''))
@@ -1017,7 +1017,6 @@ class contentengine(object):
                         if folderID != '' :
                             xbmcgui.Dialog().booleanSelector('download nfo and srt files that are stored alongside media?','helperfiles', False)
                             xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog', disable=['remove_ext', 'true', 'true'])
-                            xbmcgui.Dialog().booleanSelector('when catalog STRMs=true, retain folder structure?','retain_folders', False)
                             xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
                             xbmcgui.Dialog().booleanSelector('append resolution to STRM filename? (- ###p)','resolution')
                             xbmcgui.Dialog().textField('append the following to the resolution (- APPEND ###p)','append',isOptional=True)

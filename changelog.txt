@@ -1,3 +1,5 @@
+- remove remaining retain folder calls
+- fix for 0 STRM files on change tracking
 - fix for when not using hashfiles
 - remove retain folders parameter from STRM creation
 - add file swapping support (using md5 hash - md5files)
