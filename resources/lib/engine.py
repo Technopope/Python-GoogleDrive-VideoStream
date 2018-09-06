@@ -733,7 +733,7 @@ class contentengine(object):
                     else:
                     #    status += 'every '+str(task[1])+' mins looking for changes -- never ran'
                         status = str(task[tasks.TASK_STATUS]) + ' ' + str(task[tasks.TASK_TYPE]) + ' ' + str(task[tasks.TASK_RUNTIME]) +'??'
-                    cmd = re.sub('\&amp\;', '\&', task[tasks.TASK_CMD])
+                    cmd = re.sub('\&amp\;', '\&', str(task[tasks.TASK_CMD]))
                     results = re.search(r'\&folder=([^\&]+).*\&filename=([^\&]+).*\&title=([^\&]*).*\&username=([^\&]+)\&', str(cmd))
                     if results:
                         folderName = results.group(2)
