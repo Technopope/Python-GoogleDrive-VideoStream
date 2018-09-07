@@ -301,7 +301,7 @@ class gdrive(cloudservice):
                 clientSecret = self.getInstanceSetting('client_secret')
                 header = { 'User-Agent' : self.user_agent , 'Content-Type': 'application/x-www-form-urlencoded'}
 
-                req = urllib2.Request(url, 'client_id='+clientID+'&client_secret='+clientSecret+'&refresh_token='+self.authorization.getToken('auth_refresh_token')+'&grant_type=refresh_token', header)
+                req = urllib2.Request(url, 'client_id='+str(clientID)+'&client_secret='+str(clientSecret)+'&refresh_token='+str(self.authorization.getToken('auth_refresh_token'))+'&grant_type=refresh_token', header)
 
             #elif (self.type ==1):
             #    url = 'http://dmdsoftware.net/api/gdrive.php'
