@@ -14,7 +14,7 @@ except:
 
 dbm = anydbm.open(dbmfile,'r')
 
-file = open(csvfile, "c")
+file = open(csvfile, "w")
 print "exporting the following key,value pairs\n"
 for key in dbm:
     try:
