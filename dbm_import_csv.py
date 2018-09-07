@@ -14,7 +14,7 @@ try:
     file = open(csvfile, "r")
     print "saving the following key,value pairs\n"
     for line in file:
-        result = re.search(r'([^\,]+),([^\n]+)\n', str(line))
+        result = re.search(r'([^\,]+),([^\n]*)\n', str(line))
         key = ''
         value = ''
         if result:
