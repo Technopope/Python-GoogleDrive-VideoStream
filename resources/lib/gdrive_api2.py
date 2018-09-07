@@ -431,21 +431,21 @@ class gdrive(cloudservice):
         if self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token') and not isPOST:
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
             if additionalHeader is not None:
-                return { 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token'), additionalHeader : additionalValue }
+                return { 'Cookie' : 'DRIVE_STREAM='+ str(self.authorization.getToken('DRIVE_STREAM')), 'Authorization' : 'Bearer ' + str(self.authorization.getToken('auth_access_token')), additionalHeader : additionalValue }
             else:
-                return {  'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+                return {  'Cookie' : 'DRIVE_STREAM='+ str(self.authorization.getToken('DRIVE_STREAM')), 'Authorization' : 'Bearer ' + str(self.authorization.getToken('auth_access_token')) }
         elif isJSON and self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token'):
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
-            return { 'Content-Type': 'application/json', 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            return { 'Content-Type': 'application/json', 'Cookie' : 'DRIVE_STREAM='+ str(self.authorization.getToken('DRIVE_STREAM')), 'Authorization' : 'Bearer ' + str(self.authorization.getToken('auth_access_token')) }
         elif self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token'):
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
-            return { "If-Match" : '*', 'Content-Type': 'application/atom+xml', 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            return { "If-Match" : '*', 'Content-Type': 'application/atom+xml', 'Cookie' : 'DRIVE_STREAM='+ str(self.authorization.getToken('DRIVE_STREAM')), 'Authorization' : 'Bearer ' + str(self.authorization.getToken('auth_access_token')) }
             #return {  'Content-Type': 'application/atom+xml', 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         elif self.authorization.isToken(self.instanceName,self.addon, 'DRIVE_STREAM') and not isPOST:
             if additionalHeader is not None:
-                return { 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), additionalHeader : additionalValue }
+                return { 'Cookie' : 'DRIVE_STREAM='+ str(self.authorization.getToken('DRIVE_STREAM')), additionalHeader : additionalValue }
             else:
-                return {  'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM') }
+                return {  'Cookie' : 'DRIVE_STREAM='+ str(self.authorization.getToken('DRIVE_STREAM')) }
 
         else:
             return { 'User-Agent' : self.user_agent}
