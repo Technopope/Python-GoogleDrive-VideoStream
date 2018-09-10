@@ -1,3 +1,4 @@
+- add a separate scheduler process
 - remove remaining retain folder calls
 - fix for 0 STRM files on change tracking
 - fix for when not using hashfiles
