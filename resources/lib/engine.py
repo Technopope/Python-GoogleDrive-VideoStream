@@ -784,8 +784,11 @@ class contentengine(object):
 
             LOGGING = None
             if mode == 'buildstrm'  and logfile is not None and logfile != '':
-                LOGGING = open(logfile, 'a')
-                print >>LOGGING, "folder id\tfolder title\tfile id\tfile title\tshow title (tv)\tseason (tv)\tepisode (tv)\ttitle (movie)\tyear (movie)\tvideo resolution\tfile checksum\tfile size\n"
+                if os.path.exists(logfile):
+                    LOGGING = open(logfile, 'a')
+                else:
+                    LOGGING = open(logfile, 'a')
+                    print >>LOGGING, "folder id\tfolder title\tfile id\tfile title\tshow title (tv)\tseason (tv)\tepisode (tv)\ttitle (movie)\tyear (movie)\tvideo resolution\tfile checksum\tfile size\n"
 
             #for scheduled jbos
             #instance = settingsModule.getParameter('instance',None)

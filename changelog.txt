@@ -1,3 +1,4 @@
+- don't print STRM log header in append
 - testing search fix
 - add support for multiple emby IP whitelist (, deliminated)
 - add a separate scheduler process
