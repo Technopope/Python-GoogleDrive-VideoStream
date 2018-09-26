@@ -471,8 +471,8 @@ class gdrive(cloudservice):
         # retrieve all items
         url = self.API_URL +'files/?includeTeamDriveItems=true&supportsTeamDrives=true'
 
-        #if teamdrive != '':
-        #    url = url + "&corpora=teamDrive&teamDriveId=" + str(teamdrive)
+        if teamdrive != '':
+            url = url + "&corpora=teamDrive&teamDriveId=" + str(teamdrive)
 
         # show all videos
         if folderName=='VIDEO':

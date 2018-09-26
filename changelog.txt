@@ -1,3 +1,4 @@
+- testing search fix
 - add support for multiple emby IP whitelist (, deliminated)
 - add a separate scheduler process
 - remove remaining retain folder calls

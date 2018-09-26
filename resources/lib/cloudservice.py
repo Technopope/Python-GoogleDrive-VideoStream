@@ -172,7 +172,7 @@ class cloudservice(object):
 
             else:
                 if isTeamDrive:
-                    mediaItems = self.getMediaList(folderID,contentType=contentType, teamdrive=folderID)
+                    mediaItems = self.getMediaList(folderID,contentType=contentType)#, teamdrive=folderID)
                     isContinue = False
 
                 else:
