@@ -155,7 +155,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                     f = open(file, "r")
                     for line in f:
 
-                        entry = re.search(r'^[^\t]*\t[^\t]*\t([^\t]*)\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t([^\t]*)\n', str(line))
+                        entry = re.search(r'^[^\t]*\t[^\t]*\t([^\t]*)\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t([^\t]*)', str(line))
 
                         if entry:
                             id = str(entry.group(1))
