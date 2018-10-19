@@ -27,9 +27,25 @@ At this stage, you cannot enroll an account with this application or modify user
 
 
 
+To start the scheduler only, run:
+
+python scheduler.py
+
+The default dbmfile is ./gdrive.db and the default port to run on is 9988.  You can override these by running:
+
+python scheduler.py <dbmfile> <port>
 
 
-To start the media server, run:
+To start the media server with no scheduler, run:
+
+python noscheduler.py
+
+The default dbmfile is ./gdrive.db and the default port to run on is 9988.  You can override these by running:
+
+python noscheduler.py <dbmfile> <port>
+
+
+To start the media server with scheduler, run:
 
 python default.py
 
