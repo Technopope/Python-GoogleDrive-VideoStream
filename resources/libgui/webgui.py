@@ -182,20 +182,20 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
     def readLog(self,fname):
         xbmc.log('opening emby log...')
-
-        with open(fname) as f:
-            xbmc.log('searching emby log...')
-            line = f.readline()
-            count = 0
-            while line:
-                results = re.search(r' to (\S+)\. .*?/Users/\w{32}/', str(line))
-                if results:
-                    IP = str(results.group(1))
-                    self.embyUserList[IP] = True
-                    #print "found IP = " + IP + "\n"
-                    count = count + 1
-
+        for filename in fname.split(","):
+            with open(filename) as f:
+                xbmc.log('searching emby log...')
                 line = f.readline()
+                count = 0
+                while line:
+                    results = re.search(r' to (\S+)\. .*?/Users/\w{32}/', str(line))
+                    if results:
+                        IP = str(results.group(1))
+                        self.embyUserList[IP] = True
+                        #print "found IP = " + IP + "\n"
+                        count = count + 1
+
+                    line = f.readline()
 
 
     def whitelistIPs():
