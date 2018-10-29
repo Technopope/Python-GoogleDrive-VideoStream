@@ -167,6 +167,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                                     self.MD5List[hash].append(id)
                                 else:
                                     self.MD5List[hash].append(id)
+                        count = count + 1
                     else:
                         for line in f:
                             entry = re.search(r'^([^\,]+)\,(.*)', str(line))
