@@ -156,31 +156,34 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                     f = open(file, "r")
                     if count == 0:
                         for line in f:
-                            entry = re.search(r'^([^\,]+)\,(.*)', str(line))
-                            if entry:
-                                id = str(entry.group(1))
-                                hash = str(entry.group(2))
+#                            entry = re.search(r'^([^\,]+)\,(.*)', str(line))
+#                            if entry:
+                                entry = line.split(",")
+                                id = entry[0]
+                                hash = entry[1]
+#                                print "id = " + str(id) + "\n"
                                 self.fileIDList[id] = hash
                                 #print "hash = " + str(hash) + ' id = ' + str(id)
-                                if hash not in self.MD5List.keys():
-                                    self.MD5List[hash] = []
-                                    self.MD5List[hash].append(id)
-                                else:
-                                    self.MD5List[hash].append(id)
+                                #if hash not in self.MD5List.keys():
+                                #    self.MD5List[hash] = []
+                                #    self.MD5List[hash].append(id)
+                                #else:
+                                #    self.MD5List[hash].append(id)
                         count = count + 1
                     else:
                         for line in f:
-                            entry = re.search(r'^([^\,]+)\,(.*)', str(line))
-                            if entry:
-                                hash = str(entry.group(1))
-                                id = str(entry.group(2))
-                                if hash not in self.MD5List.keys():
-                                    #self.MD5List[hash] = []
-                                    #self.MD5List[hash].append(id)
-                                    count = count + 1
-                                else:
-                                    #self.MD5List[hash].append(id)
-                                    count = count + 1
+                                entry = line.split(",")
+                                id = entry[1]
+                                hash = entry[0]
+                                ids = entry[1].split("|")
+
+#                                if hash not in self.MD5List.keys():
+#                                    self.MD5List[hash] = []
+#                                    self.MD5List[hash].append(id)
+#                                    count = count + 1
+#                                else:
+#                                    self.MD5List[hash].append(id)
+#                                    count = count + 1
 
                     f.close()
                     xbmc.log('loop')
