@@ -1,3 +1,4 @@
+- add a new hash file method
 - add support for multiple emby logs (for multiple instances)
 - add no scheduler version
 - don't print STRM log header in append

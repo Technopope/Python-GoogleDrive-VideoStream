@@ -150,25 +150,56 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                 self.fileIDList = {}
                 self.MD5List = {}
 
+                count = 0
                 for file in hashfiles.split(","):
                     xbmc.log('FILE = ' + str(file))
                     f = open(file, "r")
-                    for line in f:
+                    if count == 0:
+                        for line in f:
+                            entry = re.search(r'^([^\,]+)\,(.*)', str(line))
+                            if entry:
+                                id = str(entry.group(1))
+                                hash = str(entry.group(2))
+                                self.fileIDList[id] = hash
+                                #print "hash = " + str(hash) + ' id = ' + str(id)
+                                if hash not in self.MD5List.keys():
+                                    self.MD5List[hash] = []
+                                    self.MD5List[hash].append(id)
+                                else:
+                                    self.MD5List[hash].append(id)
+                    else:
+                        for line in f:
+                            entry = re.search(r'^([^\,]+)\,(.*)', str(line))
+                            if entry:
+                                hash = str(entry.group(1))
+                                id = str(entry.group(2))
+                                if hash not in self.MD5List.keys():
+                                    self.MD5List[hash] = []
+                                    self.MD5List[hash].append(id)
+                                else:
+                                    self.MD5List[hash].append(id)
 
-                        entry = re.search(r'^[^\t]*\t[^\t]*\t([^\t]*)\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t([^\t]*)', str(line))
-
-                        if entry:
-                            id = str(entry.group(1))
-                            hash = str(entry.group(2))
-                            self.fileIDList[id] = hash
-                            #print "hash = " + str(hash) + ' id = ' + str(id)
-                            if hash not in self.MD5List.keys():
-                                self.MD5List[hash] = []
-                                self.MD5List[hash].append(id)
-                            else:
-                                self.MD5List[hash].append(id)
                     f.close()
                     xbmc.log('loop')
+#                for file in hashfiles.split(","):
+#                    xbmc.log('FILE = ' + str(file))
+#                    f = open(file, "r")
+#                    for line in f:
+
+#                        entry = re.search(r'^[^\t]*\t[^\t]*\t([^\t]*)\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t([^\t]*)', str(line))
+
+#                        if entry:
+#                            id = str(entry.group(1))
+#                            hash = str(entry.group(2))
+#                            self.fileIDList[id] = hash
+#                            #print "hash = " + str(hash) + ' id = ' + str(id)
+#                            if hash not in self.MD5List.keys():
+#                                self.MD5List[hash] = []
+#                                self.MD5List[hash].append(id)
+#                            else:
+#                                self.MD5List[hash].append(id)
+#                    f.close()
+#                    xbmc.log('loop')
         #except: pass
 
 
