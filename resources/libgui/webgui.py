@@ -175,10 +175,12 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                                 hash = str(entry.group(1))
                                 id = str(entry.group(2))
                                 if hash not in self.MD5List.keys():
-                                    self.MD5List[hash] = []
-                                    self.MD5List[hash].append(id)
+                                    #self.MD5List[hash] = []
+                                    #self.MD5List[hash].append(id)
+                                    count = count + 1
                                 else:
-                                    self.MD5List[hash].append(id)
+                                    #self.MD5List[hash].append(id)
+                                    count = count + 1
 
                     f.close()
                     xbmc.log('loop')
