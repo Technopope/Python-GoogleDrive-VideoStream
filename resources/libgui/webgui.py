@@ -177,6 +177,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                                 hash = entry[0]
                                 ids = entry[1].split("|")
                                 self.MD5List[hash] = ids
+                                print "hash = " . str(hash) . " ids = " . str(ids) . "\n"
 #                                if hash not in self.MD5List.keys():
 #                                    self.MD5List[hash] = []
 #                                    self.MD5List[hash].append(id)
