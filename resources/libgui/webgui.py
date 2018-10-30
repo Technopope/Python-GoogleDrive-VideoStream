@@ -156,6 +156,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                     f = open(file, "r")
                     if count == 0:
                         for line in f:
+                                line.rstrip()
 #                            entry = re.search(r'^([^\,]+)\,(.*)', str(line))
 #                            if entry:
                                 entry = line.split(",")
@@ -172,6 +173,8 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                         count = count + 1
                     else:
                         for line in f:
+                                line.rstrip()
+
                                 entry = line.split(",")
                                 id = entry[1]
                                 hash = entry[0]
