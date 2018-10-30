@@ -1595,6 +1595,7 @@ class gdrive(cloudservice):
                 except urllib2.URLError, e:
                     xbmc.log("download quota check- error " + str(e), xbmc.LOGDEBUG)
                     if e.code == 403:
+                        print "docid = " + str(fileIDList[docid]) + "\n";
                         if fileIDList is not None and docid in fileIDList:
                             retry = True
                             for item in MD5List[fileIDList[docid]]:
