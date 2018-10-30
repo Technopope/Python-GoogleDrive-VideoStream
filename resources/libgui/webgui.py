@@ -36,7 +36,6 @@ from resources.libgui import xbmcplugin
 from resources.libgui import settingsdbm
 from resources.libgui import xbmc
 from resources.libgui import xbmcaddon
-import numpy as np
 
 
 if constants.CONST.DEBUG:
@@ -177,7 +176,12 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                                 id = entry[1]
                                 hash = entry[0]
                                 ids = entry[1].split("|")
-                                self.MD5List[hash] = np.asarray(ids)
+
+                                self.MD5List[hash] = []
+                                for item in ids:
+                                    self.MD5List[hash].append(item)
+
+                                #self.MD5List[hash] = np.asarray(ids)
                                 #self.MD5List[hash] = ids
                                 #print "hash = " + str(hash) + " ids = " + str(ids) + "\n"
 #                                if hash not in self.MD5List.keys():
