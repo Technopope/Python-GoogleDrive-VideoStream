@@ -1773,7 +1773,7 @@ class gdrive(cloudservice):
                      response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                     xbmc.log("download quota check- error " + str(e), xbmc.LOGDEBUG)
-                    xbmc.log("docid = " + str(fileIDList[docid]), xbmc.LOGDEBUG)
+                    #xbmc.log("docid = " + str(fileIDList[docid]), xbmc.LOGDEBUG)
 
                     if e.code == 403:
                         if fileIDList is not None and docid in fileIDList:
