@@ -72,6 +72,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         self.embyUserList[str(self.get_ip_address())] = True
         self.fileIDList = None
         self.MD5List = None
+        self.namesList = None
 
     # set port
     def setPort(self, port):
@@ -106,6 +107,27 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                 self.keyValue = False
         except: pass
 
+
+
+        try:
+            plexNames = self.dbm.getSetting('plex_names')
+
+            if plexNames != None:
+                xbmc.log('plexNames ' + str(plexNames))
+                self.namesList = {}
+
+                xbmc.log('FILE = ' + str(plexNames))
+                f = open(plexNames, "r")
+                for line in f:
+                    line = line.rstrip()
+                    entry = line.split(",")
+                    name = entry[0]
+                    hash = entry[1]
+                    self.namesList[name] = hash
+                    xbmc.log('hash ' + hash)
+                f.close()
+
+        except: pass
 
         try:
             if self.dbm.getSetting('emby_user') == 'true':
