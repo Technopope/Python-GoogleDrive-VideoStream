@@ -702,6 +702,13 @@ class webGUI(BaseHTTPRequestHandler):
                 #self.send_response(307)
                 #self.send_header('Location', 'http://127.0.0.1:9988/default.py?' + query)
                 #self.end_headers()
+                quality = str(self.cookieQuality(headers))
+                if quality != '':
+                    query = query + quality
+                    self.override = True
+
+                if '&override=true' in query:
+                    self.override = True
 
 
                 #xbmc.log("query = " +str(query))
