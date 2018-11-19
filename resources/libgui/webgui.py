@@ -691,6 +691,8 @@ class webGUI(BaseHTTPRequestHandler):
             #encrypted stream
             if results:
                 filename = str(results.group(1))
+                filename = filename.replace("%20",' ')
+
                 xbmc.log("filename = " +str(self.server.namesList[filename]))
                 hash = self.server.namesList[filename]
                 filenames = self.server.MD5List[hash]
