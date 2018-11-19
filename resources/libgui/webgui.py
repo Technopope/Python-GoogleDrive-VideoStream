@@ -693,7 +693,7 @@ class webGUI(BaseHTTPRequestHandler):
                 filename = str(results.group(1))
                 xbmc.log("filename = " +str(self.server.namesList[filename]))
                 hash = self.server.namesList[filename]
-                filenames = self.MD5List[hash]
+                filenames = self.server.MD5List[hash]
                 xbmc.log("filename = " +str(filenames))
 
                 #query = '/default.py?mode=video&instance=gdrive1&filename=15wgki5RYH9ZN77QN4PX-HnuewEp6qt8u&title=Before+Sunrise+%281995%29+FLAC+%5BEN%5D+2.0ch+-+FLAC+Remux-1080p+-HiFi.mkv'
