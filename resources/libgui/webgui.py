@@ -696,9 +696,9 @@ class webGUI(BaseHTTPRequestHandler):
                 filenames = self.server.MD5List[hash]
                 xbmc.log("filename = " +str(filenames[0]))
 
-                #query = '/default.py?mode=video&instance=gdrive1&filename=15wgki5RYH9ZN77QN4PX-HnuewEp6qt8u&title=Before+Sunrise+%281995%29+FLAC+%5BEN%5D+2.0ch+-+FLAC+Remux-1080p+-HiFi.mkv'
-                #mediaEngine = engine.contentengine()
-                #mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
+                query = '/default.py?mode=video&instance=gdrive1&filename='+str(filenames[0])+'&title=' + str(filename)
+                mediaEngine = engine.contentengine()
+                mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
                 return
         # force refresh of scheduler
         elif  re.search(r'/default.py\?mode\=scheduler', str(decryptkeyvalue)):
