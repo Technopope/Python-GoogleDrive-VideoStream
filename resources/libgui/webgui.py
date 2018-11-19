@@ -685,7 +685,7 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         # force refresh of scheduler
-        elif  re.search(r'/TEST?file\=', str(decryptkeyvalue)):
+        elif  re.search(r'/TEST\?file\=', str(decryptkeyvalue)):
 
             results = re.search(r'/TEST?file\=(.*?)$', str(decryptkeyvalue))
             #encrypted stream
