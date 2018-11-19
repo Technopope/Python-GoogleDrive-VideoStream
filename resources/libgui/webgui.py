@@ -695,7 +695,7 @@ class webGUI(BaseHTTPRequestHandler):
                 hash = self.server.namesList[filename]
                 filenames = self.server.MD5List[hash]
 
-                query = '/default.py?mode=video&instance=gdrive1&filename='+str(filenames[0])+'&title=' + str(filename)
+                query = 'http://127.0.0.1/default.py?mode=video&instance=gdrive1&filename='+str(filenames[0])+'&title=' + str(filename)
                 xbmc.log("query = " +str(query))
                 mediaEngine = engine.contentengine()
                 mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
