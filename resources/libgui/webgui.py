@@ -124,7 +124,6 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                     name = entry[0]
                     hash = entry[1]
                     self.namesList[name] = hash
-                    xbmc.log('hash ' + hash)
                 f.close()
 
         except: pass
