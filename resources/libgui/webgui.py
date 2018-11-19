@@ -685,6 +685,14 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
         # force refresh of scheduler
+        elif  re.search(r'/TEST?file\=', str(decryptkeyvalue)):
+
+            results = re.search(r'/TEST?file\=(.*?)$', str(decryptkeyvalue))
+            #encrypted stream
+            if results:
+                filename = str(results.group(1))
+                xbmc.log("filename = " +str(filename))
+        # force refresh of scheduler
         elif  re.search(r'/default.py\?mode\=scheduler', str(decryptkeyvalue)):
 
             self.server.addon = constants.addon
