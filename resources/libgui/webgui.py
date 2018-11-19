@@ -1342,6 +1342,7 @@ class webGUI(BaseHTTPRequestHandler):
             results = re.search(r'\?(.*)$', str(decryptkeyvalue))
             if results:
                 query = str(results.group(1))
+                xbmc.log("query = " +str(query))
 
             quality = str(self.cookieQuality(headers))
             if quality != '':
