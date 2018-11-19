@@ -687,17 +687,18 @@ class webGUI(BaseHTTPRequestHandler):
         # force refresh of scheduler
         elif  re.search(r'/TEST\?file\=', str(decryptkeyvalue)):
 
-            results = re.search(r'/TEST\?file\=([^\&]+)', str(decryptkeyvalue))
+            results = re.search(r'/TEST\?file\=([^\&]+)(\&?.*?)$', str(decryptkeyvalue))
             #encrypted stream
             if results:
                 filename = str(results.group(1))
+                parameters = str(results.group(2))
                 filename = filename.replace("%20",' ')
 
                 xbmc.log("filename = " +str(self.server.namesList[filename]))
                 hash = self.server.namesList[filename]
                 filenames = self.server.MD5List[hash]
 
-                query = 'mode=video&instance=gdrive1&filename='+str(filenames[0])+'&title=' + str(filename)
+                query = 'mode=video&instance=gdrive1&filename='+str(filenames[0])+'&title=' + str(filename) + str(parameters)
                 xbmc.log("query = " +str(query))
                 mediaEngine = engine.contentengine()
                 mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
