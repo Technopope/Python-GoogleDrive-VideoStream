@@ -691,7 +691,7 @@ class webGUI(BaseHTTPRequestHandler):
             #encrypted stream
             if results:
                 filename = str(results.group(1))
-                xbmc.log("filename = " +str(self.namesList[filename]))
+                xbmc.log("filename = " +str(self.server.namesList[filename]))
         # force refresh of scheduler
         elif  re.search(r'/default.py\?mode\=scheduler', str(decryptkeyvalue)):
 
