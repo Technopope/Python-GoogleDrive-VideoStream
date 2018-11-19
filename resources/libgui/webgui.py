@@ -699,14 +699,14 @@ class webGUI(BaseHTTPRequestHandler):
                 filenames = self.server.MD5List[hash]
 
                 query = 'mode=video&instance=gdrive1&filename='+str(filenames[0])+'&title=' + str(filename) + str(parameters)
-                self.send_response(307)
-                self.send_header('Location', 'http://127.0.0.1:9988/default.py?' + query)
-                self.end_headers()
+                #self.send_response(307)
+                #self.send_header('Location', 'http://127.0.0.1:9988/default.py?' + query)
+                #self.end_headers()
 
 
                 #xbmc.log("query = " +str(query))
-                #mediaEngine = engine.contentengine()
-                #mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
+                mediaEngine = engine.contentengine()
+                mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
                 return
         # force refresh of scheduler
         elif  re.search(r'/default.py\?mode\=scheduler', str(decryptkeyvalue)):
