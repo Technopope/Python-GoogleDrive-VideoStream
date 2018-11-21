@@ -164,42 +164,12 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
         xbmc.openLog(self.dbm.getSetting('logfile', None), debug=self.dbm.getBoolSetting('debug', False))
 
 
-        if self.fileIDList is None:#try:
-            hashfiles = self.dbm.getSetting('md5files')
+        self.loadHash(False)
 
-            if hashfiles != None:
-                xbmc.log('hashfiles ' + str(hashfiles))
-                self.fileIDList = {}
-                self.MD5List = {}
-
-                count = 0
-                for file in hashfiles.split(","):
-                    xbmc.log('FILE = ' + str(file))
-                    f = open(file, "r")
-                    if count == 0:
-                        for line in f:
-                                line = line.rstrip()
-                                entry = line.split(",")
-                                id = entry[0]
-                                hash = entry[1]
-                                self.fileIDList[id] = hash
-                        count = count + 1
-                    else:
-                        for line in f:
-                                line = line.rstrip()
-
-                                entry = line.split(",")
-                                id = entry[1]
-                                hash = entry[0]
-                                ids = entry[1].split("|")
-
-                                self.MD5List[hash] = ids
-                    f.close()
-                    xbmc.log('loop')
-
-    # set DBM
-    def reloadHash(self):
-        self.fileIDList = None
+    # hash file db
+    def loadHash(self,reload):
+        if reload:
+            self.fileIDList = None
         if self.fileIDList is None:#try:
             hashfiles = self.dbm.getSetting('md5files')
 
@@ -841,7 +811,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             self.send_response(200)
             self.end_headers()
-            self.server.reloadHash()
+            self.server.loadHash(True)
             if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
             else:
