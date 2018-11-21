@@ -179,19 +179,10 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                     if count == 0:
                         for line in f:
                                 line = line.rstrip()
-#                            entry = re.search(r'^([^\,]+)\,(.*)', str(line))
-#                            if entry:
                                 entry = line.split(",")
                                 id = entry[0]
                                 hash = entry[1]
-#                                print "id = " + str(id) + "\n"
                                 self.fileIDList[id] = hash
-                                #print "hash = " + str(hash) + ' id = ' + str(id)
-                                #if hash not in self.MD5List.keys():
-                                #    self.MD5List[hash] = []
-                                #    self.MD5List[hash].append(id)
-                                #else:
-                                #    self.MD5List[hash].append(id)
                         count = count + 1
                     else:
                         for line in f:
@@ -202,43 +193,45 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
                                 hash = entry[0]
                                 ids = entry[1].split("|")
 
-                                #self.MD5List[hash] = []
-                                #for item in ids:
-                                   # self.MD5List[hash].append(item)
-
-                                #self.MD5List[hash] = np.asarray(ids)
                                 self.MD5List[hash] = ids
-                                #print "hash = " + str(hash) + " ids = " + str(ids) + "\n"
-#                                if hash not in self.MD5List.keys():
-#                                    self.MD5List[hash] = []
-#                                    self.MD5List[hash].append(id)
-#                                    count = count + 1
-#                                else:
-#                                    self.MD5List[hash].append(id)
-#                                    count = count + 1
-
                     f.close()
                     xbmc.log('loop')
-#                for file in hashfiles.split(","):
-#                    xbmc.log('FILE = ' + str(file))
-#                    f = open(file, "r")
-#                    for line in f:
 
-#                        entry = re.search(r'^[^\t]*\t[^\t]*\t([^\t]*)\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t([^\t]*)', str(line))
+    # set DBM
+    def reloadHash(self):
 
-#                        if entry:
-#                            id = str(entry.group(1))
-#                            hash = str(entry.group(2))
-#                            self.fileIDList[id] = hash
-#                            #print "hash = " + str(hash) + ' id = ' + str(id)
-#                            if hash not in self.MD5List.keys():
-#                                self.MD5List[hash] = []
-#                                self.MD5List[hash].append(id)
-#                            else:
-#                                self.MD5List[hash].append(id)
-#                    f.close()
-#                    xbmc.log('loop')
-        #except: pass
+        if self.fileIDList is None:#try:
+            hashfiles = self.dbm.getSetting('md5files')
+
+            if hashfiles != None:
+                xbmc.log('hashfiles ' + str(hashfiles))
+                self.fileIDList = {}
+                self.MD5List = {}
+
+                count = 0
+                for file in hashfiles.split(","):
+                    xbmc.log('FILE = ' + str(file))
+                    f = open(file, "r")
+                    if count == 0:
+                        for line in f:
+                                line = line.rstrip()
+                                entry = line.split(",")
+                                id = entry[0]
+                                hash = entry[1]
+                                self.fileIDList[id] = hash
+                        count = count + 1
+                    else:
+                        for line in f:
+                                line = line.rstrip()
+
+                                entry = line.split(",")
+                                id = entry[1]
+                                hash = entry[0]
+                                ids = entry[1].split("|")
+
+                                self.MD5List[hash] = ids
+                    f.close()
+                    xbmc.log('loop')
 
 
 
@@ -844,7 +837,17 @@ class webGUI(BaseHTTPRequestHandler):
             #self.server.ready = False
             return
 
+        elif decryptkeyvalue == '/reloadhash':
 
+            self.send_response(200)
+            self.end_headers()
+            self.server.reloadHash()
+            if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
+                self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
+            else:
+                self.wfile.write('<html><form action="/list" method="post"><input type="submit" value="Login"></form></html>')
+
+            return
 
 
 
