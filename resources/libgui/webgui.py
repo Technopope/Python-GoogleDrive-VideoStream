@@ -199,7 +199,7 @@ class WebGUIServer(ThreadingMixIn,HTTPServer):
 
     # set DBM
     def reloadHash(self):
-
+        self.fileIDList = None
         if self.fileIDList is None:#try:
             hashfiles = self.dbm.getSetting('md5files')
 
