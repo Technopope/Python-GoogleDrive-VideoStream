@@ -29,6 +29,7 @@ import sys
 import socket
 import string
 import random
+import os
 
 import constants
 from resources.lib import engine
