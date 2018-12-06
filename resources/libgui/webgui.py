@@ -653,7 +653,7 @@ class webGUI(BaseHTTPRequestHandler):
         elif  re.search(r'/TEST\?file\=', str(decryptkeyvalue)):
 
             results = re.search(r'/TEST\?file\=([^\&]+)(\&?.*?)$', str(decryptkeyvalue))
-            xbmc.log("TEST = " +str(self.server.namesList[decryptkeyvalue]))
+            xbmc.log("TEST = " +str(decryptkeyvalue))
 
             #encrypted stream
             if results:
