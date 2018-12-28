@@ -1,3 +1,4 @@
+- fix a building STRM issue when filename contains #
 - add a new hash file method
 - add support for multiple emby logs (for multiple instances)
 - add no scheduler version

@@ -801,6 +801,7 @@ class contentengine(object):
             removeExt = settingsModule.getParameter('remove_ext', False)
             folderID = settingsModule.getParameter('folder')
             filename = settingsModule.getParameter('filename', None)
+            #filename = re.sub('#', '%23%0A2', filename)
             title = settingsModule.getParameter('title')
             invokedUsername = settingsModule.getParameter('username')
             encfs = settingsModule.getParameter('encfs', False)

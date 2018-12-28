@@ -649,13 +649,12 @@ class webGUI(BaseHTTPRequestHandler):
             #self.server.ready = False
             return
 
-        # force refresh of scheduler
+        # Plex name to hash
         elif  re.search(r'/TEST\?file\=', str(decryptkeyvalue)):
 
             results = re.search(r'/TEST\?file\=([^\&]+)(\&?.*?)$', str(decryptkeyvalue))
             xbmc.log("TEST = " +str(decryptkeyvalue))
 
-            #encrypted stream
             if results:
                 filename = str(results.group(1))
                 parameters = str(results.group(2))

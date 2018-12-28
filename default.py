@@ -87,6 +87,7 @@ def job_scheduler(server, sleepTimer):
 
 
                         cmd = re.sub('buildstrmscheduler', 'buildstrm', cmd)
+                        cmd = re.sub('#', '%23%0A2', cmd)
                         cmd = re.sub(' ', '%20', cmd)
                         changeToken = dbm.getSetting(str(instanceName) +'_'+str(folderID)+'_changetoken', '')
                         # first run, run full don't do change tracking
