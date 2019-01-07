@@ -361,7 +361,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # redirect url to output
-        elif re.search(r'/default.py\?mode\=enroll\&default\=false', str(decryptkeyvalue)):
+        elif re.search(r'/default.py\?mode\=enroll\&default\=false', str(decryptkeyvalue),re.IGNORECASE):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self.send_response(200)
@@ -375,7 +375,7 @@ class webGUI(BaseHTTPRequestHandler):
 
                 self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id='+str(client_id)+'" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="/default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="default.py?mode=enroll" method="post">Client ID:<br /><input type="text" name="client_id" value="'+str(client_id)+'"><br />Client Secret:<br /><input type="text" name="client_secret" value="'+str(client_secret)+'"><br /><br /> <input type="submit" value="Submit"></form></body></html>')
 
-        elif re.search(r'/save_settings', str(decryptkeyvalue)):
+        elif re.search(r'/save_settings', str(decryptkeyvalue),re.IGNORECASE):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self.send_response(200)
@@ -407,7 +407,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             self.wfile.write('<html><body>Changes saved.  You must restart the service or click <a href="/reload">reload</a> to make the changes take in effect.</body></html>')
 
-        elif re.search(r'/settings', str(decryptkeyvalue)):
+        elif re.search(r'/settings', str(decryptkeyvalue),re.IGNORECASE):
 
             if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                 content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
@@ -435,7 +435,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         # redirect url to output
-        elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
+        elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue),re.IGNORECASE):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             for r in re.finditer('account\=([^\&]+)\&code=([^\&]+)\&\client_id\=([^\&]+)\&\client_secret\=([^\&]+)' ,
@@ -636,7 +636,7 @@ class webGUI(BaseHTTPRequestHandler):
           break
 
         # Plex name to hash
-        if re.search(r'/TEST\?file\=', str(decryptkeyvalue)):
+        if re.search(r'/TEST\?file\=', str(decryptkeyvalue),re.IGNORECASE):
 
                 results = re.search(r'/TEST\?file\=([^\&]+)(\&?.*?)$', str(decryptkeyvalue))
                 xbmc.log("TEST = " +str(decryptkeyvalue))
@@ -667,7 +667,7 @@ class webGUI(BaseHTTPRequestHandler):
                     mediaEngine = engine.contentengine()
                     mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
                     return
-        elif  re.search(r'/quality=SD', str(decryptkeyvalue)):
+        elif  re.search(r'/quality=SD', str(decryptkeyvalue),re.IGNORECASE):
             self.send_response(200)
             self.send_header('Set-Cookie', 'quality=2')
             self.end_headers()
@@ -675,7 +675,7 @@ class webGUI(BaseHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
-        elif  re.search(r'/quality=720p', str(decryptkeyvalue)):
+        elif  re.search(r'/quality=720p', str(decryptkeyvalue),re.IGNORECASE):
             self.send_response(200)
             self.send_header('Set-Cookie', 'quality=1')
             self.end_headers()
@@ -683,7 +683,7 @@ class webGUI(BaseHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
-        elif  re.search(r'/quality=1080p', str(decryptkeyvalue)):
+        elif  re.search(r'/quality=1080p', str(decryptkeyvalue),re.IGNORECASE):
             self.send_response(200)
             self.send_header('Set-Cookie', 'quality=0')
             self.end_headers()
@@ -691,7 +691,7 @@ class webGUI(BaseHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
-        elif  re.search(r'/quality=unset', str(decryptkeyvalue)):
+        elif  re.search(r'/quality=unset', str(decryptkeyvalue),re.IGNORECASE):
             self.send_response(200)
             self.send_header('Set-Cookie', 'quality=')
             self.end_headers()
@@ -704,14 +704,14 @@ class webGUI(BaseHTTPRequestHandler):
 #            self.end_headers()
             count = 0
             isEncrypted = False
-            results = re.search(r'/play\?count\=(\d+)\&encrypted\=true$', str(decryptkeyvalue))
+            results = re.search(r'/play\?count\=(\d+)\&encrypted\=true$', str(decryptkeyvalue),re.IGNORECASE)
             #encrypted stream
             if results:
                 count = int(results.group(1))
                 isEncrypted = True
             #not encrypted stream
             else:
-                results = re.search(r'/play\?count\=(\d+)$', str(decryptkeyvalue))
+                results = re.search(r'/play\?count\=(\d+)$', str(decryptkeyvalue),re.IGNORECASE)
                 if results:
                     count = int(results.group(1))
 
@@ -1016,7 +1016,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
             # force refresh of scheduler
-            elif  re.search(r'/default.py\?mode\=scheduler', str(decryptkeyvalue)):
+            elif  re.search(r'/default.py\?mode\=scheduler', str(decryptkeyvalue),re.IGNORECASE):
 
                 self.server.addon = constants.addon
                 self.server.addon.__init__()
@@ -1032,7 +1032,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
             # enroll read/write token
-            elif  re.search(r'/default.py\?mode\=enroll_rw', str(decryptkeyvalue)):
+            elif  re.search(r'/default.py\?mode\=enroll_rw', str(decryptkeyvalue),re.IGNORECASE):
 
                 self.send_response(200)
                 self.end_headers()
@@ -1044,7 +1044,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
             # redirect url to output
-            elif  re.search(r'/default.py\?mode\=enroll\&default\=true', str(decryptkeyvalue)):# or  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
+            elif  re.search(r'/default.py\?mode\=enroll\&default\=true', str(decryptkeyvalue),re.IGNORECASE):# or  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
 
                 self.send_response(200)
                 self.end_headers()
@@ -1053,7 +1053,7 @@ class webGUI(BaseHTTPRequestHandler):
                 return
 
             # redirect url to output
-            elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
+            elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue),re.IGNORECASE):
 
                 self.send_response(200)
                 self.end_headers()
@@ -1061,7 +1061,7 @@ class webGUI(BaseHTTPRequestHandler):
                 self.wfile.write('<html><body>Do you want to use a default client id / client secret or your own client id / client secret?  If you don\'t know what this means, select DEFAULT.<br /> <a href="default.py?mode=enroll&default=true">use default client id / client secret (DEFAULT)</a> <br /><br />OR use your own client id / client secret<br /><br /><form action="default.py?mode=enroll&default=false" method="post">Client ID:<br /><input type="text" name="client_id" value=""><br />Client Secret:<br /><input type="text" name="client_secret" value=""> <br/><input type="submit" value="Submit"></form></body></html>')
                 return
 
-            elif  re.search(r'/default.py\?mode\=enroll\&default\=false', str(decryptkeyvalue)):
+            elif  re.search(r'/default.py\?mode\=enroll\&default\=false', str(decryptkeyvalue),re.IGNORECASE):
 
                 self.send_response(200)
                 self.end_headers()
@@ -1070,7 +1070,7 @@ class webGUI(BaseHTTPRequestHandler):
                 return
 
 
-            elif  re.search(r'/settings', str(decryptkeyvalue)):
+            elif  re.search(r'/settings', str(decryptkeyvalue),re.IGNORECASE):
                 self.send_response(200)
                 self.end_headers()
                 if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
@@ -1127,7 +1127,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
             # redirect url to output
-            elif re.search(r'/\?', str(decryptkeyvalue)) or re.search(r'/default.py', str(decryptkeyvalue)):
+            elif re.search(r'/\?', str(decryptkeyvalue)) or re.search(r'/default.py', str(decryptkeyvalue),re.IGNORECASE):
     #            self.send_response(200)
     #            self.end_headers()
 
