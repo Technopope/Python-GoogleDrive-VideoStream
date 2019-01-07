@@ -1,3 +1,4 @@
+v0.1.30 (2019-01-07)
 - fix a building STRM issue when filename contains #
 - add a new hash file method
 - add support for multiple emby logs (for multiple instances)
