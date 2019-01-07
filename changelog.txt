@@ -1,3 +1,4 @@
+- security fixes - make all POST requests require login
 - make GET/POST case insensitive
 - remove depricated play method
 - security fixes -- ensure only allow PLAY, MODE=VIDEO or MODE=INDEX when folder!=root allow unauthenticated access

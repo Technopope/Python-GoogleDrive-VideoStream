@@ -326,6 +326,15 @@ class webGUI(BaseHTTPRequestHandler):
         isLoggedIn = self.cookieLogin(self.headers)
 
 
+        #require authentication for all further requests
+        if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
+            self.send_response(200)
+            self.end_headers()
+
+            self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
+            return
+
+
         # passed a kill signal?
         if decryptkeyvalue == '/kill':
             if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
