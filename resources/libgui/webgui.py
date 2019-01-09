@@ -605,7 +605,6 @@ class webGUI(BaseHTTPRequestHandler):
 
         if self.server.embyFilterUsers:
 
-
             IP = re.search(r'X-Real-IP: (\S+)', str(headers))
             if IP is not None:
                 IP = str(IP.group(1))
