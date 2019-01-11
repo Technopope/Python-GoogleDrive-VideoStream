@@ -2,6 +2,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0d2f3f5f294c4e0db6112cfb4c2ba3d8)](https://www.codacy.com/app/ddurdle/Python-GoogleDrive-VideoStream?utm_source=github.com&utm_medium=referral&utm_content=ddurdle/Python-GoogleDrive-VideoStream&utm_campaign=badger)
 
+
 This package replaces GoogleDrive-VideoStream (which was written in PHP).
 
 This plugin is a direct port of Google Drive plugin for KODI.  The purpose of this plugin is to service content delivered in Google Drive plugin for KODI through any HTML5 client.
