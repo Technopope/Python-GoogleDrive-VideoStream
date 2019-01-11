@@ -22,7 +22,7 @@ Current status of items:
 - cache and offline playback (planning stage)
 
 
-Windows and Mac OS ready to playback without installing Python, coming soon.  Right now Linux based source package is available (python required, available on all Linux systems)
+Python 2 is required.
 
 At this stage, you cannot enroll an account with this application or modify user settings.  You MUST import these from a KODI install.  I am only supporting alpha testing with users who have used the Google Drive plugin for KODI previously.
 
