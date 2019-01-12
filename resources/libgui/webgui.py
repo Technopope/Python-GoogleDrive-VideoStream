@@ -328,11 +328,31 @@ class webGUI(BaseHTTPRequestHandler):
 
         #require authentication for all further requests
         if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
-            self.send_response(200)
-            self.end_headers()
+                content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+                post_data = self.rfile.read(content_length) # <--- Gets the data itself
 
-            self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
-            return
+                username = ''
+                password = ''
+                for r in re.finditer('username\=([^\&]+)' ,
+                         post_data, re.DOTALL):
+                    username = r.group(1)
+                for r in re.finditer('password\=([^\&]+)' ,
+                         post_data, re.DOTALL):
+                    password = r.group(1)
+                if self.server.username == username and self.server.password == password:
+                    loginSession =  id_generator(size=10)
+                    self.send_response(200)
+                    self.send_header('Set-Cookie', 'login='+str(loginSession))
+                    self.server.logins[loginSession] = 1
+                    mediaEngine = engine.contentengine()
+                    mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
+                else:
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write("Wrong username/password")
+
+                    self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
+                return
 
 
         # passed a kill signal?
@@ -579,7 +599,6 @@ class webGUI(BaseHTTPRequestHandler):
 
         if self.path == '/favicon.ico':
             return
-
 
 
         decryptkeyvalue = self.path
