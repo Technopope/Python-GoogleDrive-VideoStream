@@ -581,6 +581,7 @@ class webGUI(BaseHTTPRequestHandler):
             return
 
 
+
         decryptkeyvalue = self.path
         if re.search(r'kv\=', str(self.path)):
             from resources.lib import encryption
