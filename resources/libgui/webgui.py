@@ -355,6 +355,7 @@ class webGUI(BaseHTTPRequestHandler):
                 return
 
 
+
         # passed a kill signal?
         if decryptkeyvalue == '/kill':
             if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
