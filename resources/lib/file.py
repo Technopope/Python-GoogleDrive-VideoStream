@@ -81,24 +81,24 @@ class file:
 
 
         self.cleantv = re.compile('(.+?)'
-                                       '[ .]?[ \-]?\s*S(\d\d?)E(\d\d?)'
+                                       '[ .]?[ \-]?\s*S(\d?\d\d?)E(\d\d?)'
                                        '.*', re.IGNORECASE)
         self.cleanmovie = re.compile('(.*?)'
                                        ' (\d{4}) '
                                        '.*', re.IGNORECASE)
         # nekwebdev contribution
         self.regtv1 = re.compile('(.+?)'
-                                       '[ .]?[ \-]?\s*S(\d\d?)E(\d\d?)'
+                                       '[ .]?[ \-]?\s*S(\d?\d\d?)E(\d\d?)'
                                        '(.*)'
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)
         self.regtv2 = re.compile('(.+?)'
-                                       '[ .]?[ \-]?\s*season\s?(\d\d?)\s?episode\s?(\d\d?)'
+                                       '[ .]?[ \-]?\s*season\s?(\d?\d\d?)\s?episode\s?(\d\d?)'
                                        '(.*)'
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)
         self.regtv3 = re.compile('(.+?)'
-                                       '[ .]?[ \-]?\s*(\d\d?)x(\d\d?)'
+                                       '[ .]?[ \-]?\s*(\d?\d\d?)x(\d\d?)'
                                        '(.*)'
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)

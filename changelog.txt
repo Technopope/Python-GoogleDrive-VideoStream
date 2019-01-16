@@ -1,3 +1,5 @@
+- add support for tv show seasons > 100
+- add local as whitelist for scheduler
 - fixes for /list and username+password prompt
 v0.1.31 (2019-01-08)
 - security fixes - make all POST requests require login
