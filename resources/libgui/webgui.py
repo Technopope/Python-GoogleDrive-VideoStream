@@ -272,9 +272,9 @@ class webGUI(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_POST(self):
 
-        if self.server.embyFilterUsers:
+        IP =  self.client_address[0]
 
-            IP =  self.client_address[0]
+        if self.server.embyFilterUsers:
 
             if not self.server.checkIP(IP):
                 self.server.readLog(self.server.embyLog)
@@ -324,6 +324,8 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         isLoggedIn = self.cookieLogin(self.headers)
+        if IP == '127.0.0.1':
+            isLoggedIn = True
 
 
         #require authentication for all further requests
@@ -601,6 +603,8 @@ class webGUI(BaseHTTPRequestHandler):
         if self.path == '/favicon.ico':
             return
 
+        IP =  self.client_address[0]
+
 
         decryptkeyvalue = self.path
         if re.search(r'kv\=', str(self.path)):
@@ -651,6 +655,8 @@ class webGUI(BaseHTTPRequestHandler):
 
 
         isLoggedIn = self.cookieLogin(self.headers)
+        if IP == '127.0.0.1':
+            isLoggedIn = True
 
         start = ''
         end = ''
