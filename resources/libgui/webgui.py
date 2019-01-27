@@ -673,13 +673,15 @@ class webGUI(BaseHTTPRequestHandler):
         # Plex name to hash
         if re.search(r'/stream/', str(decryptkeyvalue),re.IGNORECASE):
 
-                results = re.search(r'/stream/([^\/]+)/([^\/]+)/', str(decryptkeyvalue))
+                results = re.search(r'/stream/([^\/]+)/([^\/]+)/([^\/]+)/', str(decryptkeyvalue))
                 xbmc.log("STREAM = " +str(decryptkeyvalue))
 
                 if results:
                     API = str(results.group(1))
                     fileID = str(results.group(2))
-                    req = urllib2.Request('http://127.0.0.1:8096/emby/Items/'+ str(fileID) + '/File?api_key=' +str(API),None)
+                    port = str(results.group(3))
+
+                    req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/File?api_key=' +str(API),None)
 
                     # try login
                     try:
