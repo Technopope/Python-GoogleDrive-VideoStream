@@ -679,7 +679,7 @@ class webGUI(BaseHTTPRequestHandler):
                 if results:
                     API = str(results.group(1))
                     fileID = str(results.group(2))
-                    req = urllib2.Request('htto://127.0.0.1:8096/emby/Items/'+ str(fileID) + '/File?api_key=' +str(API),None)
+                    req = urllib2.Request('http://127.0.0.1:8096/emby/Items/'+ str(fileID) + '/File?api_key=' +str(API),None)
 
                     # try login
                     try:
