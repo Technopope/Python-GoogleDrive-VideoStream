@@ -671,7 +671,40 @@ class webGUI(BaseHTTPRequestHandler):
           break
 
         # Plex name to hash
-        if re.search(r'/TEST\?file\=', str(decryptkeyvalue),re.IGNORECASE):
+        if re.search(r'/stream/', str(decryptkeyvalue),re.IGNORECASE):
+
+                results = re.search(r'/stream/([^\/]+)/([^\/]+)/', str(decryptkeyvalue))
+                xbmc.log("STREAM = " +str(decryptkeyvalue))
+
+                if results:
+                    API = str(results.group(1))
+                    fileID = str(results.group(2))
+                    req = urllib2.Request('htto://127.0.0.1:8096/emby/Items/'+ str(fileID) + '/File?api_key=' +str(API),None)
+
+                    # try login
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        if e.code == 403:
+                            #login issue
+                            self.send_response(200)
+                            self.end_headers()
+                            self.wfile.write(str(e))
+                            return
+                        else:
+                            self.send_response(200)
+                            self.end_headers()
+                            self.wfile.write(str(e))
+                        return
+
+                    response_data = response.read()
+                    response.close()
+                    self.send_response(307)
+                    self.send_header('Location', response.read())
+                    self.end_headers()
+
+        # Plex name to hash
+        elif re.search(r'/TEST\?file\=', str(decryptkeyvalue),re.IGNORECASE):
 
                 results = re.search(r'/TEST\?file\=([^\&]+)(\&?.*?)$', str(decryptkeyvalue))
                 xbmc.log("TEST = " +str(decryptkeyvalue))
