@@ -700,7 +700,7 @@ class webGUI(BaseHTTPRequestHandler):
                     response_data = response.read()
                     response.close()
                     self.send_response(307)
-                    self.send_header('Location', response.read())
+                    self.send_header('Location', response_data)
                     self.end_headers()
 
         # Plex name to hash
