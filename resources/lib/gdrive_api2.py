@@ -1873,6 +1873,9 @@ class gdrive(cloudservice):
         if package.file.type == self.MEDIA_TYPE_MUSIC:
             return (mediaURLs, package)
 
+
+
+
         # fetch streams (video)
         if docid != '':
             # player using docid
@@ -1908,7 +1911,7 @@ class gdrive(cloudservice):
             response_data = response.read()
             response.close()
             xbmc.log("preferred quality = " + str(pquality), xbmc.LOGDEBUG)
-            #xbmc.log("response data = " + str(response_data), xbmc.LOGDEBUG)
+            xbmc.log("response data = " + str(response_data), xbmc.LOGDEBUG)
 
 
             for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
