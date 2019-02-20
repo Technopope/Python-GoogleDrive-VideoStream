@@ -1878,208 +1878,222 @@ class gdrive(cloudservice):
 
         # fetch streams (video)
         if docid != '':
-            # player using docid
-            url = self.PROTOCOL+ 'drive.google.com/get_video_info?docid=' + str(docid)
 
 
-            req = urllib2.Request(url, None, self.getHeadersList())
+            retry = True
 
-            # if action fails, validate login
-            try:
-                 response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-                 if e.code == 403 or e.code == 401:
-                     self.refreshToken()
-                     req = urllib2.Request(url, None, self.getHeadersList())
-                     try:
-                         response = urllib2.urlopen(req)
-                     except urllib2.URLError, e:
-                         if e.code == 403:
-                          if self.refreshServiceToken():
-                            req = urllib2.Request(url, None, self.getHeadersList())
-                            try:
-                                response = urllib2.urlopen(req)
-                            except urllib2.URLError, e:
-                                xbmc.log('getPlaybackCall-2 ' + str(e))
-                                return
-                         xbmc.log('getPlaybackCall-2'+str(e))
-                         return
-                 else:
-                     xbmc.log('getPlaybackCall-2'+str(e))
-                     return
-
-            response_data = response.read()
-            response.close()
-            xbmc.log("preferred quality = " + str(pquality), xbmc.LOGDEBUG)
-            xbmc.log("response data = " + str(response_data), xbmc.LOGDEBUG)
+            while retry:
+                # player using docid
+                url = self.PROTOCOL+ 'drive.google.com/get_video_info?docid=' + str(docid)
 
 
-            for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
-                cookieType,cookieValue = r.groups()
-                if cookieType == 'DRIVE_STREAM':
-                    self.authorization.setToken(cookieType,cookieValue)
 
-            # decode resulting player URL (URL is composed of many sub-URLs)
-            urls = response_data
-            urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
-            urls = re.sub('\\\\u003d', '=', urls)
-            urls = re.sub('\\\\u0026', '&', urls)
+                req = urllib2.Request(url, None, self.getHeadersList())
 
-            #set closed-caption
-            ttsURL=''
-            for r in re.finditer('&ttsurl\=(.*?)\&reportabuseurl' ,
-                               urls, re.DOTALL):
-                ttsURL = r.group(1)
-                ttsURL = ttsURL+'&v='+docid #+ '&type=track&lang=en&name&kind&fmt=1'
-
-            package.file.srtURL = ttsURL
-
-            req = urllib2.Request(url, None, self.getHeadersList())
-
-            try:
-                    response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-                    if e.code == 403 or e.code == 401:
-                        self.refreshToken()
-                        req = urllib2.Request(url, None, self.getHeadersList())
-                        try:
-                            response = urllib2.urlopen(req)
-                        except urllib2.URLError, e:
-                            if e.code == 403:
+                # if action fails, validate login
+                try:
+                     response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                     if e.code == 403 or e.code == 401:
+                         self.refreshToken()
+                         req = urllib2.Request(url, None, self.getHeadersList())
+                         try:
+                             response = urllib2.urlopen(req)
+                         except urllib2.URLError, e:
+                             if e.code == 403:
                               if self.refreshServiceToken():
                                 req = urllib2.Request(url, None, self.getHeadersList())
                                 try:
                                     response = urllib2.urlopen(req)
                                 except urllib2.URLError, e:
-                                    xbmc.log('getPlaybackCall-3 ' + str(e))
+                                    xbmc.log('getPlaybackCall-2 ' + str(e))
                                     return
-                            xbmc.log('getPlaybackCall-3'+str(e))
-                            return
-                    else:
-                        #return what we have -- video file may not have streams (not processed yet)
-                        return (mediaURLs, package)
+                             xbmc.log('getPlaybackCall-2'+str(e))
+                             return
+                     else:
+                         xbmc.log('getPlaybackCall-2'+str(e))
+                         return
 
-            response_data = response.read()
-            response.close()
-
-            # decode resulting player URL (URL is composed of many sub-URLs)
-            urls = response_data
-            urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
-            urls = re.sub('\\\\u003d', '=', urls)
-            urls = re.sub('\\\\u0026', '&', urls)
+                response_data = response.read()
+                response.close()
+                xbmc.log("preferred quality = " + str(pquality), xbmc.LOGDEBUG)
+                xbmc.log("response data = " + str(response_data), xbmc.LOGDEBUG)
 
 
-        # do some substitutions to make anchoring the URL easier
-        urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
+                for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
+                    cookieType,cookieValue = r.groups()
+                    if cookieType == 'DRIVE_STREAM':
+                        self.authorization.setToken(cookieType,cookieValue)
 
-        # itag code reference http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
-        #itag_dict = {1080: ['137', '37', '46'], 720: ['22', '136', '45'],
-        #        480: ['135', '59', '44', '35'], 360: ['43', '134', '34', '18', '6'],
-        #        240: ['133', '5', '36'], 144: ['160', '17']}
+                # decode resulting player URL (URL is composed of many sub-URLs)
+                urls = response_data
+                urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
+                urls = re.sub('\\\\u003d', '=', urls)
+                urls = re.sub('\\\\u0026', '&', urls)
 
-#        <setting id="preferred_quality" type="enum" label="30011" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
-#        <setting id="preferred_format" type="enum" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
-#        <setting id="avoid_codec" type="enum" label="30013" values="none|VP8/vorbis" default="0"/>
+                #set closed-caption
+                ttsURL=''
+                for r in re.finditer('&ttsurl\=(.*?)\&reportabuseurl' ,
+                                   urls, re.DOTALL):
+                    ttsURL = r.group(1)
+                    ttsURL = ttsURL+'&v='+docid #+ '&type=track&lang=en&name&kind&fmt=1'
 
-        itagDB={}
-        containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
-        for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
-                               urls, re.DOTALL):
-              (itag,resolution1,resolution2,codec) = r.groups()
+                package.file.srtURL = ttsURL
 
-              if codec == '9/0/115':
-                itagDB[itag] = {'resolution': resolution2, 'codec': 'h.264/aac'}
-              elif codec == '99/0/0':
-                itagDB[itag] = {'resolution': resolution2, 'codec': 'VP8/vorbis'}
-              else:
-                itagDB[itag] = {'resolution': resolution2}
+                req = urllib2.Request(url, None, self.getHeadersList())
 
-
-        # fetch format type and quality for each stream
-        count=0
-        for r in re.finditer('\@([^\@]+)' ,urls):
-                videoURL = r.group(1)
-                for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
-                             videoURL, re.DOTALL):
-                    (itag,container,quality) = q.groups()
-                    count = count + 1
-                    order=0
-                    if pquality > -1 or pformat > -1 or acodec > -1:
-                        if int(itagDB[itag]['resolution']) == 1080:
-                            if pquality == 0:
-                                order = order + 1000
-                            elif pquality == 1:
-                                order = order + 3000
-                            elif pquality == 2:
-                                order = order + 9000
-                        elif int(itagDB[itag]['resolution']) == 720:
-                            if pquality == 0:
-                                order = order + 2000
-                            elif pquality == 1:
-                                order = order + 1000
-                            elif pquality == 2:
-                                order = order + 9000
-                        elif int(itagDB[itag]['resolution']) == 480:
-                            if pquality == 0:
-                                order = order + 3000
-                            elif pquality == 1:
-                                order = order + 2000
-                            elif pquality == 2:
-                                order = order + 1000
-                        elif int(itagDB[itag]['resolution']) < 480:
-                            if pquality == 0:
-                                order = order + 4000
-                            elif pquality == 1:
-                                order = order + 3000
-                            elif pquality == 2:
-                                order = order + 2000
-                    try:
-                        if itagDB[itag]['codec'] == 'VP8/vorbis':
-                            if acodec == 1:
-                                order = order + 90000
-                            else:
-                                order = order + 10000
-                    except :
-                        order = order + 30000
-
-
-                    try:
-                        if containerDB[container] == 'MP4':
-                            if pformat == 0 or pformat == 1:
-                                order = order + 100
-                            elif pformat == 3 or pformat == 4:
-                                order = order + 200
-                            else:
-                                order = order + 300
-                        elif containerDB[container] == 'flv':
-                            if pformat == 2 or pformat == 3:
-                                order = order + 100
-                            elif pformat == 1 or pformat == 5:
-                                order = order + 200
-                            else:
-                                order = order + 300
-
-                            if aformat == 1:
-                                order = order + 90000
-
-
-                        elif containerDB[container] == 'WebM':
-                            if pformat == 4 or pformat == 5:
-                                order = order + 100
-                            elif pformat == 0 or pformat == 1:
-                                order = order + 200
-                            else:
-                                order = order + 300
+                try:
+                        response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                        if e.code == 403 or e.code == 401:
+                            self.refreshToken()
+                            req = urllib2.Request(url, None, self.getHeadersList())
+                            try:
+                                response = urllib2.urlopen(req)
+                            except urllib2.URLError, e:
+                                if e.code == 403:
+                                  if self.refreshServiceToken():
+                                    req = urllib2.Request(url, None, self.getHeadersList())
+                                    try:
+                                        response = urllib2.urlopen(req)
+                                    except urllib2.URLError, e:
+                                        xbmc.log('getPlaybackCall-3 ' + str(e))
+                                        return
+                                xbmc.log('getPlaybackCall-3'+str(e))
+                                return
                         else:
-                            order = order + 100
-                    except :
-                        pass
+                            #return what we have -- video file may not have streams (not processed yet)
+                            return (mediaURLs, package)
 
-                    try:
-                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
-                        xbmc.log(itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec']+ str(itagDB[itag]['resolution'])+ '_' + str(order+count), xbmc.LOGDEBUG)
-                    except KeyError:
-                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
+                response_data = response.read()
+                response.close()
+
+                # decode resulting player URL (URL is composed of many sub-URLs)
+                urls = response_data
+                urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
+                urls = re.sub('\\\\u003d', '=', urls)
+                urls = re.sub('\\\\u0026', '&', urls)
+
+
+                # do some substitutions to make anchoring the URL easier
+                urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
+
+                # itag code reference http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
+                #itag_dict = {1080: ['137', '37', '46'], 720: ['22', '136', '45'],
+                #        480: ['135', '59', '44', '35'], 360: ['43', '134', '34', '18', '6'],
+                #        240: ['133', '5', '36'], 144: ['160', '17']}
+
+        #        <setting id="preferred_quality" type="enum" label="30011" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
+        #        <setting id="preferred_format" type="enum" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
+        #        <setting id="avoid_codec" type="enum" label="30013" values="none|VP8/vorbis" default="0"/>
+
+                itagDB={}
+                containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
+                for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
+                                       urls, re.DOTALL):
+                      (itag,resolution1,resolution2,codec) = r.groups()
+
+                      if codec == '9/0/115':
+                        itagDB[itag] = {'resolution': resolution2, 'codec': 'h.264/aac'}
+                      elif codec == '99/0/0':
+                        itagDB[itag] = {'resolution': resolution2, 'codec': 'VP8/vorbis'}
+                      else:
+                        itagDB[itag] = {'resolution': resolution2}
+
+
+                # fetch format type and quality for each stream
+                count=0
+                for r in re.finditer('\@([^\@]+)' ,urls):
+                        videoURL = r.group(1)
+                        for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
+                                     videoURL, re.DOTALL):
+                            (itag,container,quality) = q.groups()
+                            count = count + 1
+                            order=0
+                            if pquality > -1 or pformat > -1 or acodec > -1:
+                                if int(itagDB[itag]['resolution']) == 1080:
+                                    if pquality == 0:
+                                        order = order + 1000
+                                    elif pquality == 1:
+                                        order = order + 3000
+                                    elif pquality == 2:
+                                        order = order + 9000
+                                elif int(itagDB[itag]['resolution']) == 720:
+                                    if pquality == 0:
+                                        order = order + 2000
+                                    elif pquality == 1:
+                                        order = order + 1000
+                                    elif pquality == 2:
+                                        order = order + 9000
+                                elif int(itagDB[itag]['resolution']) == 480:
+                                    if pquality == 0:
+                                        order = order + 3000
+                                    elif pquality == 1:
+                                        order = order + 2000
+                                    elif pquality == 2:
+                                        order = order + 1000
+                                elif int(itagDB[itag]['resolution']) < 480:
+                                    if pquality == 0:
+                                        order = order + 4000
+                                    elif pquality == 1:
+                                        order = order + 3000
+                                    elif pquality == 2:
+                                        order = order + 2000
+                            try:
+                                if itagDB[itag]['codec'] == 'VP8/vorbis':
+                                    if acodec == 1:
+                                        order = order + 90000
+                                    else:
+                                        order = order + 10000
+                            except :
+                                order = order + 30000
+
+
+                            try:
+                                if containerDB[container] == 'MP4':
+                                    if pformat == 0 or pformat == 1:
+                                        order = order + 100
+                                    elif pformat == 3 or pformat == 4:
+                                        order = order + 200
+                                    else:
+                                        order = order + 300
+                                elif containerDB[container] == 'flv':
+                                    if pformat == 2 or pformat == 3:
+                                        order = order + 100
+                                    elif pformat == 1 or pformat == 5:
+                                        order = order + 200
+                                    else:
+                                        order = order + 300
+
+                                    if aformat == 1:
+                                        order = order + 90000
+
+
+                                elif containerDB[container] == 'WebM':
+                                    if pformat == 4 or pformat == 5:
+                                        order = order + 100
+                                    elif pformat == 0 or pformat == 1:
+                                        order = order + 200
+                                    else:
+                                        order = order + 300
+                                else:
+                                    order = order + 100
+                            except :
+                                pass
+
+                            try:
+                                mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
+                                xbmc.log(itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec']+ str(itagDB[itag]['resolution'])+ '_' + str(order+count), xbmc.LOGDEBUG)
+                                retry = False
+                            except KeyError:
+                                mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
+                if len(mediaURLs) == 0:
+                    if self.refreshServiceToken(fetchNext=True):
+                        retry = True
+                    else:
+                        retry = False
+                else:
+                        retry = False
 
 
         # if there are no transcode links, add at least the original quality
