@@ -1,3 +1,5 @@
+v0.1.33 (2019-03-06)
+- changes for plex
 v0.1.32 (2019-01-16)
 - add support for tv show seasons > 100
 - add local as whitelist for scheduler
