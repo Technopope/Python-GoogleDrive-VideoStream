@@ -24,8 +24,10 @@ Current status of items:
 
 Python 2 is required.
 
-At this stage, you cannot enroll an account with this application or modify user settings.  You MUST import these from a KODI install.  I am only supporting alpha testing with users who have used the Google Drive plugin for KODI previously.
-
+For a docker version, see:
+https://hub.docker.com/r/rxwatcher/pgdvs-docker
+http://hub.docker.com/r/mrmachine/python-googledrive-videostream
+https://github.com/choldi/docker-pythongdv
 
 
 To start the scheduler only, run:
