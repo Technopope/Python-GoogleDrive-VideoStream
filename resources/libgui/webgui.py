@@ -1263,7 +1263,7 @@ class webGUI(BaseHTTPRequestHandler):
             if self.server.dbm.getSetting('passthrough') == 'true':
                 self.wfile.write('<option value="true" selected >true</option><option value="false">false</option><br /></select>')
             else:
-                self.wfile.write('<option value="true">true</option><option value="false" selected>false</opton><br /></select>')
+                self.wfile.write('<option value="true" selected>true</option><option value="false">false</opton><br /></select>')
 
             self.setings = {}
             file = open('./resources/settings.xml', "r")
