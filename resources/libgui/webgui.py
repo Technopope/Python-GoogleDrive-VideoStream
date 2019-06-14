@@ -694,7 +694,9 @@ class webGUI(BaseHTTPRequestHandler):
                             self.wfile.write(str(e))
                             return
                         else:
-                            req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API),None)
+                            xbmc.log("STREAM FAIL = " +str(decryptkeyvalue))
+
+                            req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Videos/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API),None)
 
                             # try login
                             try:
