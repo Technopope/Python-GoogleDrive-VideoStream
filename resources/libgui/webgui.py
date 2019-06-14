@@ -707,16 +707,18 @@ class webGUI(BaseHTTPRequestHandler):
                                     self.end_headers()
                                     self.wfile.write(str(e))
                                     return
-                                response_data = response.read()
-                                response.close()
-                                self.send_response(307)
-                                self.send_header('Location', response_data)
-                                self.end_headers()
-                                return
+                                else:
+                                    self.send_response(200)
+                                    self.end_headers()
+                                    self.wfile.write(str(e))
 
-                            self.send_response(200)
+                            response_data = response.read()
+                            response.close()
+                            self.send_response(307)
+                            self.send_header('Location', response_data)
                             self.end_headers()
-                            self.wfile.write(str(e))
+                            return
+
                         return
 
                     response_data = response.read()
