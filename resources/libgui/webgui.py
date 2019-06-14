@@ -673,13 +673,20 @@ class webGUI(BaseHTTPRequestHandler):
         # method to force direct play via Google Drive
         if re.search(r'/stream/', str(decryptkeyvalue),re.IGNORECASE):
 
-                results = re.search(r'/stream/([^\/]+)/([^\/]+)/([^\/]+)/', str(decryptkeyvalue))
-                xbmc.log("STREAM = " +str(decryptkeyvalue))
+                results = re.search(r'/stream/([^\/]+)/([^\/]+)/([^\/]+)/([^\/]+)/', str(decryptkeyvalue))
+                xbmc.log("STREAM  = " +str(decryptkeyvalue))
+                if not results:
+                    results = re.search(r'/stream/([^\/]+)/([^\/]+)/([^\/]+)/', str(decryptkeyvalue))
+                    xbmc.log("STREAM (depreicated) = " +str(decryptkeyvalue))
 
                 if results:
                     API = str(results.group(1))
                     fileID = str(results.group(2))
                     port = str(results.group(3))
+                    try:
+                       host = str(results.group(4))
+                    except:
+                       host= '127.0.0.1'
 
                     req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/File?api_key=' +str(API),None)
 
@@ -692,37 +699,12 @@ class webGUI(BaseHTTPRequestHandler):
                             self.send_response(200)
                             self.end_headers()
                             self.wfile.write(str(e))
-                            return
                         else:
                             xbmc.log("STREAM FAIL = " +str(decryptkeyvalue))
 
                             self.send_response(307)
-                            self.send_header('Location', 'http://127.0.0.1:'+str(port)+'/emby/Videos/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API))
+                            self.send_header('Location', 'http://'+str(host)+':'+str(port)+'/emby/Videos/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API))
                             self.end_headers()
-                            return
-
-                            req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Videos/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API),None)
-
-                            # try login
-                            try:
-                                response = urllib2.urlopen(req)
-                            except urllib2.URLError, e:
-                                if e.code == 403:
-                                    self.send_response(200)
-                                    self.end_headers()
-                                    self.wfile.write(str(e))
-                                    return
-                                else:
-                                    self.send_response(200)
-                                    self.end_headers()
-                                    self.wfile.write(str(e))
-
-                            response_data = response.read()
-                            response.close()
-                            self.send_response(307)
-                            self.send_header('Location', response_data)
-                            self.end_headers()
-                            return
 
                         return
 
