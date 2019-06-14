@@ -696,6 +696,11 @@ class webGUI(BaseHTTPRequestHandler):
                         else:
                             xbmc.log("STREAM FAIL = " +str(decryptkeyvalue))
 
+                            self.send_response(307)
+                            self.send_header('Location', 'http://127.0.0.1:'+str(port)+'/emby/Videos/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API))
+                            self.end_headers()
+                            return
+
                             req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Videos/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API),None)
 
                             # try login
