@@ -694,6 +694,24 @@ class webGUI(BaseHTTPRequestHandler):
                             self.wfile.write(str(e))
                             return
                         else:
+                            req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API),None)
+
+                            # try login
+                            try:
+                                response = urllib2.urlopen(req)
+                            except urllib2.URLError, e:
+                                if e.code == 403:
+                                    self.send_response(200)
+                                    self.end_headers()
+                                    self.wfile.write(str(e))
+                                    return
+                                response_data = response.read()
+                                response.close()
+                                self.send_response(307)
+                                self.send_header('Location', response_data)
+                                self.end_headers()
+                                return
+
                             self.send_response(200)
                             self.end_headers()
                             self.wfile.write(str(e))
