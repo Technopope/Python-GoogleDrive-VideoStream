@@ -670,7 +670,7 @@ class webGUI(BaseHTTPRequestHandler):
           end = int(r.group(1))
           break
 
-        # Plex name to hash
+        # method to force direct play via Google Drive
         if re.search(r'/stream/', str(decryptkeyvalue),re.IGNORECASE):
 
                 results = re.search(r'/stream/([^\/]+)/([^\/]+)/([^\/]+)/', str(decryptkeyvalue))
