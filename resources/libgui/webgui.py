@@ -677,7 +677,7 @@ class webGUI(BaseHTTPRequestHandler):
                 xbmc.log("STREAM  = " +str(decryptkeyvalue))
                 if not results:
                     results = re.search(r'/stream/([^\/]+)/([^\/]+)/([^\/]+)/', str(decryptkeyvalue))
-                    xbmc.log("STREAM (depreicated) = " +str(decryptkeyvalue))
+                    xbmc.log("STREAM (deprecated) = " +str(decryptkeyvalue))
 
                 if results:
                     API = str(results.group(1))
