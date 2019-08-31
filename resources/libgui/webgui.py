@@ -1031,8 +1031,8 @@ class webGUI(BaseHTTPRequestHandler):
                     self.wfile.write(chunk)
                     # testing of rate limitator
                     ###time.sleep(0.02)
-                    if constants.CONST.DEBUG:
-                        print "HASH = " + str(hashlib.md5(chunk).hexdigest()) + "\n"
+#                    if constants.CONST.DEBUG:
+#                        print "HASH = " + str(hashlib.md5(chunk).hexdigest()) + "\n"
 
 
 
