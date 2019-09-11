@@ -731,6 +731,30 @@ class webGUI(BaseHTTPRequestHandler):
                         except:
                             pass
 
+                    results = re.search(r'"Path":"([^\"]+)"', str(response_data), re.IGNORECASE)
+                    xbmc.log("OVERRIDE = " +str(response_data))
+                    if results:
+                        filenameWithPath = str(results.group(1))
+                        if re.search('.strm', str(filenameWithPath), re.IGNORECASE):
+                            try:
+                                f=open(filenameWithPath, "r")
+                                if f.mode == 'r':
+                                    URL =f.readline()
+                                    URL.rstrip("\n")
+                                    URL.rstrip("\r")
+                                    f.close()
+                                    self.send_response(307)
+                                    self.send_header('Location', URL)
+                                    self.end_headers()
+                            except:
+                                pass
+                        elif re.search('htt', str(filenameWithPath), re.IGNORECASE):
+                            self.send_response(307)
+                            self.send_header('Location', str(filenameWithPath))
+                            self.end_headers()
+                            return
+
+
 
                     xbmc.log("STREAM catchall = "  +str(URL) +  '  -- '+ str(decryptkeyvalue))
 
