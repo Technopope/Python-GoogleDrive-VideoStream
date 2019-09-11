@@ -732,7 +732,7 @@ class webGUI(BaseHTTPRequestHandler):
                             pass
 
 
-                    xbmc.log("STREAM FAIL = " +str(decryptkeyvalue))
+                    xbmc.log("STREAM catchall = "  +str(URL) +  '  -- '+ str(decryptkeyvalue))
 
                     self.send_response(307)
                     self.send_header('Location', 'http://'+str(host)+':'+str(port)+'/emby/Videos/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API))
