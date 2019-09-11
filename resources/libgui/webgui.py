@@ -688,7 +688,10 @@ class webGUI(BaseHTTPRequestHandler):
                     except:
                        host= '127.0.0.1'
 
-                    req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/File?api_key=' +str(API),None)
+                    #old method API call
+                    #req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/File?api_key=' +str(API),None)
+                    req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/PlaybackInfo?api_key=' +str(API),None)
+
 
                     # try login
                     try:
@@ -710,9 +713,30 @@ class webGUI(BaseHTTPRequestHandler):
 
                     response_data = response.read()
                     response.close()
+                    results = re.search(r'"Path":"([^\"]+)\.strm"', str(response_data), re.IGNORECASE)
+                    xbmc.log("OVERRIDE = " +str(response_data))
+                    if results:
+                        filenameWithPath = str(results.group(1))
+                        try:
+                            f=open(filenameWithPath, "r")
+                            if f.mode == 'r':
+                                URL =f.readline()
+                                URL.rstrip("\n")
+                                URL.rstrip("\r")
+                                f.close()
+                                self.send_response(307)
+                                self.send_header('Location', URL)
+                                self.end_headers()
+                        except:
+                            pass
+
+
+                    xbmc.log("STREAM FAIL = " +str(decryptkeyvalue))
+
                     self.send_response(307)
-                    self.send_header('Location', response_data)
+                    self.send_header('Location', 'http://'+str(host)+':'+str(port)+'/emby/Videos/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API))
                     self.end_headers()
+                    return
 
         # Plex name to hash
         elif re.search(r'/TEST\?file\=', str(decryptkeyvalue),re.IGNORECASE):
