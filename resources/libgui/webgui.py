@@ -690,7 +690,8 @@ class webGUI(BaseHTTPRequestHandler):
 
                     #old method API call
                     #req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/File?api_key=' +str(API),None)
-                    req = urllib2.Request('http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/PlaybackInfo?api_key=' +str(API),None)
+                    URL = 'http://127.0.0.1:'+str(port)+'/emby/Items/'+ str(fileID) + '/PlaybackInfo?api_key=' +str(API)
+                    req = urllib2.Request(URL,None)
 
 
                     # try login
@@ -703,7 +704,7 @@ class webGUI(BaseHTTPRequestHandler):
                             self.end_headers()
                             self.wfile.write(str(e))
                         else:
-                            xbmc.log("STREAM FAIL = " +str(decryptkeyvalue))
+                            xbmc.log("STREAM FAIL = " +str(URL) +  '  -- '+ str(decryptkeyvalue))
 
                             self.send_response(307)
                             self.send_header('Location', 'http://'+str(host)+':'+str(port)+'/emby/Videos/'+ str(fileID) + '/stream?Static=true&api_key=' +str(API))
