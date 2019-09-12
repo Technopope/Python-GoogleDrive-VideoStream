@@ -1,4 +1,6 @@
 
+- fix for Emby 4.2.1 and 4.3 breaks passthrough reverse-proxy hack #143
+- implement for emby 4.2.10 : Passthrough doesn`t work #123
 - implement -- Make passthrough default true #132
 v0.1.33 (2019-03-06)
 - changes for plex
