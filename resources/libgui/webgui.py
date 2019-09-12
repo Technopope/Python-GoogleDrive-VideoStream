@@ -722,7 +722,7 @@ class webGUI(BaseHTTPRequestHandler):
 
                         filenameWithPath = str(results.group(1))
                         xbmc.log("filenameWithPath = " +str(filenameWithPath))
-                        if re.search('.strm', str(filenameWithPath), re.IGNORECASE):
+                        if re.search('\.strm', str(filenameWithPath), re.IGNORECASE):
                             try:
                                 f=open(filenameWithPath, "r")
                                 if f.mode == 'r':
