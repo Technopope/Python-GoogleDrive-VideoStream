@@ -344,12 +344,14 @@ class webGUI(BaseHTTPRequestHandler):
                 if self.server.username == username and self.server.password == password:
                     loginSession =  id_generator(size=10)
                     self.send_response(200)
+                    self.send_header('Content-Type', 'text/html')
                     self.send_header('Set-Cookie', 'login='+str(loginSession))
                     self.server.logins[loginSession] = 1
                     mediaEngine = engine.contentengine()
                     mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
                 else:
                     self.send_response(200)
+                    self.send_header('Content-Type', 'text/html')
                     self.end_headers()
                     self.wfile.write("Wrong username/password")
 
@@ -366,6 +368,7 @@ class webGUI(BaseHTTPRequestHandler):
                 #print post_data
 
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
                 username = ''
                 password = ''
@@ -385,6 +388,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             else:
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
                 self.wfile.write("Stopping server...")
                 self.server.ready = False
@@ -397,6 +401,8 @@ class webGUI(BaseHTTPRequestHandler):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+
             self.end_headers()
 
             for r in re.finditer('client_id\=([^\&]+)\&\client_secret\=([^\&]+)' ,
@@ -411,6 +417,8 @@ class webGUI(BaseHTTPRequestHandler):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+
             self.end_headers()
             xbmc.log(post_data)
             isPassthrough = False
@@ -457,10 +465,14 @@ class webGUI(BaseHTTPRequestHandler):
                 xbmc.log("username " + username + " password " + self.server.username)
                 if not (self.server.username == username and self.server.password == password):
                     self.send_response(200)
+                    self.send_header('Content-Type', 'text/html')
+
                     self.end_headers()
                     self.wfile.write("Wrong username/password")
                     return
             self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+
             self.end_headers()
 
             self.displaySettings(host=host)
@@ -516,11 +528,13 @@ class webGUI(BaseHTTPRequestHandler):
                     if e.code == 403:
                         #login issue
                         self.send_response(200)
+                        self.send_header('Content-Type', 'text/html')
                         self.end_headers()
                         self.wfile.write(str(e))
                         return
                     else:
                         self.send_response(200)
+                        self.send_header('Content-Type', 'text/html')
                         self.end_headers()
                         self.wfile.write(str(e))
                     return
@@ -545,6 +559,7 @@ class webGUI(BaseHTTPRequestHandler):
                                  response_data, re.DOTALL):
                     errorMessage = r.group(1)
                     self.send_response(200)
+                    self.send_header('Content-Type', 'text/html')
                     self.end_headers()
                     self.wfile.write(errorMessage)
 
@@ -568,12 +583,14 @@ class webGUI(BaseHTTPRequestHandler):
                 if self.server.username == username and self.server.password == password:
                     loginSession =  id_generator(size=10)
                     self.send_response(200)
+                    self.send_header('Content-Type', 'text/html')
                     self.send_header('Set-Cookie', 'login='+str(loginSession))
                     self.server.logins[loginSession] = 1
                     mediaEngine = engine.contentengine()
                     mediaEngine.run(self, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
                 else:
                     self.send_response(200)
+                    self.send_header('Content-Type', 'text/html')
                     self.end_headers()
                     self.wfile.write("Wrong username/password")
 
@@ -701,6 +718,7 @@ class webGUI(BaseHTTPRequestHandler):
                         if e.code == 403:
                             #login issue
                             self.send_response(200)
+                            self.send_header('Content-Type', 'text/html')
                             self.end_headers()
                             self.wfile.write(str(e))
                         else:
@@ -1110,6 +1128,7 @@ class webGUI(BaseHTTPRequestHandler):
         #require authentication for all further requests
         elif not isLoggedIn and (self.server.username is not None and self.server.username != ''):
             self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
             self.end_headers()
 
             self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
@@ -1120,6 +1139,7 @@ class webGUI(BaseHTTPRequestHandler):
             if decryptkeyvalue == '/kill':
 
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
                 if (self.server.username is not None and self.server.username != ''):
                     self.wfile.write('<html><form action="/kill" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Stop Server"></form></html>')
@@ -1150,6 +1170,7 @@ class webGUI(BaseHTTPRequestHandler):
             elif  re.search(r'/default.py\?mode\=enroll_rw', str(decryptkeyvalue),re.IGNORECASE):
 
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
 
                 #pull client secrets
@@ -1162,6 +1183,7 @@ class webGUI(BaseHTTPRequestHandler):
             elif  re.search(r'/default.py\?mode\=enroll\&default\=true', str(decryptkeyvalue),re.IGNORECASE):# or  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue)):
 
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
 
                 self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="default.py?mode=enroll" method="post">Client ID:<br /><input type="hidden" name="client_id" value="772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com"><br />Client Secret:<br /><input type="hidden" name="client_secret" value="PgteSoD4uagqHA1_nLERLDx9"><br /><br /></br /> <input type="submit" value="Submit"></form></body></html>')
@@ -1171,6 +1193,7 @@ class webGUI(BaseHTTPRequestHandler):
             elif  re.search(r'/default.py\?mode\=enroll', str(decryptkeyvalue),re.IGNORECASE):
 
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
 
                 self.wfile.write('<html><body>Do you want to use a default client id / client secret or your own client id / client secret?  If you don\'t know what this means, select DEFAULT.<br /> <a href="default.py?mode=enroll&default=true">use default client id / client secret (DEFAULT)</a> <br /><br />OR use your own client id / client secret<br /><br /><form action="default.py?mode=enroll&default=false" method="post">Client ID:<br /><input type="text" name="client_id" value=""><br />Client Secret:<br /><input type="text" name="client_secret" value=""> <br/><input type="submit" value="Submit"></form></body></html>')
@@ -1179,6 +1202,7 @@ class webGUI(BaseHTTPRequestHandler):
             elif  re.search(r'/default.py\?mode\=enroll\&default\=false', str(decryptkeyvalue),re.IGNORECASE):
 
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
 
                 self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="default.py?mode=enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><br /> <input type="submit" value="Submit"></form></body></html>')
@@ -1187,6 +1211,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             elif  re.search(r'/settings', str(decryptkeyvalue),re.IGNORECASE):
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
                 if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                     self.wfile.write('<html><form action="/settings" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
@@ -1203,6 +1228,7 @@ class webGUI(BaseHTTPRequestHandler):
 
                 if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                     self.send_response(200)
+                    self.send_header('Content-Type', 'text/html')
                     self.end_headers()
                     self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
                 else:
@@ -1217,6 +1243,7 @@ class webGUI(BaseHTTPRequestHandler):
                 self.server.addon.__init__()
                 self.server.setDBM()
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
                 if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
                     self.wfile.write('<html><form action="/list" method="post">Username: <input type="text" name="username"><br />Password: <input type="password" name="password"><br /><input type="submit" value="Login"></form></html>')
@@ -1229,6 +1256,7 @@ class webGUI(BaseHTTPRequestHandler):
             elif decryptkeyvalue == '/reloadhash':
 
                 self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
                 self.end_headers()
                 self.server.loadHash(True)
                 if not isLoggedIn and (self.server.username is not None and self.server.username != ''):
