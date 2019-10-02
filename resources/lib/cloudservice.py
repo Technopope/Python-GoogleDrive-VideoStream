@@ -278,41 +278,49 @@ class cloudservice(object):
 
 
                                     if original and not skip and (not xbmcvfs.exists(strmFileName) or force):
-                                        strmFile = xbmcvfs.File(strmFileName, "w")
+                                        try:
+                                            strmFile = xbmcvfs.File(strmFileName, "w")
 
-                                        if not KODI:
-                                            if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+                                            if not KODI:
+                                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                                    params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
-                                                if params and plugin_handle.server.hide:
-                                                    base = str(params.group(1))
-                                                    extended = str(params.group(1))
-                                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
-                                                else:
-                                                    url = str(url) + '&original=true'
+                                                    if params and plugin_handle.server.hide:
+                                                        base = str(params.group(1))
+                                                        extended = str(params.group(1))
+                                                        url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
+                                                    else:
+                                                        url = str(url) + '&original=true'
 
-                                        strmFile.write(url+'\n')
-                                        strmFile.close()
+                                            strmFile.write(url+'\n')
+                                            strmFile.close()
+                                        except:
+                                            xbmc.log('SKIPPED (due to error) ' + str(strmFileName))
+
                                         count += 1
 
                                     if transcode and not skip:# and (not xbmcvfs.exists(strmFileName) or force):
 
                                         for x in extraFiles:
                                             if (not xbmcvfs.exists(x[0]) or force):
-                                                strmFile = xbmcvfs.File(x[0], "w")
-                                                tmpURL = x[1]
-                                                if not KODI:
-                                                    if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+                                                try:
+                                                    strmFile = xbmcvfs.File(x[0], "w")
+                                                    tmpURL = x[1]
+                                                    if not KODI:
+                                                        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
 
-                                                        if params and plugin_handle.server.hide:
-                                                            base = str(params.group(1))
-                                                            extended = str(params.group(1))
-                                                            tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
-                                                        else:
-                                                            tmpURL = str(tmpURL)
-                                                strmFile.write(tmpURL+'\n')
-                                                strmFile.close()
+                                                            if params and plugin_handle.server.hide:
+                                                                base = str(params.group(1))
+                                                                extended = str(params.group(1))
+                                                                tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                            else:
+                                                                tmpURL = str(tmpURL)
+                                                    strmFile.write(tmpURL+'\n')
+                                                    strmFile.close()
+                                                except:
+                                                    xbmc.log('SKIPPED (due to error) ' + str(x[0]))
+
                                                 count += 1
                                     if helperfiles and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
                                         count += 1
@@ -410,38 +418,47 @@ class cloudservice(object):
                                         elif not skip and not item.file.deleted and (not xbmcvfs.exists(strmFileName) or force):
 
                                             if original:
-                                                strmFile = xbmcvfs.File(strmFileName, "w")
+                                                try;
+                                                    strmFile = xbmcvfs.File(strmFileName, "w")
 
-                                                if not KODI:
-                                                    if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
-
-                                                        if params and plugin_handle.server.hide:
-                                                            base = str(params.group(1))
-                                                            extended = str(params.group(1))
-                                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
-                                                        else:
-                                                            url = str(url) + '&original=true'
-                                                strmFile.write(url +'\n')
-                                                strmFile.close()
-                                                count += 1
-
-                                            if transcode:
-                                                for x in extraFiles:
-                                                    strmFile = xbmcvfs.File(x[0], "w")
-                                                    tmpURL = x[1]
                                                     if not KODI:
                                                         if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+                                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
                                                             if params and plugin_handle.server.hide:
                                                                 base = str(params.group(1))
                                                                 extended = str(params.group(1))
-                                                                tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                                url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
                                                             else:
-                                                                tmpURL = str(tmpURL)
-                                                    strmFile.write(tmpURL+'\n')
+                                                                url = str(url) + '&original=true'
+                                                    strmFile.write(url +'\n')
                                                     strmFile.close()
+                                                except:
+                                                    xbmc.log('SKIPPED (due to error) ' + str(strmFileName))
+
+
+                                                count += 1
+
+                                            if transcode:
+                                                for x in extraFiles:
+                                                    try:
+                                                        strmFile = xbmcvfs.File(x[0], "w")
+                                                        tmpURL = x[1]
+                                                        if not KODI:
+                                                            if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(tmpURL))
+
+                                                                if params and plugin_handle.server.hide:
+                                                                    base = str(params.group(1))
+                                                                    extended = str(params.group(1))
+                                                                    tmpURL = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(tmpURL)
+                                                                else:
+                                                                    tmpURL = str(tmpURL)
+                                                        strmFile.write(tmpURL+'\n')
+                                                        strmFile.close()
+                                                    except:
+                                                        xbmc.log('SKIPPED (due to error) ' + str(x[0]))
+
                                                     count += 1
 
                                             if helperfiles and item.file.type != self.MEDIA_TYPE_VIDEO_HELPER:
@@ -538,21 +555,25 @@ class cloudservice(object):
 
                             if (not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm') or force):
                                 filename = str(path) + '/' + str(title)+'.strm'
-                                strmFile = xbmcvfs.File(filename, "w")
+                                try:
+                                    strmFile = xbmcvfs.File(filename, "w")
 
-                                if not KODI:
-                                    if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+                                    if not KODI:
+                                        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
-                                        if params and plugin_handle.server.hide:
-                                            base = str(params.group(1))
-                                            extended = str(params.group(1))
-                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
-                                        else:
-                                            url = str(url)
+                                            if params and plugin_handle.server.hide:
+                                                base = str(params.group(1))
+                                                extended = str(params.group(1))
+                                                url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                            else:
+                                                url = str(url)
 
-                                strmFile.write(url+'\n')
-                                strmFile.close()
+                                    strmFile.write(url+'\n')
+                                    strmFile.close()
+                                except:
+                                    xbmc.log('SKIPPED (due to error) ' + str(filename))
+
 
                 url=0
                 # file is already downloaded
@@ -584,21 +605,25 @@ class cloudservice(object):
 
                             if (not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm') or force):
                                 filename = str(path) + '/' + str(title)+'.strm'
-                                strmFile = xbmcvfs.File(filename, "w")
+                                try:
+                                    strmFile = xbmcvfs.File(filename, "w")
 
-                                if not KODI:
-                                    if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                        params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+                                    if not KODI:
+                                        if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                            params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
-                                        if params and plugin_handle.server.hide:
-                                            base = str(params.group(1))
-                                            extended = str(params.group(1))
-                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
-                                        else:
-                                            url = str(url)
+                                            if params and plugin_handle.server.hide:
+                                                base = str(params.group(1))
+                                                extended = str(params.group(1))
+                                                url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                            else:
+                                                url = str(url)
 
-                                strmFile.write(url+'\n')
-                                strmFile.close()
+                                    strmFile.write(url+'\n')
+                                    strmFile.close()
+                                except:
+                                    xbmc.log('SKIPPED (due to error) ' + str(filename))
+
         return (count, largestChangeId)
 
 
