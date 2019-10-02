@@ -418,7 +418,7 @@ class cloudservice(object):
                                         elif not skip and not item.file.deleted and (not xbmcvfs.exists(strmFileName) or force):
 
                                             if original:
-                                                try;
+                                                try:
                                                     strmFile = xbmcvfs.File(strmFileName, "w")
 
                                                     if not KODI:
