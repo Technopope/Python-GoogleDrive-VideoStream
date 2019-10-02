@@ -1,3 +1,4 @@
+- added exception handling: Large teamdrive tv series folder incomplete strm creation #135
 - send Content-Type (Is anything required to run behind a reverse proxy that handles SSL termination? #111)
 v0.1.40 (2019-09-11)
 - fix for Emby 4.2.1 and 4.3 breaks passthrough reverse-proxy hack #143
