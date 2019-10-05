@@ -1040,6 +1040,11 @@ class webGUI(BaseHTTPRequestHandler):
                     self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
                     self.send_header('Date',response.info().getheader('Date'))
                     self.send_header('Content-type','video/mp4')
+                    f =open('./resources/videos/transcode.mp4', 'rb')
+                    f.seek(0, os.SEEK_END)
+                    size = f.tell()
+                    f.close()
+                    self.send_header('Content-Length',str(size))
                     self.end_headers()
                     with open('./resources/videos/transcode.mp4', 'rb') as f:
                         self.wfile.write(f.read())
