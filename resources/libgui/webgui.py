@@ -862,6 +862,12 @@ class webGUI(BaseHTTPRequestHandler):
                 xbmc.log("send transcode broken ERROR")
                 self.send_response(200)
                 self.send_header('Content-type','video/mp4')
+                f =open('./resources/videos/transcode.mp4', 'rb')
+                f.seek(0, os.SEEK_END)
+                size = f.tell()
+                f.close()
+                self.send_header('Content-Length',str(size))
+
                 self.end_headers()
                 with open('./resources/videos/transcode.mp4', 'rb') as f:
                     self.wfile.write(f.read())
