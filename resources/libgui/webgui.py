@@ -859,6 +859,7 @@ class webGUI(BaseHTTPRequestHandler):
 
 
             if url == 'BROKEN':
+                xbmc.log("send transcode broken ERROR")
                 self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
                 self.send_header('Date',response.info().getheader('Date'))
                 self.send_header('Content-type','video/mp4')
