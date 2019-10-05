@@ -870,8 +870,9 @@ class webGUI(BaseHTTPRequestHandler):
 
                 self.end_headers()
                 with open('./resources/videos/transcode.mp4', 'rb') as f:
-                    self.wfile.write(f.read())
+                    content = f.read()
                 f.close()
+                self.wfile.write(content)
                 return
 
 
