@@ -860,6 +860,7 @@ class webGUI(BaseHTTPRequestHandler):
 
             if url == 'BROKEN':
                 xbmc.log("send transcode broken ERROR")
+                self.send_response(200)
                 self.send_header('Content-type','video/mp4')
                 self.end_headers()
                 with open('./resources/videos/transcode.mp4', 'rb') as f:
