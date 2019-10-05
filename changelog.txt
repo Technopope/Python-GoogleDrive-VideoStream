@@ -1,3 +1,4 @@
+- testing implementation: Add error message for google transcode still processing #147
 - added exception handling: Large teamdrive tv series folder incomplete strm creation #135
 - send Content-Type (Is anything required to run behind a reverse proxy that handles SSL termination? #111)
 v0.1.40 (2019-09-11)

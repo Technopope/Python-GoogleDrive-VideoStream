@@ -1025,6 +1025,13 @@ class webGUI(BaseHTTPRequestHandler):
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
                     xbmc.log("STILL ERROR 111 " +url +str(e.code))
+                    self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+                    self.send_header('Date',response.info().getheader('Date'))
+                    self.send_header('Content-type','video/mp4')
+                    self.end_headers()
+                    with open('./resources/videos/transcode.mp4', 'rb') as f:
+                        self.wfile.write(f.read())
+                    f.close()
                     return
                 else:
                     return
