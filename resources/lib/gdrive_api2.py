@@ -1920,6 +1920,7 @@ class gdrive(cloudservice):
                 xbmc.log("response data = " + str(response_data), xbmc.LOGDEBUG)
 
 
+
                 for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
                     cookieType,cookieValue = r.groups()
                     if cookieType == 'DRIVE_STREAM':
@@ -2153,7 +2154,9 @@ class gdrive(cloudservice):
 
             xbmc.log('getPlaybackCall - forcing to original')
             # new method of fetching original stream -- using alt=media
-            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            #url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
+            ##force to broken
+            url = 'BROKEN'
             mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
 
             return (mediaURLs, package)

@@ -857,6 +857,18 @@ class webGUI(BaseHTTPRequestHandler):
             auth = xbmcplugin.playbackBuffer.playback[count]['auth']
             auth = auth.replace("+",' ')
 
+
+            if url == 'BROKEN':
+                self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+                self.send_header('Date',response.info().getheader('Date'))
+                self.send_header('Content-type','video/mp4')
+                self.end_headers()
+                with open('./resources/videos/transcode.mp4', 'rb') as f:
+                    self.wfile.write(f.read())
+                f.close()
+                return
+
+
             length=0
             try:
                 length = xbmcplugin.playbackBuffer.playback[count]['length']
