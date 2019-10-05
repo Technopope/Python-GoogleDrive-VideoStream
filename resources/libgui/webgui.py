@@ -867,7 +867,7 @@ class webGUI(BaseHTTPRequestHandler):
                 size = f.tell()
                 f.close()
                 self.send_header('Content-Length',str(size))
-
+                self.send_header('Content-Range','bytes 0 -' + str(int(size-1)) + '/' +  str(size))
                 self.end_headers()
                 with open('./resources/videos/transcode.mp4', 'rb') as f:
                     content = f.read()
@@ -1052,6 +1052,8 @@ class webGUI(BaseHTTPRequestHandler):
                     size = f.tell()
                     f.close()
                     self.send_header('Content-Length',str(size))
+                    self.send_header('Content-Range','bytes 0 -' + str(int(size-1)) + '/' +  str(size))
+
                     self.end_headers()
                     with open('./resources/videos/transcode.mp4', 'rb') as f:
                         self.wfile.write(f.read())
