@@ -867,12 +867,14 @@ class webGUI(BaseHTTPRequestHandler):
                 size = f.tell()
                 f.close()
                 self.send_header('Content-Length',str(size))
-                self.send_header('Content-Range','bytes 0 -' + str(int(size-1)) + '/' +  str(size))
-                xbmc.log('Content-Range'+' bytes 0 -' + str(int(size-1)) + '/' +  str(size))
+                self.send_header('Content-Range','bytes '+str(start)+'-' + str(end) + '/' +  str(size))
+                xbmc.log('Content-Range'+' bytes '+str(start)+'-' + str(end) + '/' +  str(size))
 
                 self.end_headers()
-                with open('./resources/videos/transcode.mp4', 'rb') as f:
-                    content = f.read()
+                #with open('./resources/videos/transcode.mp4', 'rb') as f:
+                f =open('./resources/videos/transcode.mp4', 'rb')
+                f.seek(start)
+                content = f.read()
                 f.close()
                 self.wfile.write(content)
                 return
