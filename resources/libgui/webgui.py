@@ -800,37 +800,36 @@ class webGUI(BaseHTTPRequestHandler):
                     mediaEngine = engine.contentengine()
                     mediaEngine.run(self,query, DBM=self.server.dbm, addon=self.server.addon, host=host, MD5List=self.server.MD5List, fileIDList=self.server.fileIDList)
                     return
-        elif  re.search(r'/quality=SD', str(decryptkeyvalue),re.IGNORECASE):
+        elif  re.search(r'/quality=SD', str(decryptkeyvalue),re.IGNORECASE) or re.search(r'/quality=720p', str(decryptkeyvalue),re.IGNORECASE) or re.search(r'/quality=1080p', str(decryptkeyvalue),re.IGNORECASE) or re.search(r'/quality=unset', str(decryptkeyvalue),re.IGNORECASE):
             self.send_response(200)
-            self.send_header('Set-Cookie', 'quality=2')
+            if re.search(r'/quality=SD', str(decryptkeyvalue),re.IGNORECASE):
+                self.send_header('Set-Cookie', 'quality=2')
+            elif re.search(r'/quality=720p', str(decryptkeyvalue),re.IGNORECASE):
+                self.send_header('Set-Cookie', 'quality=1')
+            elif re.search(r'/quality=1080p', str(decryptkeyvalue),re.IGNORECASE):
+                self.send_header('Set-Cookie', 'quality=0')
+            elif re.search(r'/quality=unset', str(decryptkeyvalue),re.IGNORECASE):
+                self.send_header('Set-Cookie', 'quality=')
+
+            self.send_header('Content-type','video/mp4')
+            f =open('./resources/videos/transcode.mp4', 'rb')
+            f.seek(0, os.SEEK_END)
+            size = f.tell()
+            f.close()
+            self.send_header('Content-Length',str(size))
+            self.send_header('Content-Range','bytes '+str(start)+'-' + str(end) + '/' +  str(size))
+            xbmc.log('Content-Range'+' bytes '+str(start)+'-' + str(end) + '/' +  str(size))
+
             self.end_headers()
-            with open('./resources/videos/blank.mp4', 'rb') as f:
-                self.wfile.write(f.read())
+            #with open('./resources/videos/transcode.mp4', 'rb') as f:
+            f =open('./resources/videos/transcode.mp4', 'rb')
+            f.seek(start)
+            content = f.read()
+            f.close()
+            self.wfile.write(content)
             return
 
-        elif  re.search(r'/quality=720p', str(decryptkeyvalue),re.IGNORECASE):
-            self.send_response(200)
-            self.send_header('Set-Cookie', 'quality=1')
-            self.end_headers()
-            with open('./resources/videos/blank.mp4', 'rb') as f:
-                self.wfile.write(f.read())
-            return
 
-        elif  re.search(r'/quality=1080p', str(decryptkeyvalue),re.IGNORECASE):
-            self.send_response(200)
-            self.send_header('Set-Cookie', 'quality=0')
-            self.end_headers()
-            with open('./resources/videos/blank.mp4', 'rb') as f:
-                self.wfile.write(f.read())
-            return
-
-        elif  re.search(r'/quality=unset', str(decryptkeyvalue),re.IGNORECASE):
-            self.send_response(200)
-            self.send_header('Set-Cookie', 'quality=')
-            self.end_headers()
-            with open('./resources/videos/blank.mp4', 'rb') as f:
-                self.wfile.write(f.read())
-            return
             # redirect url to output
         elif re.search(r'/play', str(decryptkeyvalue)):
 #            self.send_response(200)
